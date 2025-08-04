@@ -1,0 +1,16 @@
+<nav class="navbar">
+  <div class="app-icons">
+    @for(app of apps; track app){
+      <button (click)="openApp(app.id, app.name)" title="{{app.name}}">
+        <span class="material-icons">{{app.icon || 'apps'}}</span>
+      </button>
+    }
+  </div>
+  <div class="taskbar">
+    @for(win of windows; track win){
+      <button [class.active]="win.active"
+              (click)="toggleWindow(win)"
+              title="{{win.title}}">{{win.title}}</button>
+    }
+  </div>
+</nav>
