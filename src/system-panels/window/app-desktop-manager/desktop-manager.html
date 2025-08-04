@@ -1,5 +1,5 @@
 <div class="desktop" (mouseup)="stopDrag()" (mousemove)="onDrag($event)">
-  @for(win of windows; track win){
+  @for(win of windows; track win.appId){
     <div class="window"
          [class.active]="win.active"
          [style.left.px]="win.position.x"

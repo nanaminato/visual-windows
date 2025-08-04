@@ -8,6 +8,12 @@ export interface WindowState {
   maximized: boolean;
   active: boolean;
 }
+export interface AppWindowConfig{
+  appId: string;
+  appName: string;
+  isSingleton: boolean;
+  preferredSize: { width: number; height: number };
+}
 
 export interface IWindowManagerService {
   openWindow(appId: string, options?: Partial<WindowState>): Promise<string>; // 返回窗口ID
