@@ -1,16 +1,21 @@
 import {Component, HostListener, inject} from '@angular/core';
 import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
 import {WindowState} from '../../../system-services/window-manager.service';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'system-desktop-manager',
-  imports: [],
+  imports: [
+    MatSnackBarModule,
+  ],
   templateUrl: './desktop-manager.html',
   styleUrl: './desktop-manager.css'
 })
 export class DesktopManager {
   private windowManager = inject(WindowManagerService);
   windows: WindowState[] = [];
+
+
 
   // 拖拽相关状态
   private draggingWindowId: string | null = null;
@@ -20,6 +25,7 @@ export class DesktopManager {
     this.windowManager.getWindows().subscribe(ws => {
       this.windows = ws.filter(w => !w.minimized);
     });
+
   }
 
   focusWindow(id: string) {

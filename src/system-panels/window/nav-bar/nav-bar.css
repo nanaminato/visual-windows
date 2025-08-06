@@ -1,28 +1,80 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
+.navbar.bottom-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
   background: #222;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
   color: white;
-  padding: 4px 8px;
-  user-select: none;
+  z-index: 1000;
 }
-.app-icons button, .taskbar button {
+
+.win-button {
+  font-size: 24px;
+  cursor: pointer;
+  background: #444;
+  border: none;
+  color: white;
+  margin-left: 16px;
+  padding: 2px 2px;
+  border-radius: 2px;
+}
+
+.app-list {
+  position: fixed;
+  bottom: 48px; /* 任务栏高度 */
+  left: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #333;
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.7);
+  width: 250px;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 0.2s ease-out;
+  color: white;
+  z-index: 1001;
+}
+
+.app-list.show {
+  transform: scaleY(1);
+}
+
+.app-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.app-entry {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.app-entry > button {
   background: transparent;
   border: none;
   color: white;
-  margin-right: 8px;
+  text-align: left;
+  padding: 4px 12px;
   cursor: pointer;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.app-icons button:hover, .taskbar button:hover {
-  background: rgba(255,255,255,0.1);
+.taskbar{
+  display: flex;
+  flex-direction: row;
 }
-.taskbar button.active {
-  background: #555;
-  font-weight: bold;
+.taskbar  span{
+  cursor: pointer;
+  user-select: none;
 }
-.material-icons {
-  font-size: 20px;
-  vertical-align: middle;
-}
+
 

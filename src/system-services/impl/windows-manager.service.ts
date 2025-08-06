@@ -1,39 +1,38 @@
 import {AppWindowConfig, WindowState} from '../window-manager.service';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
+import {AppManagerService} from './app-manager.service';
 
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
   // 打开的程序
   private windows$ = new BehaviorSubject<WindowState[]>([]);
   // 注册的程序，用于支持打开程序和激活程序等
-  private registeredApps = new BehaviorSubject<AppWindowConfig[]>([]);
+  appWindowConfigs: AppWindowConfig[] = [];
+
+  constructor(private appManagerService: AppManagerService) {
+    this.appWindowConfigs = this.appManagerService.getAppWindowConfigs();
+    this.appManagerService.getAppConfigObservables().subscribe(ws => {
+      this.appWindowConfigs = ws;
+    })
+  }
   getWindows() {
     return this.windows$.asObservable();
   }
   getWindowByAppId(appId: string): WindowState[] {
     return this.windows$.getValue().filter(window => window.appId === appId);
   }
-  getWindowByAppIdObservable(appId: string): Observable<WindowState[]> {
-    return this.windows$.pipe(
-      map(windows => windows.filter(window => window.appId === appId))
-    );
-  }
   getRegisteredAppByAppId(appId: string): AppWindowConfig[] {
-    return this.registeredApps.getValue().filter(app=>app.appId===appId);
+    return this.appWindowConfigs.filter(app=>app.appId===appId);
   }
   // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
   openWindow(appId: string, title: string): string {
     let openedWindows = this.getWindowByAppId(appId);
     let registeredApp = this.getRegisteredAppByAppId(appId);
     if(openedWindows) {
-      if(registeredApp.length>0&&registeredApp[0].isSingleton){
-        let lastWindow;
-        for(let window of openedWindows) {
-          window.active = true;
-          lastWindow = window;
-        }
-        return lastWindow!.id;
+      if(openedWindows.length>0&&registeredApp[0].isSingleton){
+        this.focusWindow(openedWindows[0].id)
+        return openedWindows[0]!.id;
       }
     }
     const id = Math.random().toString(36).substring(2, 11);

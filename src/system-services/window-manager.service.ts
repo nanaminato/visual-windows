@@ -1,3 +1,5 @@
+import {AppIcon} from '../models/app-info';
+
 export interface WindowState {
   id: string;                // 唯一窗口ID
   title: string;             // 窗口标题
@@ -13,8 +15,17 @@ export interface AppWindowConfig{
   appName: string;
   isSingleton: boolean;
   preferredSize: { width: number; height: number };
+  icon: AppIcon,
+  appType:number;
 }
-
+/**
+ public enum AppType
+ {
+  SystemApp = 1,// 系统程序
+  NormalApp = 2,// 集成到本项目的程序
+  WebApp = 3,// 其他项目的程序，通过frame访问
+ }
+ * */
 export interface IWindowManagerService {
   openWindow(appId: string, options?: Partial<WindowState>): Promise<string>; // 返回窗口ID
   closeWindow(windowId: string): void;
