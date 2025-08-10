@@ -1,22 +1,29 @@
 import {Component, HostListener, inject} from '@angular/core';
 import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
-import {WindowState} from '../../../system-services/window-manager.service';
+import {GroupWindowState, WindowState} from '../../../system-services/window-manager.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NgComponentOutlet} from '@angular/common';
+import {WinIcon} from '../win-icon/win-icon';
+import {AppManagerService} from '../../../system-services/impl/app-manager.service';
 
 @Component({
   selector: 'system-desktop-manager',
   imports: [
     MatSnackBarModule,
+    NzIconDirective,
+    NgComponentOutlet,
+    WinIcon,
   ],
   templateUrl: './desktop-manager.html',
   styleUrl: './desktop-manager.css'
 })
 export class DesktopManager {
+  private appManager = inject(AppManagerService);
   private windowManager = inject(WindowManagerService);
   windows: WindowState[] = [];
-
-
-
+  private appManagerService = inject(AppManagerService);
+  apps = this.appManager.listApps();
   // 拖拽相关状态
   private draggingWindowId: string | null = null;
   private dragOffset = { x: 0, y: 0 };
@@ -25,15 +32,31 @@ export class DesktopManager {
     this.windowManager.getWindows().subscribe(ws => {
       this.windows = ws.filter(w => !w.minimized);
     });
+    this.appManagerService.getAppConfigObservables().subscribe(appConfigs => {
+      this.apps = appConfigs;
+    })
 
   }
-
+  getAppWindowConfigOfWindow(window: WindowState) {
+    for (let app of this.appManager.listApps()) {
+      if(app.appId === window.appId) {
+        return app;
+      }
+    }
+    return undefined;
+  }
   focusWindow(id: string) {
     this.windowManager.focusWindow(id);
   }
 
   closeWindow(id: string) {
     this.windowManager.closeWindow(id);
+  }
+  minimizeWindow(id: string) {
+    this.windowManager.minimizeWindow(id);
+  }
+  maximizeWindow(id: string) {
+    this.windowManager.maximizeWindow(id);
   }
 
   startDrag(event: MouseEvent, windowId: string) {

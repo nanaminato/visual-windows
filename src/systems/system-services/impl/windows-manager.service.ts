@@ -26,7 +26,7 @@ export class WindowManagerService {
     return this.appWindowConfigs.filter(app=>app.appId===appId);
   }
   // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
-  openWindow(appId: string, title: string): string {
+  async openWindow(appId: string, title: string) {
     let openedWindows = this.getWindowByAppId(appId);
     let registeredApp = this.getRegisteredAppByAppId(appId);
     if(openedWindows) {
@@ -47,6 +47,17 @@ export class WindowManagerService {
       maximized: false,
       active: true,
     };
+    switch (appId) {
+      case 'micro-window':
+        const { MicroWindow } = await import('../../system-panels/window/micro-window/micro-window');
+        newWindow.component = MicroWindow;
+        break;
+      // case 'file-browser':
+      //   const { FileBrowserComponent } = await import('./file-browser.component');
+      //   win.component = FileBrowserComponent;
+      //   break;
+      // 其他程序...
+    }
     const current = this.windows$.value.map(w => ({ ...w, active: false }));
     this.windows$.next([...current, newWindow]);
     return id;
@@ -69,6 +80,13 @@ export class WindowManagerService {
   minimizeWindow(id: string) {
     const updated = this.windows$.value.map(w =>
       w.id === id ? { ...w, minimized: true, active: false } : w
+    );
+    this.windows$.next(updated);
+  }
+
+  maximizeWindow(id: string) {
+    const updated = this.windows$.value.map(w =>
+      w.id === id ? { ...w, minimized: false, active: true } : w
     );
     this.windows$.next(updated);
   }

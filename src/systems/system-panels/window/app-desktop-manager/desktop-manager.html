@@ -1,0 +1,38 @@
+<div class="desktop" (mouseup)="stopDrag()" (mousemove)="onDrag($event)">
+  @for(win of windows; track win.appId){
+    @if(!win.minimized){
+      <div class="window"
+           [class.active]="win.active"
+           [style.left.px]="win.position.x"
+           [style.top.px]="win.position.y"
+           [style.width.px]="win.size.width"
+           [style.height.px]="win.size.height"
+           (mousedown)="focusWindow(win.id)">
+        <div class="title-bar" (mousedown)="startDrag($event, win.id)">
+          <div class="d-flex flex-row">
+            <app-win-icon [appConfig]="getAppWindowConfigOfWindow(win)"></app-win-icon>
+            <span class="mx-1">{{win.title}}</span>
+          </div>
+          <div class="d-flex flex-row">
+            <button class="mini-btn" >
+              <nz-icon nzType="line" style="font-size: 14px" nzTheme="outline"
+                (click)="minimizeWindow(win.id)"
+                />
+            </button>
+            <button class="max-btn" >
+              <nz-icon nzType="border" style="font-size: 14px" nzTheme="outline"
+                (click)="maximizeWindow(win.id)"
+                />
+            </button>
+            <button class="close-btn" (click)="closeWindow(win.id)">×</button>
+          </div>
+        </div>
+        <div class="content">
+          @if(win.component){
+            <ng-container *ngComponentOutlet="win.component"></ng-container>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

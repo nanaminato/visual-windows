@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
-import {NavBar} from '../system-panels/window/nav-bar/nav-bar';
-import {DesktopManager} from '../system-panels/window/app-desktop-manager/desktop-manager';
+import {Component, signal, ViewChild, ViewContainerRef} from '@angular/core';
+import {DesktopManager} from '../systems/system-panels/window/app-desktop-manager/desktop-manager';
+import {NavBar} from '../systems/system-panels/window/nav-bar/nav-bar';
 
 
 @Component({

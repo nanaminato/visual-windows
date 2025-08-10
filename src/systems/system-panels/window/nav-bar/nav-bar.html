@@ -1,0 +1,54 @@
+<nav class="bottom-navbar">
+
+  <!-- Win 按钮 -->
+  <button class="win-button" (click)="toggleAppList()" title="Start Menu">
+    <nz-icon nzType="windows" nzTheme="outline" />
+<!--    <img width="32" height="32" src="assets/system/win.png"/>-->
+  </button>
+
+  <!-- 自下而上展开的程序列表 -->
+  <div class="app-list" [class.show]="showAppList">
+    <ul>
+      @for(app of apps; track app.appId) {
+        <li>
+          <div class="app-entry">
+            <button (click)="openApp(app.appId, app.appName)">
+              <app-win-icon [appConfig]="app"> </app-win-icon>
+              {{app.appName}}
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <div class="taskbar">
+    @for(win of groupWindows; track win.appId) {
+      @if(win.windowStates.length>1){
+        <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.appId, $event)">
+          <!-- 应用图标 -->
+          <app-win-icon [appConfig]="getAppWindowConfigOfWindowGroup(win)"></app-win-icon>
+          <!-- 下拉箭头 -->
+          <span class="dropdown-arrow">▼</span>
+
+          <!-- 弹出菜单 -->
+          @if(openGroupAppId === win.appId) {
+            <div class="window-list-popup" (click)="$event.stopPropagation()">
+              @for(window of win.windowStates; track window.id) {
+                <div class="window-list-item" (click)="activateWindow(window)">
+                  {{window.title || '无标题窗口'}}
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }@else{
+        <div class="mx-3"
+             (click)="toggleWindow(win)"
+             >
+          <app-win-icon [appConfig]="getAppWindowConfigOfWindowGroup(win)"></app-win-icon>
+        </div>
+      }
+    }
+  </div>
+</nav>

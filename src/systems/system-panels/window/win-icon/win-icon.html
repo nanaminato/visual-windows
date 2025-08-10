@@ -1,0 +1,10 @@
+@switch(appConfig!.icon!.iconType) {
+  @case(1) {
+    <span class="material-icons">
+                {{appConfig!.icon!.name || 'apps'}}
+              </span>
+  }
+  @case(3) {
+    <img width="24" height="24" [src]="'assets/icons/' + appConfig!.icon!.name" />
+  }
+}

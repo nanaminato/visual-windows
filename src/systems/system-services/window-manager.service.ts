@@ -9,6 +9,12 @@ export interface WindowState {
   minimized: boolean;
   maximized: boolean;
   active: boolean;
+  component?: any;            // 关联的Angular组件（独立组件）
+  params?: any;              // 启动参数
+}
+export interface GroupWindowState {
+  appId: string;
+  windowStates: WindowState[];
 }
 export interface AppWindowConfig{
   appId: string;

@@ -30,11 +30,11 @@
   align-items: center;
   font-weight: bold;
 }
-.close-btn {
+.mini-btn,.max-btn,.close-btn {
   background: transparent;
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   line-height: 1;
 }

@@ -2,8 +2,8 @@ export interface AppInfo {
   id: string;                // 应用唯一ID
   name: string;              // 应用名称
   icon?: AppIcon;             // 图标URL或class
-  component?: any;            // 关联的Angular组件（独立组件）
-  params?: any;              // 启动参数
+  // component?: any;            // 关联的Angular组件（独立组件）
+  // params?: any;              // 启动参数
 }
 export interface AppIcon{
   iconType: number;

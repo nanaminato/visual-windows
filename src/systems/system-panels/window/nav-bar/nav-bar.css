@@ -1,4 +1,4 @@
-.navbar.bottom-navbar {
+.bottom-navbar {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -71,10 +71,48 @@
 .taskbar{
   display: flex;
   flex-direction: row;
+  margin: 0 0 0 20px;
 }
 .taskbar  span{
   cursor: pointer;
   user-select: none;
 }
+
+
+
+.grouped-taskbar-item {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dropdown-arrow {
+  font-size: 0.6em;
+  margin-left: 4px;
+}
+
+.window-list-popup {
+  position: absolute;
+  bottom: 100%; /* 让弹窗从任务栏上方展开 */
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.window-list-item {
+  color: black;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.window-list-item:hover {
+  background-color: #eee;
+}
+
 
 
