@@ -1,0 +1,117 @@
+.window {
+    position: absolute;
+    background: white;
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    cursor: default;
+    transition: box-shadow 0.2s;
+}
+.window.active {
+    box-shadow: 0 0 20px #2196f3;
+    z-index: 10;
+}
+.title-bar {
+    background: #444;
+    color: white;
+    padding: 4px 8px;
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+.mini-btn,.max-btn,.close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+.content {
+    flex: 1;
+    padding: 8px;
+    overflow: auto;
+}
+.window {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.resize-handle {
+    position: absolute;
+    background: transparent;
+    z-index: 10;
+}
+
+/* 四角手柄，16x16 px */
+.resize-handle.top-left,
+.resize-handle.top-right,
+.resize-handle.bottom-left,
+.resize-handle.bottom-right {
+    width: 16px;
+    height: 16px;
+}
+
+/* 边缘手柄，厚度 8px，长度根据边 */
+.resize-handle.top,
+.resize-handle.bottom {
+    height: 8px;
+    left: 16px;
+    right: 16px;
+}
+
+.resize-handle.left,
+.resize-handle.right {
+    width: 8px;
+    top: 16px;
+    bottom: 16px;
+}
+
+/* 具体定位 */
+.resize-handle.top-left {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+}
+
+.resize-handle.top {
+    top: 0;
+    cursor: ns-resize;
+}
+
+.resize-handle.top-right {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+}
+
+.resize-handle.right {
+    right: 0;
+    cursor: ew-resize;
+}
+
+.resize-handle.bottom-right {
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
+}
+
+.resize-handle.bottom {
+    bottom: 0;
+    cursor: ns-resize;
+}
+
+.resize-handle.bottom-left {
+    bottom: 0;
+    left: 0;
+    cursor: nesw-resize;
+}
+
+.resize-handle.left {
+    left: 0;
+    cursor: ew-resize;
+}

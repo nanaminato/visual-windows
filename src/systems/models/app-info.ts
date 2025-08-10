@@ -9,6 +9,19 @@ export interface AppIcon{
   iconType: number;
   name: string;
 }
+export interface AppEvent{
+  type: number;
+  id: string;
+  event: any;
+}
+/*
+* 1 focus window
+* 2 mini window
+* 3 maxi window
+* 4 close window
+* 5 drag
+*
+* **/
 /*
 public enum IconType
 {

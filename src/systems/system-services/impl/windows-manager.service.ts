@@ -28,21 +28,24 @@ export class WindowManagerService {
   // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
   async openWindow(appId: string, title: string) {
     let openedWindows = this.getWindowByAppId(appId);
-    let registeredApp = this.getRegisteredAppByAppId(appId);
+    let registeredApps = this.getRegisteredAppByAppId(appId);
     if(openedWindows) {
-      if(openedWindows.length>0&&registeredApp[0].isSingleton){
+      if(openedWindows.length>0&&registeredApps[0].isSingleton){
         this.focusWindow(openedWindows[0].id)
         return openedWindows[0]!.id;
       }
     }
     const id = Math.random().toString(36).substring(2, 11);
-
+    let registeredApp = registeredApps[0];
     const newWindow: WindowState = {
       id,
       appId,
       title,
       position: { x: 100, y: 100 },
-      size: { width: 600, height: 400 },
+      size: {
+        width: registeredApp.preferredSize.width?registeredApp.preferredSize.width:800,
+        height: registeredApp.preferredSize.height?registeredApp.preferredSize.height:600
+      },
       minimized: false,
       maximized: false,
       active: true,

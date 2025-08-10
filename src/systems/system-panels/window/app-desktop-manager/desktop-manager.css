@@ -5,41 +5,4 @@
   background: #0078d7;
   overflow: hidden;
 }
-.window {
-  position: absolute;
-  background: white;
-  border: 1px solid #333;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  user-select: none;
-  cursor: default;
-  transition: box-shadow 0.2s;
-}
-.window.active {
-  box-shadow: 0 0 20px #2196f3;
-  z-index: 10;
-}
-.title-bar {
-  background: #444;
-  color: white;
-  padding: 4px 8px;
-  cursor: move;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-}
-.mini-btn,.max-btn,.close-btn {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  line-height: 1;
-}
-.content {
-  flex: 1;
-  padding: 8px;
-  overflow: auto;
-}
+
