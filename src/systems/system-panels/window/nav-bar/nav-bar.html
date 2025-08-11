@@ -22,7 +22,7 @@
     </ul>
   </div>
 
-  <div class="taskbar">
+  <div class="taskbar dont-select">
     @for(win of groupWindows; track win.appId) {
       @if(win.windowStates.length>1){
         <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.appId, $event)">
@@ -35,7 +35,8 @@
           @if(openGroupAppId === win.appId) {
             <div class="window-list-popup" (click)="$event.stopPropagation()">
               @for(window of win.windowStates; track window.id) {
-                <div class="window-list-item" (click)="activateWindow(window)">
+                <!-- 添加hover的时候，激活对应窗口,并关闭其他窗口                 -->
+                <div class="window-list-item" (click)="activateWindow(window)" >
                   {{window.title || '无标题窗口'}}
                 </div>
               }

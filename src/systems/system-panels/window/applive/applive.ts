@@ -163,8 +163,13 @@ export class Applive {
             }
         }
 
-        // TODO: 这里可以加入桌面边界限制
-
+        // // TODO: 这里可以加入桌面边界限制
+        // console.log("resizing");
+        // if(this.win&&this.win.component){
+        //     if(typeof this.win.component.prototype.fit() === 'function'){
+        //         this.win.component.fit();
+        //     }
+        // }
         // 触发更新窗口大小位置事件
         this.appEventEmitter.emit({
             type: 6, // 自定义类型，比如 resize
@@ -185,5 +190,7 @@ export class Applive {
 
         window.removeEventListener('mousemove', this.onResizeMove);
         window.removeEventListener('mouseup', this.stopResize);
+
+
     };
 }
