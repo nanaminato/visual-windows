@@ -8,6 +8,7 @@ import { WebLinksAddon } from '@xterm/addon-web-links';
 import { ClipboardAddon} from "@xterm/addon-clipboard"
 import { ImageAddon } from "@xterm/addon-image"
 import { Unicode11Addon} from "@xterm/addon-unicode11"
+import {ServerService} from '../../system-services/impl/server.service';
 @Component({
   selector: 'app-terminal',
   imports: [],
@@ -15,6 +16,7 @@ import { Unicode11Addon} from "@xterm/addon-unicode11"
   styleUrl: './terminal.component.css'
 })
 export class TerminalComponent {
+    private serverService = inject(ServerService);
     @Input()
     params: { sessionId?: string } | undefined;
     private socket: WebSocket | undefined;
@@ -26,6 +28,7 @@ export class TerminalComponent {
     ngAfterContentInit() {
         this.xterm = new Terminal({
             allowProposedApi: true,
+            cursorBlink: true,
         });
         this.fitAddon = new FitAddon();
         this.xterm.loadAddon(this.fitAddon);
@@ -62,7 +65,8 @@ export class TerminalComponent {
         }
     }
     private connectWebSocket(sessionId: string) {
-        this.socket = new WebSocket(`ws://localhost:5111/api/v1/terminal/${sessionId}`);
+        // this.socket = new WebSocket(`wss://localhost:7100/api/v1/terminal/${sessionId}`);
+        this.socket = new WebSocket(`${this.serverService.getWebSocketBase()}/api/v1/terminal/${sessionId}`);
         if(this.xterm) {
             this.socket.onmessage = (event) => {
                 this.xterm!.write(event.data);
@@ -75,8 +79,10 @@ export class TerminalComponent {
 
     }
     createTerminalSession() {
+        // let url = "https://localhost:7100/api/v1/terminal/";
+        let url = `${this.serverService.getServerBase()}/api/v1/terminal/`;
         return new Promise<TerminalSession>((resolve,reject) => {
-            let subscription = this.http.post<TerminalSession>("http://localhost:5111/api/v1/terminal/",{}).subscribe({
+            let subscription = this.http.post<TerminalSession>(url,{}).subscribe({
                 next: (sessionId: TerminalSession) => {
                     resolve(sessionId);
                     console.log(sessionId);
@@ -95,22 +101,5 @@ export class TerminalComponent {
     ngOnDestroy() {
         this.socket?.close();
     }
-    // myfit(){
-    //     if(this.xterm && this.terminalContainer &&this.fitAddon) {
-    //         this.xterm!.open(this.terminalContainer!.nativeElement);
-    //         this.fitAddon!.fit();
-    //     }
-    // }
-    // xtermVisible: boolean = true;
-    // public fit(){
-    //     this.xtermVisible = false;
-    //     setTimeout(() => {
-    //         this.xtermVisible = true;
-    //         this.fitAddon!.fit();
-    //     },20)
-    //     // this.fitAddon?.fit();
-    //     // console.log("trying to fit");
-    //     // this.myfit();
-    // }
 
 }
