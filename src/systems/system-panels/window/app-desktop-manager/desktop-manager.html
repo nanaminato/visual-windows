@@ -1,5 +1,5 @@
 <div class="desktop" (mouseup)="stopDrag()" (mousemove)="onDrag($event)">
-  @for(win of windows; track win.appId){
+  @for(win of windows; track win.id){
     @if(!win.minimized){
       <app-applive [win]="win" (appEventEmitter)="appLiveEvent($event)">
       </app-applive>

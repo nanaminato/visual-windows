@@ -1,4 +1,4 @@
-import {AppIcon} from '../models/app-info';
+import {AppIcon} from '../../models/app-info';
 
 export interface WindowState {
   id: string;                // 唯一窗口ID
@@ -20,6 +20,7 @@ export interface AppWindowConfig{
   appId: string;
   appName: string;
   isSingleton: boolean;
+  stateful: boolean;
   preferredSize: { width: number; height: number };
   icon: AppIcon,
   appType:number;

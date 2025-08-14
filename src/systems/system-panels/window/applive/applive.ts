@@ -1,8 +1,18 @@
-import {Component, ElementRef, EventEmitter, inject, Input, Output} from '@angular/core';
-import {NgComponentOutlet} from "@angular/common";
+import {
+    Component, ComponentRef,
+    ElementRef,
+    EventEmitter,
+    inject,
+    Input,
+    Output,
+    TemplateRef, Type,
+    ViewChild,
+    ViewContainerRef
+} from '@angular/core';
+import {CommonModule, NgComponentOutlet} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {WinIcon} from "../win-icon/win-icon";
-import {WindowState} from '../../../system-services/window-manager.service';
+import {WindowState} from '../../../system-services/refers/window-manager.service';
 import {AppEvent} from '../../../models/app-info';
 import {AppManagerService} from '../../../system-services/impl/app-manager.service';
 type ResizeDirection =
@@ -12,9 +22,10 @@ type ResizeDirection =
 @Component({
     selector: 'app-applive',
     imports: [
-        NgComponentOutlet,
+        // NgComponentOutlet,
         NzIconDirective,
-        WinIcon
+        WinIcon,
+        CommonModule,
     ],
     templateUrl: './applive.html',
     styleUrl: './applive.css'
@@ -45,7 +56,14 @@ export class Applive {
             event: 'minimizeWindow'
         });
     }
-
+    toRecord<T extends object>(param: T): Record<string, unknown> | undefined {
+        if(param===undefined) return undefined;
+        const record: Record<string, unknown> = {};
+        for (const key of Object.keys(param)) {
+            record[key] = (param as any)[key];
+        }
+        return record;
+    }
     maximizeWindow(id: string) {
         this.appEventEmitter.emit({
             type: 3,
@@ -54,13 +72,48 @@ export class Applive {
         })
     }
 
-    closeWindow(id: string) {
+
+    @ViewChild('dynamicContent', { read: ViewContainerRef, static: false })
+    dynamicContent!: ViewContainerRef | undefined;
+
+    private componentRef?: ComponentRef<any>;
+    ngAfterViewInit() {
+        if (this.win && this.win.component) {
+            // setTimeout(()=>{
+            //     this.loadComponent(this.win!.component, this.win!.params);
+            // },20)
+            this.loadComponent(this.win!.component, this.win!.params);
+        }
+    }
+
+    loadComponent(component: Type<any>, params?: any) {
+        this.dynamicContent?.clear();
+        // console.log(this.dynamicContent);
+        if(this.dynamicContent) {
+            // console.log("try to load component " + component.name);
+            this.componentRef = this.dynamicContent.createComponent(component);
+
+            if (params) {
+                Object.keys(params).forEach(key => {
+                    this.componentRef!.instance[key] = params[key];
+                });
+            }
+        }
+    }
+
+    async closeWindow(id: string) {
+        if (this.componentRef && typeof this.componentRef.instance.parentClosed=== 'function') {
+            await this.componentRef.instance.parentClosed();
+        }
         this.appEventEmitter.emit({
             type: 4,
             id: id,
             event: 'closeWindow'
-        })
+        });
     }
+
+
+
 
     startDrag($event: MouseEvent, id: string) {
         this.appEventEmitter.emit({
@@ -80,7 +133,7 @@ export class Applive {
     private minWidth = 200;
     private minHeight = 100;
 
-    constructor(private elRef: ElementRef<HTMLElement>) {}
+    constructor() {}
 
     startResize(event: MouseEvent, id: string, direction: ResizeDirection) {
         event.stopPropagation();
@@ -166,8 +219,8 @@ export class Applive {
         // // TODO: 这里可以加入桌面边界限制
         // console.log("resizing");
         // if(this.win&&this.win.component){
-        //     if(typeof this.win.component.prototype.fit() === 'function'){
-        //         this.win.component.fit();
+        //     if(typeof this.win.component.prototype.sizeChanged === 'function'){
+        //         this.win.component.sizeChanged();
         //     }
         // }
         // 触发更新窗口大小位置事件
@@ -193,4 +246,5 @@ export class Applive {
 
 
     };
+
 }

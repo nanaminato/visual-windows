@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AppWindowConfig} from '../../../system-services/window-manager.service';
+import {AppWindowConfig} from '../../../system-services/refers/window-manager.service';
 
 @Component({
   selector: 'app-win-icon',

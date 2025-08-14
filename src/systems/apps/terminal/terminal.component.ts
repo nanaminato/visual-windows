@@ -18,14 +18,14 @@ import {ServerService} from '../../system-services/impl/server.service';
 export class TerminalComponent {
     private serverService = inject(ServerService);
     @Input()
-    params: { sessionId?: string } | undefined;
+    sessionId?: string | undefined;
     private socket: WebSocket | undefined;
     private xterm: Terminal | undefined;
     @ViewChild('terminalContainer', { static: true })
     terminalContainer!: ElementRef<HTMLDivElement> | undefined;
     private http = inject(HttpClient);
     fitAddon!: FitAddon | undefined;
-    ngAfterContentInit() {
+    ngOnInit()  {
         this.xterm = new Terminal({
             allowProposedApi: true,
             cursorBlink: true,
@@ -56,17 +56,18 @@ export class TerminalComponent {
                 }
             });
             resizeObserver.observe(this.terminalContainer.nativeElement);
-            if (!this.params) {
+            if (!this.sessionId) {
                 // 调用后端创建新终端
                 this.createTerminalSession().then(terminalSession => this.connectWebSocket(terminalSession.id));
             } else {
-                this.connectWebSocket(this.params!.sessionId!);
+                this.connectWebSocket(this.sessionId!);
             }
         }
     }
     private connectWebSocket(sessionId: string) {
         // this.socket = new WebSocket(`wss://localhost:7100/api/v1/terminal/${sessionId}`);
         this.socket = new WebSocket(`${this.serverService.getWebSocketBase()}/api/v1/terminal/${sessionId}`);
+        this.sessionId = sessionId;
         if(this.xterm) {
             this.socket.onmessage = (event) => {
                 this.xterm!.write(event.data);
@@ -76,7 +77,6 @@ export class TerminalComponent {
                 this.socket?.send(data);
             });
         }
-
     }
     createTerminalSession() {
         // let url = "https://localhost:7100/api/v1/terminal/";
@@ -96,10 +96,35 @@ export class TerminalComponent {
             return () => subscription.unsubscribe();
         })
     }
+    closeTerminal() {
+        if(!this.sessionId) {
+            return Promise.resolve(); // 没有sessionId时，返回一个立即resolve的Promise，避免await阻塞
+        }
+        let url = `${this.serverService.getServerBase()}/api/v1/terminal/${this.sessionId}`;
+        return new Promise((resolve,reject) => {
+            let subscription = this.http.delete(url,{}).subscribe({
+                next: () => {
+                    subscription.unsubscribe();
+                    resolve({});  // 这里必须调用resolve
+                    // alert("Terminal session closed successfully."+this.sessionId);
+                },
+                error: (err) => {
+                    reject(err);
+                    subscription.unsubscribe();
+                }
+            });
+            // 这里return的函数是unsubscribe的清理函数，通常不需要return
+        });
+    }
 
-
+    async parentClosed(){
+        // console.log("try to close");
+        await this.closeTerminal();
+    }
     ngOnDestroy() {
         this.socket?.close();
     }
+
+
 
 }

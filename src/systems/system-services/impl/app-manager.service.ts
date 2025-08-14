@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AppWindowConfig, WindowState} from '../window-manager.service';
+import {AppWindowConfig, WindowState} from '../refers/window-manager.service';
 import {AppWindowConfigService} from './app-window-config-service';
 import {BehaviorSubject} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -9,7 +9,7 @@ export class AppManagerService {
   appWindowConfigs= new BehaviorSubject<AppWindowConfig[]>([]);
   constructor(private readonly appConfigService: AppWindowConfigService,
               private snackBar: MatSnackBar) {
-    this.loadAppConfigs();
+    // this.loadAppConfigs();
   }
   getAppWindowConfigOfWindow(window: WindowState) {
     for (let app of this.listApps()) {

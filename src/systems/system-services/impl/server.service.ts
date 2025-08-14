@@ -6,7 +6,7 @@ import {serverEnvironment} from '../../../environments/environment';
 })
 export class ServerService {
     getServerBase(){
-        console.log(`${serverEnvironment.protocol}://${serverEnvironment.baseUrl}`);
+        // console.log(`${serverEnvironment.protocol}://${serverEnvironment.baseUrl}`);
         return `${serverEnvironment.protocol}://${serverEnvironment.baseUrl}`;
     }
     getWebSocketBase(){

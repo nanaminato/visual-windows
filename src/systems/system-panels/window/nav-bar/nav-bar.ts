@@ -1,7 +1,7 @@
 import {Component, HostListener, inject} from '@angular/core';
 import {AppManagerService} from '../../../system-services/impl/app-manager.service';
 import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
-import {GroupWindowState, WindowState} from '../../../system-services/window-manager.service';
+import {GroupWindowState, WindowState} from '../../../system-services/refers/window-manager.service';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WinIcon} from '../win-icon/win-icon';

@@ -1,1 +1,1 @@
-export type {TerminalSession} from "./terminal-session"
+export type {TerminalSession, ResumableSession} from "./terminal-session"

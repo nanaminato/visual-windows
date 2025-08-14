@@ -1,4 +1,4 @@
-import {AppInfo} from '../models';
+import {AppInfo} from '../../models';
 
 export interface IAppManagerService {
   registerApp(appInfo: AppInfo): void;

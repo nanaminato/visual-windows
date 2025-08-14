@@ -1,6 +1,6 @@
 import {Component, HostListener, inject} from '@angular/core';
 import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
-import {GroupWindowState, WindowState} from '../../../system-services/window-manager.service';
+import {GroupWindowState, WindowState} from '../../../system-services/refers/window-manager.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NgComponentOutlet} from '@angular/common';
@@ -8,6 +8,7 @@ import {WinIcon} from '../win-icon/win-icon';
 import {AppManagerService} from '../../../system-services/impl/app-manager.service';
 import {Applive} from '../applive/applive';
 import {AppEvent} from '../../../models/app-info';
+import {ResumeService} from '../../../system-services/impl/resume.service';
 
 @Component({
     selector: 'system-desktop-manager',
@@ -19,6 +20,7 @@ import {AppEvent} from '../../../models/app-info';
     styleUrl: './desktop-manager.css'
 })
 export class DesktopManager {
+    private resumeService = inject(ResumeService);
     private windowManager = inject(WindowManagerService);
     windows: WindowState[] = [];
     // 拖拽相关状态
@@ -27,8 +29,10 @@ export class DesktopManager {
 
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
-            this.windows = ws.filter(w => !w.minimized);
+            // this.windows = ws.filter(w => !w.minimized);
+            this.windows = ws;
         });
+        this.resumeService.start();
     }
     focusWindow(id: string) {
         this.windowManager.focusWindow(id);
@@ -79,6 +83,7 @@ export class DesktopManager {
     }
 
     appLiveEvent($event: AppEvent) {
+        console.log($event);
         switch ($event.type) {
             case 1:
                 this.focusWindow($event.id);
@@ -91,6 +96,7 @@ export class DesktopManager {
                 break;
             case 4:
                 this.closeWindow($event.id);
+                console.log("close window "+$event.id);
                 break;
             case 5:
                 this.startDrag($event.event as unknown as MouseEvent, $event.id);

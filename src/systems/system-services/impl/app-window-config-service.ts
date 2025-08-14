@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {AppWindowConfig} from '../window-manager.service';
+import {AppWindowConfig} from '../refers/window-manager.service';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from './server.service';
 

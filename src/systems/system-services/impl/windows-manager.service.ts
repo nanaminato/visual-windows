@@ -1,8 +1,8 @@
-import {AppWindowConfig, WindowState} from '../window-manager.service';
+import {AppWindowConfig, WindowState} from '../refers/window-manager.service';
 import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AppManagerService} from './app-manager.service';
-
+import { v4 as uuidv4 } from 'uuid';
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
     // 打开的程序
@@ -26,7 +26,7 @@ export class WindowManagerService {
         return this.appWindowConfigs.filter(app=>app.appId===appId);
     }
     // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
-    async openWindow(appId: string, title: string) {
+    async openWindow(appId: string, title: string,params?: any) {
         let openedWindows = this.getWindowByAppId(appId);
         let registeredApps = this.getRegisteredAppByAppId(appId);
         if(openedWindows) {
@@ -35,7 +35,7 @@ export class WindowManagerService {
                 return openedWindows[0]!.id;
             }
         }
-        const id = Math.random().toString(36).substring(2, 11);
+        const id = uuidv4();
         let registeredApp = registeredApps[0];
         const newWindow: WindowState = {
             id,
@@ -58,6 +58,8 @@ export class WindowManagerService {
             case 'terminal':
                 const {TerminalComponent} = await import("../../apps/terminal/terminal.component");
                 newWindow.component = TerminalComponent;
+                newWindow.params = params;
+                // newWindow.component.show();
                 break;
             // case 'file-browser':
             //   const { FileBrowserComponent } = await import('./file-browser.component');
@@ -72,6 +74,7 @@ export class WindowManagerService {
     // 关闭窗口
     closeWindow(id: string) {
         const filtered = this.windows$.value.filter(w => w.id !== id);
+        console.log(filtered);
         this.windows$.next(filtered);
     }
     // 聚焦窗口
