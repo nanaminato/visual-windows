@@ -30,13 +30,15 @@
           <ng-template #dynamicContent></ng-template>
       }
     </div>
-      <div class="resize-handle top-left" (mousedown)="startResize($event, win.id, 'top-left')"></div>
-      <div class="resize-handle top" (mousedown)="startResize($event, win.id, 'top')"></div>
-      <div class="resize-handle top-right" (mousedown)="startResize($event, win.id, 'top-right')"></div>
-      <div class="resize-handle right" (mousedown)="startResize($event, win.id, 'right')"></div>
-      <div class="resize-handle bottom-right" (mousedown)="startResize($event, win.id, 'bottom-right')"></div>
-      <div class="resize-handle bottom" (mousedown)="startResize($event, win.id, 'bottom')"></div>
-      <div class="resize-handle bottom-left" (mousedown)="startResize($event, win.id, 'bottom-left')"></div>
-      <div class="resize-handle left" (mousedown)="startResize($event, win.id, 'left')"></div>
+      @if(!win.maximized){
+          <div class="resize-handle top-left" (mousedown)="startResize($event, win.id, 'top-left')"></div>
+          <div class="resize-handle top" (mousedown)="startResize($event, win.id, 'top')"></div>
+          <div class="resize-handle top-right" (mousedown)="startResize($event, win.id, 'top-right')"></div>
+          <div class="resize-handle right" (mousedown)="startResize($event, win.id, 'right')"></div>
+          <div class="resize-handle bottom-right" (mousedown)="startResize($event, win.id, 'bottom-right')"></div>
+          <div class="resize-handle bottom" (mousedown)="startResize($event, win.id, 'bottom')"></div>
+          <div class="resize-handle bottom-left" (mousedown)="startResize($event, win.id, 'bottom-left')"></div>
+          <div class="resize-handle left" (mousedown)="startResize($event, win.id, 'left')"></div>
+      }
   </div>
 }

@@ -85,16 +85,18 @@ export class WindowManagerService {
         this.windows$.next(updated);
     }
     getTaskbarHeight(): number {
-        const taskbar = document.querySelector('.taskbar');
+        const taskbar = document.querySelector('.bottom-navbar');
         if (taskbar) {
             return taskbar.clientHeight;
         }
         return 40; // 默认值
     }
     maximizeWindow(id: string) {
+        const body = document.body;
         const taskbarHeight = this.getTaskbarHeight();
-        const desktopWidth = window.innerWidth;
-        const desktopHeight = window.innerHeight - taskbarHeight;
+        const desktopWidth = body.offsetWidth;
+        const desktopHeight = body.offsetHeight - taskbarHeight;
+        console.log(taskbarHeight)
 
         const updated = this.windows$.value.map(w => {
             if (w.id === id) {
@@ -129,9 +131,10 @@ export class WindowManagerService {
         this.windows$.next(updated);
     }
     private onWindowResize = () => {
+        const body = document.body;
         const taskbarHeight = this.getTaskbarHeight();
-        const desktopWidth = window.innerWidth;
-        const desktopHeight = window.innerHeight - taskbarHeight;
+        const desktopWidth = body.offsetWidth;
+        const desktopHeight = body.offsetHeight - taskbarHeight;
 
         let updated = false;
         const newWindows = this.windows$.value.map(w => {

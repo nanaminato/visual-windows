@@ -43,10 +43,7 @@ export class TerminalComponent {
             if (el && el instanceof HTMLElement) {
                 el.style.width = '100%';
                 el.style.height = '100%';
-                // el.style.display = 'flex';
-                // el.style.flexDirection = 'column';
             }
-
             this.fitAddon.fit();
 
             // 监听父容器大小变化，自动调整终端大小
@@ -65,7 +62,6 @@ export class TerminalComponent {
         }
     }
     private connectWebSocket(sessionId: string) {
-        // this.socket = new WebSocket(`wss://localhost:7100/api/v1/terminal/${sessionId}`);
         this.socket = new WebSocket(`${this.serverService.getWebSocketBase()}/api/v1/terminal/${sessionId}`);
         this.sessionId = sessionId;
         if(this.xterm) {
