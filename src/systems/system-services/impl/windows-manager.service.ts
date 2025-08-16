@@ -2,7 +2,9 @@ import {AppWindowConfig, WindowState} from '../refers/window-manager.service';
 import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AppManagerService} from './app-manager.service';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
+import {componentMap} from '../../apps';
+
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
     // 打开的程序
@@ -15,6 +17,7 @@ export class WindowManagerService {
         this.appManagerService.getAppConfigObservables().subscribe(ws => {
             this.appWindowConfigs = ws;
         })
+        window.addEventListener('resize', this.onWindowResize);
     }
     getWindows() {
         return this.windows$.asObservable();
@@ -49,23 +52,11 @@ export class WindowManagerService {
             minimized: false,
             maximized: false,
             active: true,
+            params: params
         };
-        switch (appId) {
-            case 'micro-window':
-                const { MicroWindow } = await import('../../system-panels/window/micro-window/micro-window');
-                newWindow.component = MicroWindow;
-                break;
-            case 'terminal':
-                const {TerminalComponent} = await import("../../apps/terminal/terminal.component");
-                newWindow.component = TerminalComponent;
-                newWindow.params = params;
-                // newWindow.component.show();
-                break;
-            // case 'file-browser':
-            //   const { FileBrowserComponent } = await import('./file-browser.component');
-            //   win.component = FileBrowserComponent;
-            //   break;
-            // 其他程序...
+        const componentLoader= componentMap.get(appId);
+        if(componentLoader) {
+            newWindow.component = await componentLoader();
         }
         const current = this.windows$.value.map(w => ({ ...w, active: false }));
         this.windows$.next([...current, newWindow]);
@@ -93,11 +84,73 @@ export class WindowManagerService {
         );
         this.windows$.next(updated);
     }
-
+    getTaskbarHeight(): number {
+        const taskbar = document.querySelector('.taskbar');
+        if (taskbar) {
+            return taskbar.clientHeight;
+        }
+        return 40; // 默认值
+    }
     maximizeWindow(id: string) {
-        const updated = this.windows$.value.map(w =>
-            w.id === id ? { ...w, minimized: false, active: true } : w
-        );
+        const taskbarHeight = this.getTaskbarHeight();
+        const desktopWidth = window.innerWidth;
+        const desktopHeight = window.innerHeight - taskbarHeight;
+
+        const updated = this.windows$.value.map(w => {
+            if (w.id === id) {
+                if (!w.maximized) {
+                    // 还没最大化，保存当前状态，最大化
+                    return {
+                        ...w,
+                        prevPosition: { ...w.position },
+                        prevSize: { ...w.size },
+                        position: { x: 0, y: 0 },
+                        size: { width: desktopWidth, height: desktopHeight },
+                        minimized: false,
+                        active: true,
+                        maximized: true
+                    };
+                } else {
+                    // 已经最大化，恢复之前状态
+                    return {
+                        ...w,
+                        position: w.prevPosition || w.position,
+                        size: w.prevSize || w.size,
+                        minimized: false,
+                        active: true,
+                        maximized: false,
+                        prevPosition: undefined,
+                        prevSize: undefined
+                    };
+                }
+            }
+            return w;
+        });
         this.windows$.next(updated);
+    }
+    private onWindowResize = () => {
+        const taskbarHeight = this.getTaskbarHeight();
+        const desktopWidth = window.innerWidth;
+        const desktopHeight = window.innerHeight - taskbarHeight;
+
+        let updated = false;
+        const newWindows = this.windows$.value.map(w => {
+            if (w.maximized) {
+                updated = true;
+                return {
+                    ...w,
+                    position: { x: 0, y: 0 },
+                    size: { width: desktopWidth, height: desktopHeight }
+                };
+            }
+            return w;
+        });
+
+        if (updated) {
+            this.windows$.next(newWindows);
+        }
+    }
+    ngOnDestroy() {
+        window.removeEventListener('resize', this.onWindowResize);
     }
 }

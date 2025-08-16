@@ -73,13 +73,12 @@ export class TerminalComponent {
                 this.xterm!.write(event.data);
             };
             this.xterm!.onData(data => {
-                console.log('Input data:', data, data.charCodeAt(0));
+                // console.log('Input data:', data, data.charCodeAt(0));
                 this.socket?.send(data);
             });
         }
     }
     createTerminalSession() {
-        // let url = "https://localhost:7100/api/v1/terminal/";
         let url = `${this.serverService.getServerBase()}/api/v1/terminal/`;
         return new Promise<TerminalSession>((resolve,reject) => {
             let subscription = this.http.post<TerminalSession>(url,{}).subscribe({
@@ -106,19 +105,16 @@ export class TerminalComponent {
                 next: () => {
                     subscription.unsubscribe();
                     resolve({});  // 这里必须调用resolve
-                    // alert("Terminal session closed successfully."+this.sessionId);
                 },
                 error: (err) => {
                     reject(err);
                     subscription.unsubscribe();
                 }
             });
-            // 这里return的函数是unsubscribe的清理函数，通常不需要return
         });
     }
 
     async parentClosed(){
-        // console.log("try to close");
         await this.closeTerminal();
     }
     ngOnDestroy() {

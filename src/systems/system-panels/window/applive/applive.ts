@@ -1,15 +1,14 @@
 import {
     Component, ComponentRef,
-    ElementRef,
     EventEmitter,
     inject,
     Input,
     Output,
-    TemplateRef, Type,
+    Type,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import {CommonModule, NgComponentOutlet} from "@angular/common";
+import {CommonModule} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {WinIcon} from "../win-icon/win-icon";
 import {WindowState} from '../../../system-services/refers/window-manager.service';
@@ -22,7 +21,6 @@ type ResizeDirection =
 @Component({
     selector: 'app-applive',
     imports: [
-        // NgComponentOutlet,
         NzIconDirective,
         WinIcon,
         CommonModule,
@@ -79,18 +77,13 @@ export class Applive {
     private componentRef?: ComponentRef<any>;
     ngAfterViewInit() {
         if (this.win && this.win.component) {
-            // setTimeout(()=>{
-            //     this.loadComponent(this.win!.component, this.win!.params);
-            // },20)
             this.loadComponent(this.win!.component, this.win!.params);
         }
     }
 
     loadComponent(component: Type<any>, params?: any) {
         this.dynamicContent?.clear();
-        // console.log(this.dynamicContent);
         if(this.dynamicContent) {
-            // console.log("try to load component " + component.name);
             this.componentRef = this.dynamicContent.createComponent(component);
 
             if (params) {
@@ -111,10 +104,6 @@ export class Applive {
             event: 'closeWindow'
         });
     }
-
-
-
-
     startDrag($event: MouseEvent, id: string) {
         this.appEventEmitter.emit({
             type: 5,
@@ -217,13 +206,6 @@ export class Applive {
         }
 
         // // TODO: 这里可以加入桌面边界限制
-        // console.log("resizing");
-        // if(this.win&&this.win.component){
-        //     if(typeof this.win.component.prototype.sizeChanged === 'function'){
-        //         this.win.component.sizeChanged();
-        //     }
-        // }
-        // 触发更新窗口大小位置事件
         this.appEventEmitter.emit({
             type: 6, // 自定义类型，比如 resize
             id: this.resizeWinId!,
@@ -243,8 +225,6 @@ export class Applive {
 
         window.removeEventListener('mousemove', this.onResizeMove);
         window.removeEventListener('mouseup', this.stopResize);
-
-
     };
 
 }
