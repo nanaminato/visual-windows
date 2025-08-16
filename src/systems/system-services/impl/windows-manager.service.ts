@@ -96,7 +96,7 @@ export class WindowManagerService {
         const taskbarHeight = this.getTaskbarHeight();
         const desktopWidth = body.offsetWidth;
         const desktopHeight = body.offsetHeight - taskbarHeight;
-        console.log(taskbarHeight)
+        // console.log(taskbarHeight)
 
         const updated = this.windows$.value.map(w => {
             if (w.id === id) {

@@ -70,7 +70,6 @@ export class WindowsLive {
         })
     }
 
-
     @ViewChild('dynamicContent', { read: ViewContainerRef, static: false })
     dynamicContent!: ViewContainerRef | undefined;
 
@@ -80,9 +79,9 @@ export class WindowsLive {
             this.loadComponent(this.win!.component, this.win!.params);
         }
     }
-
+    private hasLoaded = false;
     loadComponent(component: Type<any>, params?: any) {
-        this.dynamicContent?.clear();
+        if (this.hasLoaded) return; // 只加载一次
         if(this.dynamicContent) {
             this.componentRef = this.dynamicContent.createComponent(component);
 
@@ -91,6 +90,7 @@ export class WindowsLive {
                     this.componentRef!.instance[key] = params[key];
                 });
             }
+            this.hasLoaded = true;
         }
     }
 

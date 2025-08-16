@@ -18,6 +18,7 @@ export class FileExplorer {
 
         }
     }
+    i = 1;
     get pathParts(): string[] {
         if (!this.currentPath) return [''];
         return this.currentPath.split('/').filter(p => p.length > 0);
