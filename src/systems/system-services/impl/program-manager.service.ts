@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {AppWindowConfig, WindowState} from '../refers/window-manager.service';
-import {AppWindowConfigService} from './app-window-config-service';
+import {ProgramConfigService} from './program-config.service';
 import {BehaviorSubject} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ProgramConfig, WindowState} from '../../models';
 
 @Injectable({ providedIn: 'root' })
-export class AppManagerService {
-  appWindowConfigs= new BehaviorSubject<AppWindowConfig[]>([]);
-  constructor(private readonly appConfigService: AppWindowConfigService,
+export class ProgramManagerService {
+  appWindowConfigs= new BehaviorSubject<ProgramConfig[]>([]);
+  constructor(private readonly appConfigService: ProgramConfigService,
               private snackBar: MatSnackBar) {
     // this.loadAppConfigs();
   }

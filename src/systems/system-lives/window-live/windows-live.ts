@@ -11,29 +11,29 @@ import {
 import {CommonModule} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {WinIcon} from "../win-icon/win-icon";
-import {WindowState} from '../../../system-services/refers/window-manager.service';
-import {AppEvent} from '../../../models/app-info';
-import {AppManagerService} from '../../../system-services/impl/app-manager.service';
+import {ProgramEvent} from '../../models';
+import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
+import {WindowState} from '../../models';
 type ResizeDirection =
     | 'top-left' | 'top' | 'top-right'
     | 'right' | 'bottom-right' | 'bottom'
     | 'bottom-left' | 'left';
 @Component({
-    selector: 'app-applive',
+    selector: 'window-live',
     imports: [
         NzIconDirective,
         WinIcon,
         CommonModule,
     ],
-    templateUrl: './applive.html',
-    styleUrl: './applive.css'
+    templateUrl: './windows-live.html',
+    styleUrl: './windows-live.css'
 })
-export class Applive {
+export class WindowsLive {
     @Input()
     win: WindowState | undefined;
-    private appManagerService: AppManagerService = inject(AppManagerService);
+    private appManagerService: ProgramManagerService = inject(ProgramManagerService);
     @Output()
-    appEventEmitter: EventEmitter<AppEvent> = new EventEmitter<AppEvent>();
+    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
 
     getAppWindowConfigOfWindow(win: WindowState) {
         return this.appManagerService.getAppWindowConfigOfWindow(win);

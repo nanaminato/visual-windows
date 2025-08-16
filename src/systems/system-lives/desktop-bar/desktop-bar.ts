@@ -1,24 +1,23 @@
 import {Component, HostListener, inject} from '@angular/core';
-import {AppManagerService} from '../../../system-services/impl/app-manager.service';
-import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
-import {GroupWindowState, WindowState} from '../../../system-services/refers/window-manager.service';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
+import {WindowManagerService} from '../../system-services/impl/windows-manager.service';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WinIcon} from '../win-icon/win-icon';
+import {GroupWindowState, WindowState} from '../../models';
 
 @Component({
-  selector: 'system-nav-bar',
+  selector: 'system-desktop-bar',
   imports: [
     NzIconDirective,
     WinIcon
   ],
-  templateUrl: './nav-bar.html',
-  styleUrl: './nav-bar.css'
+  templateUrl: './desktop-bar.html',
+  styleUrl: './desktop-bar.css'
 })
-export class NavBar {
-  private appManager = inject(AppManagerService);
+export class DesktopBar {
+  private appManager = inject(ProgramManagerService);
   private windowManager = inject(WindowManagerService);
-  private appManagerService = inject(AppManagerService);
+  private appManagerService = inject(ProgramManagerService);
   apps = this.appManager.listApps();
   windows: WindowState[] = [];
   groupWindows: GroupWindowState[] = [];

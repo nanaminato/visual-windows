@@ -1,0 +1,6 @@
+.file-browser { font-family: Arial, sans-serif; }
+.breadcrumb { margin-bottom: 8px; cursor: pointer; }
+.breadcrumb-item:hover { text-decoration: underline; }
+.file-list { border: 1px solid #ccc; padding: 8px; max-height: 300px; overflow-y: auto; }
+.file-item { padding: 4px; cursor: pointer; }
+.file-item:hover { background-color: #eee; }

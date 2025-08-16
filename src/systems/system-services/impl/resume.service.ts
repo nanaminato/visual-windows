@@ -1,15 +1,15 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from './server.service';
-import {ResumableSession} from '../../apps/terminal/models';
 import {WindowManagerService} from './windows-manager.service';
-import {AppManagerService} from './app-manager.service';
+import {ProgramManagerService} from './program-manager.service';
+import {ResumableSession} from '../../programs/terminal/models';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ResumeService {
-    private managerService = inject(AppManagerService);
+    private managerService = inject(ProgramManagerService);
     private windowManagerService = inject(WindowManagerService);
     constructor(private http: HttpClient, private serverService: ServerService) {
 

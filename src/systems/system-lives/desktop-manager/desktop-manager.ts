@@ -1,20 +1,16 @@
 import {Component, HostListener, inject} from '@angular/core';
-import {WindowManagerService} from '../../../system-services/impl/windows-manager.service';
-import {GroupWindowState, WindowState} from '../../../system-services/refers/window-manager.service';
+import {WindowManagerService} from '../../system-services/impl/windows-manager.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NgComponentOutlet} from '@angular/common';
-import {WinIcon} from '../win-icon/win-icon';
-import {AppManagerService} from '../../../system-services/impl/app-manager.service';
-import {Applive} from '../applive/applive';
-import {AppEvent} from '../../../models/app-info';
-import {ResumeService} from '../../../system-services/impl/resume.service';
+import {WindowsLive} from '../window-live/windows-live';
+import {ProgramEvent} from '../../models';
+import {ResumeService} from '../../system-services/impl/resume.service';
+import {WindowState} from '../../models';
 
 @Component({
     selector: 'system-desktop-manager',
     imports: [
         MatSnackBarModule,
-        Applive,
+        WindowsLive,
     ],
     templateUrl: './desktop-manager.html',
     styleUrl: './desktop-manager.css'
@@ -29,10 +25,10 @@ export class DesktopManager {
 
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
-            // this.windows = ws.filter(w => !w.minimized);
             this.windows = ws;
         });
         this.resumeService.start();
+        this.windowManager.openWindow("file-explorer","file-explorer")
     }
     focusWindow(id: string) {
         this.windowManager.focusWindow(id);
@@ -82,7 +78,7 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(); // 触发更新
     }
 
-    appLiveEvent($event: AppEvent) {
+    appLiveEvent($event: ProgramEvent) {
         // console.log($event);
         switch ($event.type) {
             case 1:

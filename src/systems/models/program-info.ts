@@ -1,14 +1,14 @@
-export interface AppInfo {
+export interface ProgramInfo {
   id: string;                // 应用唯一ID
   name: string;              // 应用名称
-  icon?: AppIcon;             // 图标URL或class
+  icon?: ProgramIcon;             // 图标URL或class
 
 }
-export interface AppIcon{
+export interface ProgramIcon {
   iconType: number;
   name: string;
 }
-export interface AppEvent{
+export interface ProgramEvent {
   type: number;
   id: string;
   event: any;

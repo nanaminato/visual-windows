@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AppWindowConfig} from '../../../system-services/refers/window-manager.service';
+import {ProgramConfig} from '../../models';
 
 @Component({
   selector: 'app-win-icon',
@@ -8,5 +8,5 @@ import {AppWindowConfig} from '../../../system-services/refers/window-manager.se
 })
 export class WinIcon {
   @Input()
-  public appConfig: AppWindowConfig | undefined;
+  public appConfig: ProgramConfig | undefined;
 }

@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, inject, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import { Terminal } from 'xterm';
 import 'xterm/css/xterm.css';
 import {HttpClient} from '@angular/common/http';

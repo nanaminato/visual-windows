@@ -1,37 +1,37 @@
-import {AppWindowConfig, WindowState} from '../refers/window-manager.service';
 import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {AppManagerService} from './app-manager.service';
+import {ProgramManagerService} from './program-manager.service';
 import {v4 as uuidv4} from 'uuid';
-import {componentMap} from '../../apps';
+import {componentMap} from '../../programs/models';
+import {ProgramConfig, WindowState} from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
     // 打开的程序
     private windows$ = new BehaviorSubject<WindowState[]>([]);
     // 注册的程序，用于支持打开程序和激活程序等
-    appWindowConfigs: AppWindowConfig[] = [];
+    programConfigs: ProgramConfig[] = [];
 
-    constructor(private appManagerService: AppManagerService) {
-        this.appWindowConfigs = this.appManagerService.getAppWindowConfigs();
+    constructor(private appManagerService: ProgramManagerService) {
+        this.programConfigs = this.appManagerService.getAppWindowConfigs();
         this.appManagerService.getAppConfigObservables().subscribe(ws => {
-            this.appWindowConfigs = ws;
+            this.programConfigs = ws;
         })
         window.addEventListener('resize', this.onWindowResize);
     }
     getWindows() {
         return this.windows$.asObservable();
     }
-    getWindowByAppId(appId: string): WindowState[] {
+    getWindowByProgramId(appId: string): WindowState[] {
         return this.windows$.getValue().filter(window => window.appId === appId);
     }
-    getRegisteredAppByAppId(appId: string): AppWindowConfig[] {
-        return this.appWindowConfigs.filter(app=>app.appId===appId);
+    getRegisteredProgramByProgramId(appId: string): ProgramConfig[] {
+        return this.programConfigs.filter(app=>app.appId===appId);
     }
     // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
     async openWindow(appId: string, title: string,params?: any) {
-        let openedWindows = this.getWindowByAppId(appId);
-        let registeredApps = this.getRegisteredAppByAppId(appId);
+        let openedWindows = this.getWindowByProgramId(appId);
+        let registeredApps = this.getRegisteredProgramByProgramId(appId);
         if(openedWindows) {
             if(openedWindows.length>0&&registeredApps[0].isSingleton){
                 this.focusWindow(openedWindows[0].id)

@@ -1,0 +1,15 @@
+<div class="file-picker-overlay">
+    <div class="file-picker-dialog">
+        <h3>{{ selectFolder ? '选择文件夹' : '选择文件' }}</h3>
+        <file-explorer
+            [currentPath]="currentPath"
+            [files]="files"
+            (pathChange)="onPathChange($event)"
+            (fileOpen)="onFileOpen($event)">
+        </file-explorer>
+        <div class="actions">
+            <button (click)="onCancel()">取消</button>
+            <button [disabled]="!selectedItem" (click)="onConfirm()">确定</button>
+        </div>
+    </div>
+</div>
