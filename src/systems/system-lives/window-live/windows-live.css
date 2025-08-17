@@ -26,7 +26,7 @@
 .mini-btn,.max-btn,.close-btn {
     background: transparent;
     border: none;
-    color: white;
+    /*color: white;*/
     font-size: 20px;
     cursor: pointer;
     line-height: 1;

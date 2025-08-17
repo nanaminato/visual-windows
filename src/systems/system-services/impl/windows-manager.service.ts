@@ -2,7 +2,7 @@ import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {ProgramManagerService} from './program-manager.service';
 import {v4 as uuid} from 'uuid';
-import {componentMap} from '../../programs/models';
+import {componentMap, programWithCustomHeaders} from '../../programs/models';
 import {ProgramConfig, WindowState} from '../../models';
 
 @Injectable({ providedIn: 'root' })
@@ -52,7 +52,8 @@ export class WindowManagerService {
             minimized: false,
             maximized: false,
             active: true,
-            params: params
+            params: params,
+            customHeader: programWithCustomHeaders.findIndex(c=>c===appId) !==-1,
         };
         const componentLoader= componentMap.get(appId);
         if(componentLoader) {

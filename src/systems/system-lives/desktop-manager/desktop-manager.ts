@@ -81,7 +81,6 @@ export class DesktopManager {
     }
 
     appLiveEvent($event: ProgramEvent) {
-        // console.log($event);
         switch ($event.type) {
             case 1:
                 this.focusWindow($event.id);

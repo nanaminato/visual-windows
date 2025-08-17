@@ -8,3 +8,7 @@ export const componentMap: Map<string, () => Promise<any>> = new Map([
             .then(f=>f.MultiExplorer),
     ]
 ]);
+export const programWithCustomHeaders = [
+    'file-explorer',
+
+]

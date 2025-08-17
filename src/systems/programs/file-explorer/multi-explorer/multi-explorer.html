@@ -1,10 +1,48 @@
-<nz-tabs [(nzSelectedIndex)]="selectedIndex"
-         nzType="editable-card"
-         (nzAdd)="openNewFileExplorer()" (nzClose)="closeTab($event)"
-    >
-    @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
-        <nz-tab class="explorer-tab" nzClosable [nzTitle]="getTitle(fileExplorer)">
-            <file-explorer [uuid]="fileExplorer.fileExplorerId" [currentPath]="fileExplorer.initPath" (titleChange)="handleTitleChange($event)"></file-explorer>
-        </nz-tab>
-    }
-</nz-tabs>
+<div class="tabs-container" [class.active]="active">
+    <div class="tabs-header" (mousedown)="startDrag($event)">
+        <div class="d-flex flex-row">
+            @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
+                <div
+                    class="tab"
+                    [class.active]="selectedIndex === $index"
+                    (click)="selectTab($index)">
+                    <span class="tab-title">{{ getTitle(fileExplorer) || '无标题' }}</span>
+                    <button class="close-btn" (click)="closeTab($index, $event)">×</button>
+                </div>
+            }
+            <button class="add-btn" (click)="openNewFileExplorer()">＋</button>
+        </div>
+        <div class="d-flex flex-row ">
+            <button class="mini-btn" >
+                <nz-icon nzType="line" style="font-size: 14px"
+                         (click)="minimizeWindow()"
+                />
+            </button>
+            <button class="max-btn" >
+                <nz-icon nzType="border" style="font-size: 14px"
+                         (click)="maximizeWindow()"
+                />
+            </button>
+            <button class="close-btn " (click)="closeWindow()">×</button>
+        </div>
+    </div>
+
+    <div class="tabs-content">
+        @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
+            <ng-container >
+                <div [hidden]="selectedIndex !== $index" class="tab-panel">
+                    <file-explorer
+                        [uuid]="fileExplorer.fileExplorerId"
+                        [currentPath]="fileExplorer.initPath"
+                        (titleChange)="handleTitleChange($event)">
+                    </file-explorer>
+                </div>
+            </ng-container>
+        }
+        @if(fileExplorers.length===0){
+            <div class="empty-state">
+                没有打开的标签页
+            </div>
+        }
+    </div>
+</div>

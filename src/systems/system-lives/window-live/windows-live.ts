@@ -3,7 +3,7 @@ import {
     EventEmitter,
     inject,
     Input,
-    Output,
+    Output, SimpleChanges,
     Type,
     ViewChild,
     ViewContainerRef
@@ -46,7 +46,6 @@ export class WindowsLive {
             event: 'focus'
         });
     }
-
     minimizeWindow(id: string) {
         this.appEventEmitter.emit({
             type: 2,
@@ -54,12 +53,15 @@ export class WindowsLive {
             event: 'minimizeWindow'
         });
     }
-    toRecord<T extends object>(param: T): Record<string, unknown> | undefined {
-        if(param===undefined) return undefined;
+
+    toRecord<T extends object>(param: T): Record<string, unknown> {
         const record: Record<string, unknown> = {};
-        for (const key of Object.keys(param)) {
-            record[key] = (param as any)[key];
+        if(param){
+            for (const key of Object.keys(param)) {
+                record[key] = (param as any)[key];
+            }
         }
+        record["id"] = this.win?.id;
         return record;
     }
     maximizeWindow(id: string) {
@@ -85,15 +87,44 @@ export class WindowsLive {
         if(this.dynamicContent) {
             this.componentRef = this.dynamicContent.createComponent(component);
 
-            if (params) {
-                Object.keys(params).forEach(key => {
-                    this.componentRef!.instance[key] = params[key];
-                });
+            let record: Record<string, unknown> = this.toRecord(params);
+            for (let key of Object.keys(record)) {
+                this.componentRef!.instance[key] = record[key];
+            }
+            if(this.win?.customHeader){
+                if(this.componentRef.instance.appEventEmitter){
+                    this.componentRef.instance.appEventEmitter.subscribe((eventData: ProgramEvent) => {
+                        switch (eventData.type) {
+                            case 1:
+                                this.focusWindow(eventData.id);
+                                break;
+                            case 2:
+                                this.minimizeWindow(eventData.id);
+                                break;
+                            case 3:
+                                this.maximizeWindow(eventData.id);
+                                break;
+                            case 4:
+                                this.closeWindow(eventData.id);
+                                break;
+                            case 5:
+                                this.startDrag(eventData.event as unknown as MouseEvent, eventData.id);
+                                break;
+                        }
+                    });
+                }
             }
             this.hasLoaded = true;
         }
     }
-
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['win']) {
+            const win = changes['win'].currentValue;
+            if(this.componentRef) {
+                this.componentRef.instance.active = win.active;
+            }
+        }
+    }
     async closeWindow(id: string) {
         if (this.componentRef && typeof this.componentRef.instance.parentClosed=== 'function') {
             await this.componentRef.instance.parentClosed();
@@ -104,11 +135,11 @@ export class WindowsLive {
             event: 'closeWindow'
         });
     }
-    startDrag($event: MouseEvent, id: string) {
+    startDrag(eventData: MouseEvent, id: string) {
         this.appEventEmitter.emit({
             type: 5,
             id: id,
-            event: $event
+            event: eventData
         });
     }
     private resizing = false;

@@ -6,7 +6,7 @@
        [style.width.px]="win.size.width"
        [style.height.px]="win.size.height"
        (mousedown)="focusWindow(win.id)">
-    <div class="title-bar" (mousedown)="startDrag($event, win.id)">
+    <div class="title-bar" (mousedown)="startDrag($event, win.id)" [hidden]="win.customHeader">
       <div class="d-flex flex-row">
         <app-win-icon [appConfig]="getAppWindowConfigOfWindow(win)"></app-win-icon>
         <span class="mx-1">{{win.title}}</span>

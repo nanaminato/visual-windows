@@ -61,6 +61,10 @@ export class FileExplorer {
                 });
         }
     }
+    // i: number = 0;
+    // lifeLong(){
+    //     this.i = this.i+1;
+    // }
 
 
 }

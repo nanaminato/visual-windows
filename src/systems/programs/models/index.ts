@@ -1,1 +1,1 @@
-export {componentMap} from "./register-app"
+export {componentMap, programWithCustomHeaders} from "./register-app"

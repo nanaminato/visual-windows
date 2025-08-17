@@ -11,6 +11,7 @@ export interface WindowState {
     active: boolean;
     component?: any;            // 关联的Angular组件（独立组件）
     params?: any;              // 启动参数
+    customHeader?: boolean;
     // 新增字段，保存最大化前的状态
     prevPosition?: { x: number; y: number };
     prevSize?: { width: number; height: number };

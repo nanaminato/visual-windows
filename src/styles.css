@@ -5,3 +5,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .dont-select{
     user-select: none;
 }
+.border-none{
+    border: none;
+}
