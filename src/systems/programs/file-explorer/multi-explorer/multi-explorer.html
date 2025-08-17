@@ -1,0 +1,10 @@
+<nz-tabs [(nzSelectedIndex)]="selectedIndex"
+         nzType="editable-card"
+         (nzAdd)="openNewFileExplorer()" (nzClose)="closeTab($event)"
+    >
+    @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
+        <nz-tab class="explorer-tab" nzClosable [nzTitle]="getTitle(fileExplorer)">
+            <file-explorer [uuid]="fileExplorer.fileExplorerId" [currentPath]="fileExplorer.initPath" (titleChange)="handleTitleChange($event)"></file-explorer>
+        </nz-tab>
+    }
+</nz-tabs>

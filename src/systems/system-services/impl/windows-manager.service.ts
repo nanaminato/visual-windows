@@ -1,7 +1,7 @@
 import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {ProgramManagerService} from './program-manager.service';
-import {v4 as uuidv4} from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {componentMap} from '../../programs/models';
 import {ProgramConfig, WindowState} from '../../models';
 
@@ -38,7 +38,7 @@ export class WindowManagerService {
                 return openedWindows[0]!.id;
             }
         }
-        const id = uuidv4();
+        const id = uuid();
         let registeredApp = registeredApps[0];
         const newWindow: WindowState = {
             id,

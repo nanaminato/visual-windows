@@ -1,32 +1,3 @@
 <div class="file-browser">
-    <div class="breadcrumb">
-        @for(p of pathParts; track p){
-            <span (click)="navigateTo($index)" class="breadcrumb-item">
-                {{ p || 'Root' }}
-                @if($index < pathParts.length - 1){
-                    <span>/</span>
-                }
 
-            </span>
-        }
-
-    </div>
-    <div class="file-list">
-        @if(currentPath!==''){
-            <div class="file-item" (click)="goUp()">
-                📁 .. (Up)
-            </div>
-        }
-        @for(file of files; track file){
-            <div class="file-item" (click)="onItemClick(file)">
-                @if(file.isDirectory){
-                    <span>📁</span>
-                }@else{
-                    <span>📄</span>
-                }
-                {{ file.name }}
-            </div>
-        }
-
-    </div>
 </div>

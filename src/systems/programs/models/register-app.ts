@@ -4,7 +4,7 @@ export const componentMap: Map<string, () => Promise<any>> = new Map([
     ],
     [
         'file-explorer',
-        ()=> import("../file-explorer/explorer/file-explorer")
-            .then(f=>f.FileExplorer),
+        ()=> import("../file-explorer/multi-explorer/multi-explorer")
+            .then(f=>f.MultiExplorer),
     ]
 ]);

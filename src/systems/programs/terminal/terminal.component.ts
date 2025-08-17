@@ -26,7 +26,7 @@ export class TerminalComponent {
     private http = inject(HttpClient);
     fitAddon!: FitAddon | undefined;
     ngOnInit()  {
-        console.log("initialized with terminal");
+        // console.log("initialized with terminal");
         this.xterm = new Terminal({
             allowProposedApi: true,
             cursorBlink: true,

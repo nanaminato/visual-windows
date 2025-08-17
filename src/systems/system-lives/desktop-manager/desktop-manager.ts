@@ -27,8 +27,10 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        this.resumeService.start();
-        this.windowManager.openWindow("file-explorer","file-explorer")
+        this.resumeService.start().then(c=>{
+            this.windowManager.openWindow("file-explorer","file-explorer")
+        })
+
     }
     focusWindow(id: string) {
         this.windowManager.focusWindow(id);
