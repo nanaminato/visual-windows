@@ -1,6 +1,76 @@
-.file-browser { font-family: Arial, sans-serif; }
-.breadcrumb { margin-bottom: 8px; cursor: pointer; }
-.breadcrumb-item:hover { text-decoration: underline; }
-.file-list { border: 1px solid #ccc; padding: 8px; max-height: 300px; overflow-y: auto; }
-.file-item { padding: 4px; cursor: pointer; }
-.file-item:hover { background-color: #eee; }
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+#file-browser {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#navigator{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 5px 0;
+}
+#navigator-item-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 10px;
+}
+#navigator-item-group > button{
+    border: none;
+    background: transparent;
+}
+#address-bar{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+#address-bar  input, #search-bar  input{
+    font-size: 16px !important;
+}
+#search-box{
+    margin: 0 10px;
+}
+
+#quick-tool{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#normal-tools{
+    margin: 0 10px;
+}
+#normal-tools > button{
+    border: none;
+    background: transparent;
+    /*padding: 5px;*/
+    margin: 10px;
+}
+#more-information{
+    margin: 10px 10px;
+}
+.breadcrumb {
+    margin-bottom: 8px; cursor: pointer;
+}
+.breadcrumb-item:hover {
+    text-decoration: underline;
+}
+.file-list {
+    border: 1px solid #ccc; padding: 8px; max-height: 300px; overflow-y: auto;
+}
+.file-item {
+    padding: 4px; cursor: pointer;
+}
+.file-item:hover {
+    background-color: #eee;
+}
+nz-splitter {
+    height: 200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

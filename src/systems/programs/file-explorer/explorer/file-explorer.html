@@ -1,5 +1,78 @@
-<div class="file-browser">
+<div id="file-browser">
+    <div>
+        <div id="navigator">
+            <div id="navigator-item-group">
+                <button>
+                    <nz-icon nzType="arrow-left" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="arrow-right" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="arrow-up" nzTheme="outline" />
+                </button>
+                <button>
+                    <!-- todo 图标替换为更合适的图标 -->
+                    <nz-icon nzType="retweet" nzTheme="outline" />
+                </button>
+            </div>
+            <div id="address-bar">
+                <input nz-input type="text" [(ngModel)]="navigatePath" />
+                <button class="border-none bg-transparent">
+                    <nz-icon nzType="close" nzTheme="outline" />
+                </button>
+            </div>
+            <div id="search-box">
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input [placeholder]="getSearchPlaceHolder()" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <nz-icon nzType="search" />
+                </ng-template>
+            </div>
+        </div>
+        <div id="quick-tool">
+            <div id="normal-tools">
+                <div id="create-new">
 
+                </div>
+                <button>
+                    <nz-icon nzType="scissor" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="copy" nzTheme="outline" />
+                </button>
+                <button>
+                    <!-- todo 替换更贴切的图标                    -->
+                    <nz-icon nzType="snippets" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="form" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="share-alt" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="delete" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="more" nzTheme="outline" />
+                </button>
+            </div>
+            <div id="more-information">
+                <button class="border-none bg-transparent">
+                    <nz-icon nzType="bars" nzTheme="outline" />
+                     详细信息
+                </button>
+            </div>
+        </div>
+    </div>
+    <nz-splitter class="d-flex flex-grow-1">
+        <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
+
+        </nz-splitter-panel>
+        <nz-splitter-panel>
+
+        </nz-splitter-panel>
+    </nz-splitter>
 </div>
-<!--{{i}}-->
-<!--<button (click)="lifeLong()">Leval up</button>-->

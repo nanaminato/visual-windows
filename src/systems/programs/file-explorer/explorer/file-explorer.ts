@@ -2,10 +2,20 @@ import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {FileItem} from '../models';
 import {PropagateTitle} from '../multi-explorer/models';
 import {SystemInfoService} from '../../../system-services/impl/info.service';
+import {NzSplitterModule} from 'ng-zorro-antd/splitter';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'file-explorer',
-  imports: [],
+    imports: [
+        NzSplitterModule,
+        NzIconDirective,
+        NzInputGroupComponent,
+        NzInputDirective,
+        FormsModule
+    ],
   templateUrl: './file-explorer.html',
   styleUrl: './file-explorer.css'
 })
@@ -26,6 +36,10 @@ export class FileExplorer {
     private systemInfoService = inject(SystemInfoService);
     @Input()
     uuid: string | undefined;
+
+    navigatePath: string = "";
+    parts: string[] = [];
+
     constructor() {
 
     }
@@ -36,12 +50,15 @@ export class FileExplorer {
             }else{
                 this.currentPath = "c://"
             }
+            this.navigatePath = this.currentPath;
         }
         this.propagatePathChange()
     }
-    get pathParts(): string[] {
-        if (!this.currentPath) return [''];
-        return this.currentPath.split('/').filter(p => p.length > 0);
+    partPath() {
+        if (!this.currentPath){
+            this.parts = ['']
+        }
+        this.parts = this.currentPath.split('/').filter(p => p.length > 0);
     }
 
     propagatePathChange(){
@@ -61,10 +78,12 @@ export class FileExplorer {
                 });
         }
     }
-    // i: number = 0;
-    // lifeLong(){
-    //     this.i = this.i+1;
-    // }
+    getSearchPlaceHolder() {
+        if(this.parts.length === 0){
+            return `在 此电脑 中搜索`;
+        }
+        return `在 ${this.parts[this.parts.length-1]} 中搜索`;
+    }
 
 
 }
