@@ -1,0 +1,34 @@
+@if(fileNode){
+    <div class="d-flex flex-row file-tree-node" [style]="'margin-left: '+fileNode.deep * 10+'px'">
+        @if(!noChild){
+            @if(expanded){
+                <button class="expander">
+                    <nz-icon nzType="down" nzTheme="outline" (click)="expandChildren()" />
+                </button>
+            }@else{
+                <button class="expander">
+                    <nz-icon nzType="right" nzTheme="outline" (click)="expandChildren()" />
+                </button>
+            }
+        }
+        <div [class.no-child]="noChild" class="me-1 d-flex justify-content-center align-items-center">
+            @if(fileNode.path==="/"){
+                <nz-icon nzType="codepen" nzTheme="outline" />
+            }@else if(fileNode.isDriverDisk){
+                <nz-icon nzType="box-plot" nzTheme="outline" />
+            }@else{
+                <nz-icon nzType="folder" nzTheme="outline" />
+            }
+        </div>
+        <span class="node-identifier nowrap-ellipsis">
+            @if(fileNode.path==="/"){
+                此电脑
+            }@else{
+                {{fileNode.name}}
+            }
+        </span>
+    </div>
+    @for(child of children;track child.path){
+        <app-file-node [fileNode]="child" [hidden]="!expanded"></app-file-node>
+    }
+}

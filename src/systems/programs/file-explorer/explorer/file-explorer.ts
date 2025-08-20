@@ -6,6 +6,7 @@ import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
+import {EntryRoot} from './entry-root/entry-root';
 
 @Component({
   selector: 'file-explorer',
@@ -14,7 +15,8 @@ import {FormsModule} from '@angular/forms';
         NzIconDirective,
         NzInputGroupComponent,
         NzInputDirective,
-        FormsModule
+        FormsModule,
+        EntryRoot
     ],
   templateUrl: './file-explorer.html',
   styleUrl: './file-explorer.css'
