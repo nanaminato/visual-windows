@@ -2,6 +2,8 @@ import {Component, inject, Input} from '@angular/core';
 import {FileNodeViewModel} from '../../models/file-node-vm';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {ExplorerService} from '../../services/explorer.service';
+import {SystemInfoService} from '../../../../../system-services/impl/info.service';
+import {SystemInfo} from '../../../../../models';
 
 @Component({
   selector: 'app-file-node',
@@ -12,6 +14,7 @@ import {ExplorerService} from '../../services/explorer.service';
   styleUrl: './file-node.css'
 })
 export class FileNode {
+    systemInfoService: SystemInfoService = inject(SystemInfoService);
     explorerService: ExplorerService = inject(ExplorerService);
     @Input()
     fileNode: FileNodeViewModel | undefined;
@@ -19,12 +22,13 @@ export class FileNode {
     children: FileNodeViewModel[] = [];
     loaded: boolean = false;
     noChild: boolean = false;
-
+    // systemInfo: SystemInfo | undefined;
     constructor() {
 
     }
-    ngOnInit() {
+    async ngOnInit() {
         if(this.fileNode?.expandedWhenInit) {
+            // this.systemInfo = await this.systemInfoService.getInfo();
             this.expandChildren();
         }
     }
@@ -32,7 +36,7 @@ export class FileNode {
         this.expanded = !this.expanded;
         if(this.loaded) return;
         this.children.length = 0;
-        if(this.fileNode?.path==='/'){
+        if(this.fileNode?.path==='/' && !(await this.systemInfoService.isLinuxAsync())){
             let easyFolder = await this.explorerService.getDisks();
             if(easyFolder.length === 0){
                 this.noChild = true;

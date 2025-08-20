@@ -2,6 +2,7 @@ import {Component, inject} from '@angular/core';
 import {ExplorerService} from '../services/explorer.service';
 import {FileNodeViewModel} from '../models/file-node-vm';
 import {FileNode} from './file-node/file-node';
+import {SystemInfoService} from '../../../../system-services/impl/info.service';
 
 @Component({
   selector: 'app-entry-root',
@@ -21,17 +22,18 @@ export class EntryRoot {
     music: FileNodeViewModel | undefined;
     pictures: FileNodeViewModel | undefined;
     videos: FileNodeViewModel | undefined;
-
+    systemInfoService: SystemInfoService = inject(SystemInfoService);
     constructor() {
+
+    }
+    async ngOnInit() {
         this.computer = {
             name: '',
             path: '/',
-            expandedWhenInit: true,
+            expandedWhenInit: !await this.systemInfoService.isLinuxAsync(),
             deep: 0,
             isDriverDisk: true,
         }
-    }
-    ngOnInit() {
         this.explorerService.getSpecialFolder().then((specialFolder) => {
             this.specialFolder = specialFolder;
             const folderNames = ["Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos"];
