@@ -1,0 +1,85 @@
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+.driver-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+.driver-item {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.driver-item:hover {
+    background: #e1eaff;
+}
+
+.driver-icon {
+    font-size: 36px;
+    width: 48px;
+    text-align: center;
+    margin-right: 16px;
+    user-select: none;
+}
+
+.driver-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.driver-name {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.volume-label {
+    font-weight: normal;
+    color: #666;
+    margin-left: 8px;
+    font-size: 0.9em;
+}
+
+.driver-details {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 4px;
+}
+
+.drive-space {
+    margin-top: 8px;
+}
+
+.space-bar {
+    width: 100%;
+    height: 12px;
+    background: #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.space-used {
+    height: 100%;
+    background: #4a90e2;
+    border-radius: 6px 0 0 6px;
+    transition: width 0.3s ease;
+}
+
+.space-text {
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 4px;
+    user-select: none;
+}

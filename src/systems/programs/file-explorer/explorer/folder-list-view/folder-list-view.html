@@ -1,0 +1,38 @@
+
+<table class="folder-list-table" role="grid" aria-label="文件列表">
+    <thead>
+    <tr>
+        <th scope="col" style="width: 40%;">名称</th>
+        <th scope="col" style="width: 20%;">修改日期</th>
+        <th scope="col" style="width: 20%;">类型</th>
+        <th scope="col" style="width: 20%; text-align: right;">大小</th>
+    </tr>
+    </thead>
+    <tbody>
+        @for (file of files; track file.path) {
+            <tr role="row" tabindex="0" class="folder-list-row" (dblclick)="fileDbl(file)">
+                <td role="gridcell" class="file-name">
+                    @if (file.isDirectory) {
+                        📁 {{ file.name }}
+                    } @else {
+                        📄 {{ file.name }}
+                    }
+                </td>
+                <td role="gridcell" class="file-modified">
+                    {{ file.lastModified | date:'yyyy-MM-dd HH:mm' }}
+                </td>
+                <td role="gridcell" class="file-type">
+                    {{ getFileType(file) }}
+                </td>
+                <td role="gridcell" class="file-size" style="text-align: right;">
+                    @if (file.isDirectory) {
+                        <!-- 文件夹大小通常不显示 -->
+                            --
+                    } @else {
+                        {{ formatSize(file.size) }}
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

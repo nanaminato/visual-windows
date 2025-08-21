@@ -11,7 +11,7 @@
                 </button>
             }
         }
-        <div [class.no-child]="noChild" class="me-1 d-flex justify-content-center align-items-center">
+        <div (click)="onNodeClick()" [class.no-child]="noChild" class="me-1 d-flex justify-content-center align-items-center">
             @if(fileNode.path==="/"){
                 <nz-icon nzType="codepen" nzTheme="outline" />
             }@else if(fileNode.isDriverDisk){
@@ -20,15 +20,15 @@
                 <nz-icon nzType="folder" nzTheme="outline" />
             }
         </div>
-        <span class="node-identifier nowrap-ellipsis">
+        <div (click)="onNodeClick()" class="flex-grow-1 node-identifier nowrap-ellipsis">
             @if(fileNode.path==="/"){
                 此电脑
             }@else{
                 {{fileNode.name}}
             }
-        </span>
+        </div>
     </div>
     @for(child of children;track child.path){
-        <app-file-node [fileNode]="child" [hidden]="!expanded"></app-file-node>
+        <app-file-node [fileNode]="child" [hidden]="!expanded" (nodeClicked)="nodeClicked.emit($event)"></app-file-node>
     }
 }

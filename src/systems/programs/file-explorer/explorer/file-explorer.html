@@ -1,7 +1,7 @@
-<div id="file-browser">
+<div class="file-browser">
     <div>
-        <div id="navigator">
-            <div id="navigator-item-group">
+        <div class="navigator">
+            <div class="navigator-item-group">
                 <button>
                     <nz-icon nzType="arrow-left" nzTheme="outline" />
                 </button>
@@ -16,13 +16,13 @@
                     <nz-icon nzType="retweet" nzTheme="outline" />
                 </button>
             </div>
-            <div id="address-bar">
+            <div class="address-bar">
                 <input nz-input type="text" [(ngModel)]="navigatePath" />
                 <button class="border-none bg-transparent">
                     <nz-icon nzType="close" nzTheme="outline" />
                 </button>
             </div>
-            <div id="search-box">
+            <div class="search-box">
                 <nz-input-group [nzSuffix]="suffixIconSearch">
                     <input type="text" nz-input [placeholder]="getSearchPlaceHolder()" />
                 </nz-input-group>
@@ -31,9 +31,9 @@
                 </ng-template>
             </div>
         </div>
-        <div id="quick-tool">
-            <div id="normal-tools">
-                <div id="create-new">
+        <div class="quick-tool">
+            <div class="normal-tools">
+                <div class="create-new">
 
                 </div>
                 <button>
@@ -59,7 +59,7 @@
                     <nz-icon nzType="more" nzTheme="outline" />
                 </button>
             </div>
-            <div id="more-information">
+            <div class="more-information">
                 <button class="border-none bg-transparent">
                     <nz-icon nzType="bars" nzTheme="outline" />
                      详细信息
@@ -69,10 +69,14 @@
     </div>
     <nz-splitter class="d-flex flex-grow-1">
         <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
-            <app-entry-root></app-entry-root>
+            <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
         </nz-splitter-panel>
         <nz-splitter-panel>
-
+            @if(driverView){
+                <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
+            }@else{
+                <app-folder-list-view [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
+            }
         </nz-splitter-panel>
     </nz-splitter>
 </div>

@@ -1,4 +1,4 @@
-import {Component, inject, Input} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {FileNodeViewModel} from '../../models/file-node-vm';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {ExplorerService} from '../../services/explorer.service';
@@ -22,6 +22,11 @@ export class FileNode {
     children: FileNodeViewModel[] = [];
     loaded: boolean = false;
     noChild: boolean = false;
+
+    @Output() nodeClicked = new EventEmitter<FileNodeViewModel>();
+    onNodeClick() {
+        this.nodeClicked.emit(this.fileNode);
+    }
     // systemInfo: SystemInfo | undefined;
     constructor() {
 

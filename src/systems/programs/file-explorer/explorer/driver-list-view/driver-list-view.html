@@ -1,0 +1,25 @@
+<div class="driver-list">
+    @for(driver of drivers; track driver.name) {
+        @if(driver.totalSize > 0){
+            <div class="driver-item"  (dblclick)="driverSelected(driver)">
+                <div class="driver-icon">{{ getDriveIcon(driver.driveType) }}</div>
+                <div class="driver-info">
+                    <div class="driver-name">{{ driver.name }} <span class="volume-label">{{ driver.volumeLabel }}</span></div>
+                    <div class="driver-details">
+                        <span class="drive-type">{{ driver.driveType }}</span> |
+                        <span class="drive-format">{{ driver.format || '未知格式' }}</span>
+                    </div>
+                    <div class="drive-space">
+                        <div class="space-bar">
+                            <div class="space-used" [style]="'width: '+( (1 - driver.availableFreeSpace / driver.totalSize) * 100)+'%'"></div>
+                        </div>
+                        <div class="space-text">
+                            {{ formatBytes(driver.availableFreeSpace) }} 可用 / {{ formatBytes(driver.totalSize) }} 总容量
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+

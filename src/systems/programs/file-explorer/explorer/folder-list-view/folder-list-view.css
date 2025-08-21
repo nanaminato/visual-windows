@@ -1,0 +1,42 @@
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+.folder-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    color: #000;
+}
+
+.folder-list-table th,
+.folder-list-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.folder-list-table th {
+    background-color: #f3f3f3;
+    text-align: left;
+    user-select: none;
+}
+
+.folder-list-row:hover {
+    background-color: #e5f1fb;
+    cursor: pointer;
+}
+
+.file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-modified,
+.file-type,
+.file-size {
+    white-space: nowrap;
+}

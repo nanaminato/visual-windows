@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, EventEmitter, inject, Output} from '@angular/core';
 import {ExplorerService} from '../services/explorer.service';
 import {FileNodeViewModel} from '../models/file-node-vm';
 import {FileNode} from './file-node/file-node';
@@ -52,5 +52,10 @@ export class EntryRoot {
             });
 
         })
+    }
+    @Output()
+    folderSelected = new EventEmitter<FileNodeViewModel>();
+    onFolderSelected(node: FileNodeViewModel) {
+        this.folderSelected.emit(node);
     }
 }

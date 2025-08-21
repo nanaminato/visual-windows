@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FileItem} from '../models';
 import {FileExplorer} from "../explorer/file-explorer"
+import {LightFile} from '../explorer/models';
 
 @Component({
   selector: 'app-file-picker',
@@ -13,19 +13,19 @@ import {FileExplorer} from "../explorer/file-explorer"
 export class FilePicker {
     @Input() selectFolder = false;
     @Input() currentPath = '';
-    @Input() files: FileItem[] = [];
+    @Input() files: LightFile[] = [];
 
     @Output() cancel = new EventEmitter<void>();
-    @Output() confirm = new EventEmitter<FileItem>();
+    @Output() confirm = new EventEmitter<LightFile>();
 
-    selectedItem?: FileItem;
+    selectedItem?: LightFile;
 
     onPathChange(newPath: string) {
         this.currentPath = newPath;
         this.selectedItem = undefined;
     }
 
-    onFileOpen(file: FileItem) {
+    onFileOpen(file: LightFile) {
         if (this.selectFolder && file.isDirectory) {
             this.selectedItem = file;
         } else if (!this.selectFolder && !file.isDirectory) {

@@ -1,5 +1,4 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {FileItem} from '../models';
 import {PropagateTitle} from '../multi-explorer/models';
 import {SystemInfoService} from '../../../system-services/impl/info.service';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
@@ -7,6 +6,13 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {EntryRoot} from './entry-root/entry-root';
+import {FileNodeViewModel} from './models';
+import {ExplorerService} from './services/explorer.service';
+import {LightFile} from './models';
+import {FolderListView} from './folder-list-view/folder-list-view';
+import {DriverInfo} from './models';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {DriverListView} from './driver-list-view/driver-list-view';
 
 @Component({
   selector: 'file-explorer',
@@ -16,22 +22,23 @@ import {EntryRoot} from './entry-root/entry-root';
         NzInputGroupComponent,
         NzInputDirective,
         FormsModule,
-        EntryRoot
+        EntryRoot,
+        FolderListView,
+        DriverListView
     ],
   templateUrl: './file-explorer.html',
   styleUrl: './file-explorer.css'
 })
 export class FileExplorer {
+    explorerService: ExplorerService = inject(ExplorerService);
+    messageService = inject(NzMessageService);
     @Input()
     currentPath: string = ''; // 例如 "/home/user"
-    @Input()
-    files: FileItem[] = [];
-    // 用于处理文件选择
     @Output()
     pathChange = new EventEmitter<string>();
     // 处理文件打开
     @Output()
-    fileOpen = new EventEmitter<FileItem>();
+    fileOpen = new EventEmitter<LightFile>();
     // 用于处理多标签也文件浏览器
     @Output()
     titleChange = new EventEmitter<PropagateTitle>();
@@ -39,8 +46,14 @@ export class FileExplorer {
     @Input()
     uuid: string | undefined;
 
+    @Input()
+    files: LightFile[] = [];
+
+    drivers: DriverInfo[] = [];
+
     navigatePath: string = "";
     parts: string[] = [];
+    driverView: boolean = false;
 
     constructor() {
 
@@ -50,7 +63,7 @@ export class FileExplorer {
             if(await this.systemInfoService.isLinuxAsync()){
                 this.currentPath = "/";
             }else{
-                this.currentPath = "c://"
+                this.currentPath = "/"
             }
             this.navigatePath = this.currentPath;
         }
@@ -60,7 +73,7 @@ export class FileExplorer {
         if (!this.currentPath){
             this.parts = ['']
         }
-        this.parts = this.currentPath.split('/').filter(p => p.length > 0);
+        this.parts = this.currentPath.split('\\').filter(p => p.length > 0);
     }
 
     propagatePathChange(){
@@ -88,4 +101,44 @@ export class FileExplorer {
     }
 
 
+    async onFolderSelected($event: FileNodeViewModel) {
+        this.navigatePath = $event.path;
+        await this.tryNavigateToFolder($event.path);
+
+    }
+    async tryNavigateToFolder(path: string) {
+        try {
+            if(path==='/'&&!(await this.systemInfoService.isLinuxAsync())){
+                const driverInfos = await this.explorerService.getDriverInfos();
+                this.files.length = 0;
+                this.driverView = true;
+                this.drivers = driverInfos;
+                this.currentPath = path;
+            }else{
+                const files = await this.explorerService.getFiles(path);
+                this.drivers.length = 0;
+                this.driverView = false;
+                this.files = files;
+                this.currentPath = path;
+            }
+
+        } catch (error: any) {
+            this.navigatePath = this.currentPath;
+            this.messageService.error(error.message);
+        }
+    }
+
+    async onFileNavigate($event: LightFile) {
+        if($event.isDirectory){
+            this.navigatePath = $event.path;
+            await this.tryNavigateToFolder($event.path);
+        }else{
+            //todo 调用文件关联程序打开
+        }
+    }
+
+    async onDriverNavigate($event: DriverInfo) {
+        this.navigatePath = $event.name;
+        await this.tryNavigateToFolder($event.name);
+    }
 }

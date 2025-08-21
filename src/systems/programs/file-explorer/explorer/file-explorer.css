@@ -3,56 +3,56 @@
     height: 100%;
     width: 100%;
 }
-#file-browser {
+.file-browser {
     font-family: Arial, sans-serif;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
-#navigator{
+.navigator{
     display: flex;
     flex-direction: row;
     width: 100%;
     margin: 5px 0;
 }
-#navigator-item-group{
+.navigator-item-group{
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin: 0 10px;
 }
-#navigator-item-group > button{
+.navigator-item-group > button{
     border: none;
     background: transparent;
 }
-#address-bar{
+.address-bar{
     display: flex;
     flex-direction: row;
     flex-grow: 1;
 }
-#address-bar  input, #search-bar  input{
+.address-bar  input, #search-bar  input{
     font-size: 16px !important;
 }
-#search-box{
+.search-box{
     margin: 0 10px;
 }
 
-#quick-tool{
+.quick-tool{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
-#normal-tools{
+.normal-tools{
     margin: 0 10px;
 }
-#normal-tools > button{
+.normal-tools > button{
     border: none;
     background: transparent;
     /*padding: 5px;*/
     margin: 10px;
 }
-#more-information{
+.more-information{
     margin: 10px 10px;
 }
 .breadcrumb {
