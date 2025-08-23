@@ -13,9 +13,17 @@ import {FolderListView} from './folder-list-view/folder-list-view';
 import {DriverInfo} from './models';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {DriverListView} from './driver-list-view/driver-list-view';
+import {
+    generateTitle,
+    getParentPath,
+    isAbsolutePath,
+    isRootPath,
+    normalizePath,
+    resolveRelativePath
+} from './services/explorer.util';
 
 @Component({
-  selector: 'file-explorer',
+    selector: 'file-explorer',
     imports: [
         NzSplitterModule,
         NzIconDirective,
@@ -26,12 +34,13 @@ import {DriverListView} from './driver-list-view/driver-list-view';
         FolderListView,
         DriverListView
     ],
-  templateUrl: './file-explorer.html',
-  styleUrl: './file-explorer.css'
+    templateUrl: './file-explorer.html',
+    styleUrl: './file-explorer.css'
 })
 export class FileExplorer {
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
+    // 当前实际所在的位置
     @Input()
     currentPath: string = ''; // 例如 "/home/user"
     @Output()
@@ -50,24 +59,27 @@ export class FileExplorer {
     files: LightFile[] = [];
 
     drivers: DriverInfo[] = [];
-
+    // 地址栏地址，不代表实际处于的位置
     navigatePath: string = "";
     parts: string[] = [];
     driverView: boolean = false;
 
-    constructor() {
-
-    }
+    isLinux: boolean = false;
     async ngOnInit() {
+        this.isLinux = await this.systemInfoService.isLinuxAsync();
         if(this.currentPath===''){
-            if(await this.systemInfoService.isLinuxAsync()){
+            if(this.isLinux){
                 this.currentPath = "/";
             }else{
                 this.currentPath = "/"
             }
             this.navigatePath = this.currentPath;
         }
-        this.propagatePathChange()
+        this.history = [this.currentPath];
+        this.historyIndex = 0;
+        this.navigatePath = this.currentPath;
+        this.partPath();
+        this.TitleChange()
     }
     partPath() {
         if (!this.currentPath){
@@ -75,23 +87,15 @@ export class FileExplorer {
         }
         this.parts = this.currentPath.split('\\').filter(p => p.length > 0);
     }
-
-    propagatePathChange(){
+    // 传递
+    TitleChange(){
         this.pathChange.emit(this.currentPath);
-        let left = this.currentPath.lastIndexOf('/');
-        if(left===-1){
-            let right = this.currentPath.lastIndexOf('\\');
-            this.titleChange.emit({
-                fileExplorerId: this.uuid,
-                title: this.currentPath.substring(right)
-            });
-        }else{
-            this.titleChange.emit(
-                {
-                    fileExplorerId: this.uuid,
-                    title: this.currentPath.substring(left)
-                });
-        }
+        const title = generateTitle(this.currentPath, this.isLinux);
+        this.titleChange.emit({
+            fileExplorerId: this.uuid,
+            title
+        });
+
     }
     getSearchPlaceHolder() {
         if(this.parts.length === 0){
@@ -106,9 +110,9 @@ export class FileExplorer {
         await this.tryNavigateToFolder($event.path);
 
     }
-    async tryNavigateToFolder(path: string) {
+    async tryNavigateToFolder(path: string,addToHistory: boolean = true) {
         try {
-            if(path==='/'&&!(await this.systemInfoService.isLinuxAsync())){
+            if(path==='/'&&!this.isLinux){
                 const driverInfos = await this.explorerService.getDriverInfos();
                 this.files.length = 0;
                 this.driverView = true;
@@ -120,6 +124,18 @@ export class FileExplorer {
                 this.driverView = false;
                 this.files = files;
                 this.currentPath = path;
+            }
+            this.navigatePath = this.currentPath;
+            this.partPath();
+            this.TitleChange();
+
+            if(addToHistory){
+                // 如果当前不是历史末尾，截断后面的历史
+                if(this.historyIndex < this.history.length - 1){
+                    this.history = this.history.slice(0, this.historyIndex + 1);
+                }
+                this.history.push(path);
+                this.historyIndex = this.history.length - 1;
             }
 
         } catch (error: any) {
@@ -141,4 +157,65 @@ export class FileExplorer {
         this.navigatePath = $event.name;
         await this.tryNavigateToFolder($event.name);
     }
+    private history: string[] = [];
+    private historyIndex: number = -1;
+    async back() {
+        if(this.historyIndex > 0){
+            this.historyIndex--;
+            const path = this.history[this.historyIndex];
+            await this.tryNavigateToFolder(path, false);
+        }
+    }
+
+    async forward() {
+        if(this.historyIndex < this.history.length - 1){
+            this.historyIndex++;
+            const path = this.history[this.historyIndex];
+            await this.tryNavigateToFolder(path, false);
+        }
+    }
+
+    async stepBack() {
+        const parentPath = getParentPath(this.currentPath, this.isLinux);
+        if (parentPath === this.currentPath || !parentPath) {
+            return; // 根目录，不再往上
+        }
+        await this.tryNavigateToFolder(parentPath);
+    }
+
+    refresh() {
+        this.tryNavigateToFolder(this.currentPath);
+    }
+    canBack(): boolean {
+        return this.historyIndex > 0;
+    }
+
+    canForward(): boolean {
+        return this.historyIndex < this.history.length - 1;
+    }
+    canStepBack(): boolean {
+        return !isRootPath(this.currentPath, this.isLinux);
+    }
+
+    clearPath() {
+        this.navigatePath = "";
+    }
+
+    navigateFromAddress() {
+        let inputPath = this.navigatePath.trim();
+        if (!inputPath) {
+            this.navigatePath = this.currentPath;
+            return;
+        }
+        let targetPath = '';
+        if (isAbsolutePath(inputPath, this.isLinux)) {
+            targetPath = normalizePath(inputPath, this.isLinux);
+        } else {
+            targetPath = resolveRelativePath(this.currentPath, inputPath, this.isLinux);
+        }
+
+        this.tryNavigateToFolder(targetPath);
+    }
+
+
 }

@@ -67,6 +67,7 @@ export class MultiExplorer {
     handleTitleChange($event: PropagateTitle) {
         const ele = this.fileExplorers.find(f => f.fileExplorerId === $event.fileExplorerId);
         if (ele) {
+            console.log($event.title)
             ele.title = $event.title;
         }
     }

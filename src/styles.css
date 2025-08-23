@@ -8,3 +8,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .border-none{
     border: none;
 }
+button.disabled > nz-icon{
+    color: #b5b5b5;
+}

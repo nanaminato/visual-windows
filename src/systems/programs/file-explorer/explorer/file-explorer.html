@@ -2,24 +2,25 @@
     <div>
         <div class="navigator">
             <div class="navigator-item-group">
-                <button>
-                    <nz-icon nzType="arrow-left" nzTheme="outline" />
+                <button [disabled]="!canBack()" [class.disabled]="!canBack()" >
+                    <nz-icon nzType="arrow-left" nzTheme="outline" (click)="back()"/>
                 </button>
-                <button>
-                    <nz-icon nzType="arrow-right" nzTheme="outline" />
+                <button [disabled]="!canForward()" [class.disabled]="!canForward()" >
+                    <nz-icon nzType="arrow-right" nzTheme="outline" (click)="forward()"/>
                 </button>
-                <button>
-                    <nz-icon nzType="arrow-up" nzTheme="outline" />
+                <button [disabled]="!canStepBack()" [class.disabled]="!canStepBack()" >
+                    <nz-icon nzType="arrow-up" nzTheme="outline" (click)="stepBack()"/>
                 </button>
+
                 <button>
                     <!-- todo 图标替换为更合适的图标 -->
-                    <nz-icon nzType="retweet" nzTheme="outline" />
+                    <nz-icon nzType="retweet" nzTheme="outline" (click)="refresh()" />
                 </button>
             </div>
             <div class="address-bar">
-                <input nz-input type="text" [(ngModel)]="navigatePath" />
+                <input nz-input type="text" (keydown.enter)="navigateFromAddress()"  [(ngModel)]="navigatePath" />
                 <button class="border-none bg-transparent">
-                    <nz-icon nzType="close" nzTheme="outline" />
+                    <nz-icon nzType="close" nzTheme="outline" (click)="clearPath()"/>
                 </button>
             </div>
             <div class="search-box">
