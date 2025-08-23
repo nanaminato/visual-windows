@@ -1,6 +1,6 @@
 import {Component, EventEmitter, inject, Output} from '@angular/core';
 import {ExplorerService} from '../services/explorer.service';
-import {FileNodeViewModel} from '../models/file-node-vm';
+import {FileNodeViewModel} from '../models';
 import {FileNode} from './file-node/file-node';
 import {SystemInfoService} from '../../../../system-services/impl/info.service';
 
@@ -39,7 +39,7 @@ export class EntryRoot {
             const folderNames = ["Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos"];
             folderNames.forEach(name => {
                 let path = this.specialFolder.get(name);
-                if (path !== undefined) {
+                if (path !== undefined&&path !== null) {
                     // @ts-ignore
                     this[name.toLowerCase()] = {
                         name: name,
