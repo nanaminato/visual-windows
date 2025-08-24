@@ -26,8 +26,8 @@ nz-splitter {
 }
 .stock{
     width: 55px;
+
 }
-nz-splitter{
-    width: 100%;
-    height: 100%;
+.my-border{
+    border-left: 1px solid #858585;
 }

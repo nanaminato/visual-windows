@@ -22,7 +22,7 @@
 }
 
 .divider {
-    width: 5px;
+    width: 2px;
     background-color: #ccc;
     cursor: col-resize;
     user-select: none;
