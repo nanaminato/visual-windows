@@ -3,7 +3,7 @@ import {ProgramManagerService} from '../../system-services/impl/program-manager.
 import {WindowManagerService} from '../../system-services/impl/windows-manager.service';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WinIcon} from '../win-icon/win-icon';
-import {GroupWindowState, WindowState} from '../../models';
+import {GroupWindowState, ProgramConfig, WindowState} from '../../models';
 
 @Component({
   selector: 'system-desktop-bar',
@@ -18,16 +18,11 @@ export class DesktopBar {
   private appManager = inject(ProgramManagerService);
   private windowManager = inject(WindowManagerService);
   private appManagerService = inject(ProgramManagerService);
-  apps = this.appManager.listApps();
+  apps = this.appManager.listProgramConfigs();
   windows: WindowState[] = [];
   groupWindows: GroupWindowState[] = [];
-  getAppWindowConfigOfWindowGroup(group: GroupWindowState) {
-    for (let app of this.appManager.listApps()) {
-      if(app.appId === group.appId) {
-        return app;
-      }
-    }
-    return undefined;
+  getWindowConfigOfProgramId(programId: string): ProgramConfig |undefined {
+    return this.appManager.getProgramConfig(programId);
   }
   showAppList = false;
 
@@ -37,7 +32,7 @@ export class DesktopBar {
       this.divideIntoGroups();
         // ws.filter(w => !w.minimized);
     });
-    this.appManagerService.getAppConfigObservables().subscribe(appConfigs => {
+    this.appManagerService.getProgramConfigObservables().subscribe(appConfigs => {
       this.apps = appConfigs;
     })
 
@@ -47,15 +42,15 @@ export class DesktopBar {
 
     // 遍历所有窗口，根据 appId 分组
     for (const window of this.windows) {
-      if (!groupsMap.has(window.appId)) {
-        groupsMap.set(window.appId, []);
+      if (!groupsMap.has(window.programId)) {
+        groupsMap.set(window.programId, []);
       }
-      groupsMap.get(window.appId)!.push(window);
+      groupsMap.get(window.programId)!.push(window);
     }
 
     // 将 Map 转换为数组，赋值给 groupWindows
     this.groupWindows = Array.from(groupsMap.entries()).map(([appId, windowStates]) => ({
-      appId,
+      programId: appId,
       windowStates
     }));
   }
@@ -79,7 +74,7 @@ export class DesktopBar {
   }
 
   getWindowsByApp(appId: string): WindowState[] {
-    return this.windows.filter(w => w.appId === appId);
+    return this.windows.filter(w => w.programId === appId);
   }
 
   openGroupAppId: string | null = null;

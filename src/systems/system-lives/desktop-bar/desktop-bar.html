@@ -9,12 +9,12 @@
   <!-- 自下而上展开的程序列表 -->
   <div class="app-list" [class.show]="showAppList">
     <ul>
-      @for(app of apps; track app.appId) {
+      @for(app of apps; track app.programId) {
         <li>
           <div class="app-entry">
-            <button (click)="openApp(app.appId, app.appName)">
-              <app-win-icon [appConfig]="app"> </app-win-icon>
-              {{app.appName}}
+            <button (click)="openApp(app.programId, app.programName)">
+              <app-win-icon [programConfig]="app"> </app-win-icon>
+              {{app.programName}}
             </button>
           </div>
         </li>
@@ -23,16 +23,16 @@
   </div>
 
   <div class="taskbar dont-select">
-    @for(win of groupWindows; track win.appId) {
+    @for(win of groupWindows; track win.programId) {
       @if(win.windowStates.length>1){
-        <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.appId, $event)">
+        <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.programId, $event)">
           <!-- 应用图标 -->
-          <app-win-icon [appConfig]="getAppWindowConfigOfWindowGroup(win)"></app-win-icon>
+          <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
           <!-- 下拉箭头 -->
           <span class="dropdown-arrow">▼</span>
 
           <!-- 弹出菜单 -->
-          @if(openGroupAppId === win.appId) {
+          @if(openGroupAppId === win.programId) {
             <div class="window-list-popup" (click)="$event.stopPropagation()">
               @for(window of win.windowStates; track window.id) {
                 <!-- 添加hover的时候，激活对应窗口,并关闭其他窗口                 -->
@@ -47,7 +47,7 @@
         <div class="mx-3"
              (click)="toggleWindow(win)"
              >
-          <app-win-icon [appConfig]="getAppWindowConfigOfWindowGroup(win)"></app-win-icon>
+          <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
         </div>
       }
     }

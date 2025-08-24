@@ -25,9 +25,6 @@ export class MultiExplorer {
     startPath: string = "";
     fileExplorers: FileExplorerInit[] = [];
     selectedIndex: number = 0;
-    constructor() {
-
-    }
     private systemInfoService = inject(SystemInfoService);
     systemInfo: SystemInfo | undefined = undefined;
     // 初始化，打开一个文件浏览器tab页

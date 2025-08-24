@@ -3,7 +3,7 @@ import {ProgramIcon} from './program-info';
 export interface WindowState {
     id: string;                // 唯一窗口ID
     title: string;             // 窗口标题
-    appId: string;             // 所属应用ID
+    programId: string;             // 所属应用ID
     position: { x: number; y: number };
     size: { width: number; height: number };
     minimized: boolean;
@@ -17,17 +17,17 @@ export interface WindowState {
     prevSize?: { width: number; height: number };
 }
 export interface GroupWindowState {
-    appId: string;
+    programId: string;
     windowStates: WindowState[];
 }
 export interface ProgramConfig {
-    appId: string;
-    appName: string;
+    programId: string;
+    programName: string;
     isSingleton: boolean;
     stateful: boolean;
     preferredSize: { width: number; height: number };
     icon: ProgramIcon,
-    appType:number;
+    programType:number;
 }
 /**
  public enum AppType

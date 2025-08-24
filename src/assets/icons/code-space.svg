@@ -1,0 +1,10 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <rect width="128" height="128" rx="20" ry="20" fill="#0E5AAB"/>
+
+    <!-- 代码符号：尖括号 -->
+    <path d="M40 40 L30 64 L40 88" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round" fill="none"/>
+    <path d="M88 40 L98 64 L88 88" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round" fill="none"/>
+
+    <!-- 运行符号：三角形 播放按钮 -->
+    <polygon points="60,50 60,78 84,64" fill="#28A745"/>
+</svg>

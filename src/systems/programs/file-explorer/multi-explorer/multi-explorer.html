@@ -1,5 +1,5 @@
-<div class="tabs-container" [class.active]="active">
-    <div class="tabs-header" >
+<div class="program-container" [class.active]="active">
+    <div class="program-header" >
         <div class="d-flex flex-row">
             @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
                 <div
@@ -16,21 +16,21 @@
 
         </div>
         <div class="d-flex flex-row ">
-            <button class="mini-btn" >
-                <nz-icon nzType="line" style="font-size: 14px"
-                         (click)="minimizeWindow()"
+            <button class="mini-btn" (click)="minimizeWindow()">
+                <nz-icon nzType="line"
                 />
             </button>
-            <button class="max-btn" >
-                <nz-icon nzType="border" style="font-size: 14px"
-                         (click)="maximizeWindow()"
+            <button class="max-btn" (click)="maximizeWindow()">
+                <nz-icon nzType="border"
                 />
             </button>
-            <button class="close-btn " (click)="closeWindow()">×</button>
+            <button class="close-btn " (click)="closeWindow()">
+                <nz-icon nzType="close"  />
+            </button>
         </div>
     </div>
 
-    <div class="tabs-content">
+    <div class="program-content">
         @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
             <ng-container >
                 <div [hidden]="selectedIndex !== $index" class="tab-panel">

@@ -8,5 +8,5 @@ import {ProgramConfig} from '../../models';
 })
 export class WinIcon {
   @Input()
-  public appConfig: ProgramConfig | undefined;
+  public programConfig: ProgramConfig | undefined;
 }

@@ -28,7 +28,8 @@ export class DesktopManager {
             this.windows = ws;
         });
         this.resumeService.start().then(c=>{
-            this.windowManager.openWindow("file-explorer","file-explorer")
+            // this.windowManager.openWindow("file-explorer","file-explorer")
+            this.windowManager.openWindow("code-space","code")
         })
 
     }

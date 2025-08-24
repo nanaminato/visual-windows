@@ -13,8 +13,8 @@ export class WindowManagerService {
     programConfigs: ProgramConfig[] = [];
 
     constructor(private appManagerService: ProgramManagerService) {
-        this.programConfigs = this.appManagerService.getAppWindowConfigs();
-        this.appManagerService.getAppConfigObservables().subscribe(ws => {
+        this.programConfigs = this.appManagerService.getProgramConfigs();
+        this.appManagerService.getProgramConfigObservables().subscribe(ws => {
             this.programConfigs = ws;
         })
         window.addEventListener('resize', this.onWindowResize);
@@ -23,10 +23,10 @@ export class WindowManagerService {
         return this.windows$.asObservable();
     }
     getWindowByProgramId(appId: string): WindowState[] {
-        return this.windows$.getValue().filter(window => window.appId === appId);
+        return this.windows$.getValue().filter(window => window.programId === appId);
     }
     getRegisteredProgramByProgramId(appId: string): ProgramConfig[] {
-        return this.programConfigs.filter(app=>app.appId===appId);
+        return this.programConfigs.filter(app=>app.programId===appId);
     }
     // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
     async openWindow(appId: string, title: string,params?: any) {
@@ -42,7 +42,7 @@ export class WindowManagerService {
         let registeredApp = registeredApps[0];
         const newWindow: WindowState = {
             id,
-            appId,
+            programId: appId,
             title,
             position: { x: 100, y: 100 },
             size: {

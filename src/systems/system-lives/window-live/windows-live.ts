@@ -35,8 +35,8 @@ export class WindowsLive {
     @Output()
     appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
 
-    getAppWindowConfigOfWindow(win: WindowState) {
-        return this.appManagerService.getAppWindowConfigOfWindow(win);
+    getAppWindowConfigOfWindow(programId: string) {
+        return this.appManagerService.getProgramConfig(programId);
     }
 
     focusWindow(id: string) {

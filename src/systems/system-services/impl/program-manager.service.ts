@@ -2,43 +2,42 @@ import {Injectable} from '@angular/core';
 import {ProgramConfigService} from './program-config.service';
 import {BehaviorSubject} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ProgramConfig, WindowState} from '../../models';
+import {ProgramConfig} from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramManagerService {
-  appWindowConfigs= new BehaviorSubject<ProgramConfig[]>([]);
-  constructor(private readonly appConfigService: ProgramConfigService,
-              private snackBar: MatSnackBar) {
-    // this.loadAppConfigs();
-  }
-  getAppWindowConfigOfWindow(window: WindowState) {
-    for (let app of this.listApps()) {
-      if(app.appId === window.appId) {
-        return app;
-      }
+    programConfigs= new BehaviorSubject<ProgramConfig[]>([]);
+    constructor(private readonly appConfigService: ProgramConfigService,
+                private snackBar: MatSnackBar) {
     }
-    return undefined;
-  }
-  getAppWindowConfigs() {
-    return this.appWindowConfigs.getValue();
-  }
-  async loadAppConfigs(){
-    try{
-      let appConfigs = await this.appConfigService.getAllInstalledApps();
-      if(appConfigs===undefined){
-        return;
-      }
-      this.appWindowConfigs.next(appConfigs);
-    }catch(error){
-      this.snackBar.open('Error loading app configs.');
+    getProgramConfig(programId: string): ProgramConfig |undefined {
+        for (let program of this.listProgramConfigs()) {
+            if(program.programId === programId) {
+                return program;
+            }
+        }
+        return undefined;
+    }
+    getProgramConfigs() {
+        return this.programConfigs.getValue();
+    }
+    async loadProgramConfigs(){
+        try{
+            let appConfigs = await this.appConfigService.getAllInstalledApps();
+            if(appConfigs===undefined){
+                return;
+            }
+            this.programConfigs.next(appConfigs);
+        }catch(error){
+            this.snackBar.open('Error loading app configs.');
+        }
+
+    }
+    getProgramConfigObservables(){
+        return this.programConfigs.asObservable();
     }
 
-  }
-  getAppConfigObservables(){
-    return this.appWindowConfigs.asObservable();
-  }
-
-  listApps() {
-    return this.getAppWindowConfigs()
-  }
+    listProgramConfigs() {
+        return this.getProgramConfigs()
+    }
 }

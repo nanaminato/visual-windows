@@ -15,7 +15,7 @@ export class ResumeService {
 
     }
     async start(){
-        await this.managerService.loadAppConfigs();
+        await this.managerService.loadProgramConfigs();
         await this.resumeTerminals();
     }
     async resumeTerminals(){
