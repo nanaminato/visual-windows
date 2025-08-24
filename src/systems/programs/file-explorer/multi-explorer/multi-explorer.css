@@ -15,9 +15,9 @@
     display: flex;
     align-items: center;
     padding: 6px 12px;
-    margin-right: 4px;
+    margin-right: 0;
     border: 1px solid transparent;
-    border-radius: 4px 4px 0 0;
+    border-radius: 8px 16px 0 0;
     cursor: pointer;
     background: #e0e0e0;
     position: relative;
@@ -55,4 +55,7 @@
     padding: 20px;
     color: #999;
     text-align: center;
+}
+.tab > .close-btn{
+    font-size: 12px;
 }

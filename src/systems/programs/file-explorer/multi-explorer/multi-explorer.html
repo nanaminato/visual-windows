@@ -7,7 +7,9 @@
                     [class.active]="selectedIndex === $index"
                     (click)="selectTab($index)">
                     <span class="tab-title">{{ getTitle(fileExplorer) || '无标题' }}</span>
-                    <button class="close-btn" (click)="closeTab($index, $event)">×</button>
+                    <button class="close-btn" (click)="closeTab($index, $event)">
+                        <nz-icon nzType="close"  />
+                    </button>
                 </div>
             }
             <button class="add-btn" (click)="openNewFileExplorer()">＋</button>
