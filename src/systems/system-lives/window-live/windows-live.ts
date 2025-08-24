@@ -237,6 +237,10 @@ export class WindowsLive {
         }
 
         // // TODO: 这里可以加入桌面边界限制
+        if (this.componentRef && typeof this.componentRef.instance.parentSizeChange=== 'function') {
+            this.componentRef.instance.parentSizeChange();
+        }
+
         this.appEventEmitter.emit({
             type: 6, // 自定义类型，比如 resize
             id: this.resizeWinId!,
@@ -249,11 +253,9 @@ export class WindowsLive {
 
     stopResize = (event: MouseEvent) => {
         if (!this.resizing) return;
-
         this.resizing = false;
         this.resizeDir = null;
         this.resizeWinId = null;
-
         window.removeEventListener('mousemove', this.onResizeMove);
         window.removeEventListener('mouseup', this.stopResize);
     };

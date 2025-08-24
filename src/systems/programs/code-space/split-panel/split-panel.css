@@ -1,0 +1,29 @@
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.splitBox {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    user-select: none; /* 拖动时防止选中文本 */
+}
+
+.left {
+    /*background-color: #f0f0f0;*/
+    overflow: auto;
+}
+
+.right {
+    /*background-color: #e0e0e0;*/
+    overflow: auto;
+}
+
+.divider {
+    width: 5px;
+    background-color: #ccc;
+    cursor: col-resize;
+    user-select: none;
+}

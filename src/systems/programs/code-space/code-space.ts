@@ -1,19 +1,32 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FileExplorer} from "../file-explorer/explorer/file-explorer";
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    inject,
+    Input,
+    Output,
+    Renderer2, ViewChild,
+    ViewChildren
+} from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
+import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
+import {SplitPanel} from './split-panel/split-panel';
 
 @Component({
   selector: 'app-code-space',
     imports: [
         NzIconDirective,
-        WinIcon
+        WinIcon,
+        SplitPanel
     ],
   templateUrl: './code-space.html',
   styleUrl: './code-space.css'
 })
 export class CodeSpace {
+    programManagerService: ProgramManagerService = inject(ProgramManagerService);
     @Input()
     id: string | undefined;
     @Input()
@@ -26,7 +39,12 @@ export class CodeSpace {
     async ngOnInit() {
 
     }
+    leftPanelVisible: boolean = true;
 
+    constructor(private renderer: Renderer2) {}
+    parentSizeChange(){
+
+    }
     @Output()
     appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
     minimizeWindow() {
@@ -74,6 +92,11 @@ export class CodeSpace {
     }
 
     getIcon() {
-        return undefined;
+        return this.programManagerService.getProgramConfig('code-space');
     }
+
+    changePanelVisibleStatus() {
+        this.leftPanelVisible = !this.leftPanelVisible;
+    }
+
 }

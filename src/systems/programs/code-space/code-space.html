@@ -2,6 +2,14 @@
     <div class="program-header" >
         <div class="d-flex flex-row">
             <app-win-icon [programConfig]="getIcon()"></app-win-icon>
+            <button class="menu-item">File</button>
+            <button class="menu-item">Edit</button>
+            <button class="menu-item">Selection</button>
+            <button class="menu-item">View</button>
+            <button class="menu-item">Go</button>
+            <button class="menu-item">
+                <img src="assets/icons/code-space/more.svg" width="20" height="20">
+            </button>
         </div>
         <div class="flex-grow-1" (mousedown)="startDrag($event)">
 
@@ -21,7 +29,20 @@
         </div>
     </div>
 
-    <div class="program-content">
+    <div class="program-content code-space-content">
+        <div class="d-flex flex-column stock">
+            <button class="plane-button py-2" (click)="changePanelVisibleStatus()">
+                <nz-icon nzType="profile" />
+            </button>
+        </div>
+        <app-split-panel [leftVisible]="leftPanelVisible" [leftSize]="'150px'" [minLeft]="'100px'" [minRight]="'100px'"  class="w-100 h-100" style="border: 1px solid #000;">
+            <div left>
+                左侧内容
+            </div>
+            <div right>
+                右侧内容
+            </div>
+        </app-split-panel>
 
     </div>
 </div>
