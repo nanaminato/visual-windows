@@ -1,0 +1,8 @@
+<div class="scroll-container">
+    @if(folderNode){
+        <app-code-file-node
+            [fileNode]="folderNode"
+            (nodeClicked)="onFileSelected($event)">
+        </app-code-file-node>
+    }
+</div>

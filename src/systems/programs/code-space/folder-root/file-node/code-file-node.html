@@ -1,0 +1,28 @@
+@if(fileNode){
+    <div class="d-flex flex-row file-tree-node" [style]="'margin-left: '+fileNode.deep * 10+'px'">
+        @if(fileNode.isDirectory&&!noChild){
+            @if(expanded){
+                <button class="expander">
+                    <nz-icon nzType="down" nzTheme="outline" (click)="expandChildren()" />
+                </button>
+            }@else{
+                <button class="expander">
+                    <nz-icon nzType="right" nzTheme="outline" (click)="expandChildren()" />
+                </button>
+            }
+        }
+        <div (dblclick)="onNodeClick()" [class.no-child]="noChild" class="me-1 d-flex justify-content-center align-items-center">
+            @if(fileNode.isDirectory){
+                <nz-icon nzType="folder" nzTheme="outline" />
+            }@else{
+                <img [src]="getIconPath()" width="18" height="18"/>
+            }
+        </div>
+        <div (dblclick)="onNodeClick()" class="flex-grow-1 node-identifier nowrap-ellipsis">
+            {{fileNode.name}}
+        </div>
+    </div>
+    @for(child of children;track child.path){
+        <app-code-file-node [fileNode]="child" [hidden]="!expanded" (nodeClicked)="nodeClicked.emit($event)"></app-code-file-node>
+    }
+}

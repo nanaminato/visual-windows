@@ -11,14 +11,15 @@
     user-select: none; /* 拖动时防止选中文本 */
 }
 
-.left {
-    /*background-color: #f0f0f0;*/
+.left, .right {
     overflow: auto;
 }
 
-.right {
-    /*background-color: #e0e0e0;*/
-    overflow: auto;
+::ng-deep [left], ::ng-deep [right] {
+    display: block;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .divider {

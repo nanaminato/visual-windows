@@ -29,7 +29,9 @@ export class DesktopManager {
         });
         this.resumeService.start().then(c=>{
             // this.windowManager.openWindow("file-explorer","file-explorer")
-            this.windowManager.openWindow("code-space","code")
+            this.windowManager.openWindow("code-space","code", {
+                startPath: 'D:\\WebstormProjects\\Remote-File-Manager'
+            })
         })
 
     }

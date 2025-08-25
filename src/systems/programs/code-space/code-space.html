@@ -36,14 +36,18 @@
             </button>
         </div>
         <app-split-panel [leftVisible]="leftPanelVisible"
-                         [leftSize]="'150px'" [minLeft]="'100px'"
+                         [leftSize]="'200px'" [minLeft]="'100px'"
                          [minRight]="'100px'"
                          class="w-100 h-100 my-border">
             <div left>
-                左侧内容
+                @if(startPath!==''){
+                    <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>
+                }
             </div>
             <div right>
-                右侧内容
+                <div class="open-codes-header">
+
+                </div>
             </div>
         </app-split-panel>
 

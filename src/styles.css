@@ -50,8 +50,7 @@ button.disabled > nz-icon{
     color: #f5222d;
 }
 .program-content {
-    width: 100%;
-    height: 100%;
+    flex-grow: 1;
     overflow: auto;
     background: white;
 }

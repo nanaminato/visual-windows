@@ -1,0 +1,26 @@
+.expander{
+    border: none;
+    background: transparent;
+}
+.expander > nz-icon{
+    font-size: 12px;
+}
+.node-identifier{
+    font-size: 18px;
+}
+.file-tree-node{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.file-tree-node:hover{
+    background: lightblue;
+}
+.no-child{
+    margin-left: 24px;
+}
+.nowrap-ellipsis{
+    white-space: nowrap;       /* 不换行 */
+    overflow: hidden;          /* 超出部分隐藏 */
+    text-overflow: ellipsis;   /* 超出部分显示省略号（可选） */
+    display: inline-block;
+}

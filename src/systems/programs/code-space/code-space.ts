@@ -1,26 +1,28 @@
 import {
     Component,
-    ElementRef,
     EventEmitter,
-    HostListener,
     inject,
     Input,
     Output,
-    Renderer2, ViewChild,
-    ViewChildren
+    Renderer2,
 } from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
 import {SplitPanel} from './split-panel/split-panel';
+import {FolderRoot} from './folder-root/folder-root';
+import {CodeFileNode} from './folder-root/file-node/code-file-node';
+import {CodeFileNodeViewModel} from './models';
+import {OpenFile} from './models/open-file';
 
 @Component({
   selector: 'app-code-space',
     imports: [
         NzIconDirective,
         WinIcon,
-        SplitPanel
+        SplitPanel,
+        FolderRoot
     ],
   templateUrl: './code-space.html',
   styleUrl: './code-space.css'
@@ -37,14 +39,17 @@ export class CodeSpace {
     @Input()
     startFile: string = "";
     async ngOnInit() {
-
+        if(this.startPath!==''){
+            this.leftPanelVisible = true;
+        }
     }
-    leftPanelVisible: boolean = true;
+    leftPanelVisible: boolean = false;
 
     constructor(private renderer: Renderer2) {}
     parentSizeChange(){
 
     }
+
     @Output()
     appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
     minimizeWindow() {
@@ -98,5 +103,8 @@ export class CodeSpace {
     changePanelVisibleStatus() {
         this.leftPanelVisible = !this.leftPanelVisible;
     }
+    openFiles: OpenFile[] = [];
+    onFileOpen($event: CodeFileNodeViewModel) {
 
+    }
 }
