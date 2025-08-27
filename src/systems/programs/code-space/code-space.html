@@ -45,8 +45,25 @@
                 }
             </div>
             <div right>
-                <div class="open-codes-header">
-
+                <div class="d-flex flex-column w-100 h-100">
+                    <div class="open-codes-header ">
+                        @for(openFile of openFiles; track openFile.path){
+                            <div class="p-2 open-file-item"
+                                 (click)="activeFile(openFile)"
+                                 [class.active]="openFile.path===activeOpenFile?.path">
+                                <img width="15" height="15" [src]="getIconPath(openFile.name)" alt="文件图标">
+                                <div>{{openFile.name}}</div>
+                                <button class="plane-button" (click)="closeFile(openFile, $event)">
+                                    <nz-icon nzType="close" />
+                                </button>
+                            </div>
+                        }
+                    </div>
+                    <div class="d-flex flex-grow-1">
+                        @if(editorVisible){
+                            <ngx-monaco-editor class="w-100 h-100" [options]="editorOptions" [(ngModel)]="content"></ngx-monaco-editor>
+                        }
+                    </div>
                 </div>
             </div>
         </app-split-panel>

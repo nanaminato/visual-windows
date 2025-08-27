@@ -92,6 +92,7 @@ export class WindowManagerService {
         }
         return 40; // 默认值
     }
+    // 最大化，或取消最大化
     maximizeWindow(id: string) {
         const body = document.body;
         const taskbarHeight = this.getTaskbarHeight();

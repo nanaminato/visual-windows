@@ -2,6 +2,7 @@ import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ExplorerService} from '../../../file-explorer/explorer/services/explorer.service';
 import {CodeFileNodeViewModel} from '../../models';
+import {getIconPath} from '../../services';
 
 @Component({
   selector: 'app-code-file-node',
@@ -60,32 +61,7 @@ export class CodeFileNode {
     getIconPath() {
         if (this.fileNode) {
             const name = this.fileNode.name;
-            const index = name.lastIndexOf('.');
-            if (index > -1) {
-                const ext = name.substring(index + 1).toLowerCase();
-
-                // Map<图标文件名, 后缀数组>
-                const map: Map<string, string[]> = new Map([
-                    ['java.svg', ['java']],
-                    ['ts.svg', ['ts']],
-                    ['js.svg', ['js']],
-                    ['py.svg', ['py']],
-                    ['text.svg', ['txt']],
-                    ['md.svg', ['md']],
-                    ['html.svg', ['html', 'htm']],
-                    ['css.svg', ['css',"sass","less"]],
-                    ['json.svg', ['json']],
-                    ['xml.svg', ['xml']],
-                    ['image.svg', ['jpg', 'jpeg', 'svg', 'gif','png']],
-                    // 继续补充
-                ]);
-
-                for (const [icon, exts] of map.entries()) {
-                    if (exts.includes(ext)) {
-                        return `assets/icons/code-space/languages/${icon}`;
-                    }
-                }
-            }
+            return getIconPath(this.fileNode.name);
         }
         return 'assets/icons/code-space/languages/text.svg';
     }

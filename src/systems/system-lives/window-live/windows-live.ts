@@ -70,6 +70,11 @@ export class WindowsLive {
             id: id,
             event: 'maximizeWindow'
         })
+        if (this.componentRef && typeof this.componentRef.instance.parentSizeChange=== 'function') {
+            setTimeout(()=>{
+                this.componentRef!.instance.parentSizeChange();
+            },200)
+        }
     }
 
     @ViewChild('dynamicContent', { read: ViewContainerRef, static: false })

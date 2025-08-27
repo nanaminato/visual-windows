@@ -12,9 +12,10 @@ export class CodeService{
     getCode(path: string): Promise<OpenFile> {
         return new Promise((resolve, reject) => {
             let subscription = this.http.post<OpenFile>
-            (`${this.serverService.getServerBase()}/api/v1/code`,{path}).subscribe(
+            (`${this.serverService.getServerBase()}/api/v1/code/open`,{path}).subscribe(
                 {
                     next: (value: OpenFile) => {
+                        value.content = atob(value.content);
                         resolve(value);
                         subscription.unsubscribe();
                     },
@@ -30,7 +31,7 @@ export class CodeService{
     saveCode(openFile: OpenFile): Promise<any> {
         return new Promise((resolve, reject) => {
             let subscription = this.http.post
-            (`${this.serverService.getServerBase()}/api/v1/save`,openFile).subscribe(
+            (`${this.serverService.getServerBase()}/api/v1/code/save`,openFile).subscribe(
                 {
                     next: (value: any) => {
                         resolve(value);

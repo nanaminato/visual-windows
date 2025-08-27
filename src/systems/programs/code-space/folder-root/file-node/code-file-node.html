@@ -15,7 +15,7 @@
             @if(fileNode.isDirectory){
                 <nz-icon nzType="folder" nzTheme="outline" />
             }@else{
-                <img [src]="getIconPath()" width="18" height="18"/>
+                <img [src]="getIconPath()" width="18" height="18" alt="文件图标"/>
             }
         </div>
         <div (dblclick)="onNodeClick()" class="flex-grow-1 node-identifier nowrap-ellipsis">
