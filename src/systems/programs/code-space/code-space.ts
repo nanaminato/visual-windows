@@ -1,6 +1,6 @@
 import {
     Component,
-    EventEmitter,
+    EventEmitter, HostListener,
     inject,
     Input,
     Output,
@@ -57,13 +57,20 @@ export class CodeSpace {
     constructor(private renderer: Renderer2) {}
 
     editorVisible: boolean = true;
-    parentSizeChange(){
-        // alert('parentSizeChange');
+    @HostListener('window:resize', ['$event'])
+    sizeChanged($event: any): void {
+        this.monacoEditorViewUpdate()
+    }
+    parentSizeChange(): void {
+        this.monacoEditorViewUpdate()
+    }
+    monacoEditorViewUpdate(){
         this.editorVisible = false;
         setTimeout(()=>{
             this.editorVisible = true;
         },20)
     }
+
 
     @Output()
     appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
@@ -117,6 +124,7 @@ export class CodeSpace {
 
     changePanelVisibleStatus() {
         this.leftPanelVisible = !this.leftPanelVisible;
+        this.monacoEditorViewUpdate()
     }
     codeService: CodeService = inject(CodeService);
     openFiles: OpenFile[] = [];
@@ -131,6 +139,9 @@ export class CodeSpace {
             let openFile = await this.codeService.getCode($event.path);
             this.activeOpenFile = openFile;
             this.openFiles.push(openFile);
+            if(this.openFiles.length === 1){
+                this.monacoEditorViewUpdate()
+            }
         }
         this.activeFile(this.activeOpenFile);
     }
@@ -155,7 +166,6 @@ export class CodeSpace {
             this.activeOpenFile = openFile;
             this.editorOptions.language = getFileLanguage(openFile.name);
             this.content = openFile.content;
-
         }
     }
 }

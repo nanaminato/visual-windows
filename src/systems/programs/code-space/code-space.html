@@ -30,25 +30,29 @@
     </div>
 
     <div class="program-content code-space-content">
-        <div class="d-flex flex-column stock">
+        <div class="d-flex flex-column stock flex-grow-0 flex-shrink-0">
             <button class="plane-button py-2" (click)="changePanelVisibleStatus()">
                 <nz-icon nzType="profile" />
             </button>
         </div>
         <app-split-panel [leftVisible]="leftPanelVisible"
-                         [leftSize]="'200px'" [minLeft]="'100px'"
+                         [leftSize]="'200px'"
+                         [minLeft]="'100px'"
                          [minRight]="'100px'"
+                         (sizeChanged)="monacoEditorViewUpdate()"
                          class="w-100 h-100 my-border">
             <div left>
-                @if(startPath!==''){
-                    <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>
-                }
+                <div class="w-100 flex-grow-0 flex-shrink-0">
+                    @if(startPath!==''){
+                        <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>
+                    }
+                </div>
             </div>
             <div right>
-                <div class="d-flex flex-column w-100 h-100">
-                    <div class="open-codes-header ">
+                <div class="d-flex flex-column w-100 h-100 flex-grow-0 flex-shrink-0">
+                    <div class="w-100 open-codes-header" [hidden]="openFiles.length===0">
                         @for(openFile of openFiles; track openFile.path){
-                            <div class="p-2 open-file-item"
+                            <div class="px-2 py-1 open-file-item"
                                  (click)="activeFile(openFile)"
                                  [class.active]="openFile.path===activeOpenFile?.path">
                                 <img width="15" height="15" [src]="getIconPath(openFile.name)" alt="文件图标">

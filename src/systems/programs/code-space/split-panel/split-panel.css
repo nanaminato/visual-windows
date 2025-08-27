@@ -13,6 +13,7 @@
 
 .left, .right {
     overflow: auto;
+    /*overflow: hidden;*/
 }
 
 ::ng-deep [left], ::ng-deep [right] {

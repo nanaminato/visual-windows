@@ -18,7 +18,7 @@ button.disabled > nz-icon{
     flex-direction: column;
     height: 100%;
     width: 100%;
-    /*min-width: 500px !important;*/
+
 }
 
 .program-header {
@@ -53,5 +53,7 @@ button.disabled > nz-icon{
     flex-grow: 1;
     overflow: auto;
     background: white;
+    overflow-x: hidden !important;
+    /*overflow-y: hidden !important;*/
 }
 /*program end*/

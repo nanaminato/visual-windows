@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'app-split-panel',
@@ -217,10 +217,12 @@ export class SplitPanel {
         this.savedLeftPercent = this.leftPercent;
         this.savedRightPercent = this.rightPercent;
     };
-
+    @Output()
+    sizeChanged: EventEmitter<any> = new EventEmitter();
     onDragEnd = (event: MouseEvent) => {
         this.dragging = false;
         document.removeEventListener('mousemove', this.onDragMove);
         document.removeEventListener('mouseup', this.onDragEnd);
+        this.sizeChanged.emit(event);
     };
 }
