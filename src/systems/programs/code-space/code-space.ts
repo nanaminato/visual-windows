@@ -10,7 +10,6 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
-import {SplitPanel} from './split-panel/split-panel';
 import {FolderRoot} from './folder-root/folder-root';
 import {CodeFileNodeViewModel} from './models';
 import {OpenFile} from './models/open-file';
@@ -18,16 +17,18 @@ import {CodeService, getIconPath} from './services';
 import {EditorComponent} from 'ngx-monaco-editor-v2';
 import {FormsModule} from '@angular/forms';
 import {getFileLanguage} from './services';
+import {SplitAreaComponent, SplitComponent} from 'angular-split';
 
 @Component({
     selector: 'app-code-space',
     imports: [
         NzIconDirective,
         WinIcon,
-        SplitPanel,
         FolderRoot,
         EditorComponent,
         FormsModule,
+        SplitAreaComponent,
+        SplitComponent,
     ],
     providers: [
 
