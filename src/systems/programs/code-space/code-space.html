@@ -36,7 +36,7 @@
             </button>
         </div>
         <as-split direction="horizontal" (dragEnd)="monacoEditorViewUpdate()">
-            <as-split-area [size]="26">
+            <as-split-area [size]="26" [visible]="leftPanelVisible">
                 <div class="w-100 flex-grow-0 flex-shrink-0">
                     @if(startPath!==''){
                         <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>

@@ -7,17 +7,19 @@ import {
     Renderer2,
 } from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {ProgramEvent} from '../../models';
+import {ProgramConfig, ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
-import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
 import {FolderRoot} from './folder-root/folder-root';
 import {CodeFileNodeViewModel} from './models';
-import {OpenFile} from './models/open-file';
+import {OpenFile} from './models';
 import {CodeService, getIconPath} from './services';
 import {EditorComponent} from 'ngx-monaco-editor-v2';
 import {FormsModule} from '@angular/forms';
 import {getFileLanguage} from './services';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
+import {CommonModule} from '@angular/common';
+import {selectProgramConfigs} from '../../system-services/state/program-config.selector';
+import {Store} from '@ngrx/store';
 
 @Component({
     selector: 'app-code-space',
@@ -29,6 +31,7 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
         FormsModule,
         SplitAreaComponent,
         SplitComponent,
+        CommonModule
     ],
     providers: [
 
@@ -38,7 +41,6 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
     styleUrl: './code-space.css'
 })
 export class CodeSpace {
-    programManagerService: ProgramManagerService = inject(ProgramManagerService);
     @Input()
     id: string | undefined;
     @Input()
@@ -52,6 +54,9 @@ export class CodeSpace {
         if(this.startPath!==''){
             this.leftPanelVisible = true;
         }
+        this.programConfigs$.subscribe(ws => {
+            this.programConfigs = ws;
+        })
     }
     leftPanelVisible: boolean = false;
 
@@ -69,7 +74,7 @@ export class CodeSpace {
         this.editorVisible = false;
         setTimeout(()=>{
             this.editorVisible = true;
-        },20)
+        },1)
     }
 
 
@@ -118,9 +123,11 @@ export class CodeSpace {
             event: $event
         });
     }
-
+    private store = inject(Store);
+    programConfigs$ = this.store.select(selectProgramConfigs);
+    programConfigs : ProgramConfig[] | undefined;
     getIcon() {
-        return this.programManagerService.getProgramConfig('code-space');
+        return this.programConfigs?.find(p=>p.programId==='code space');
     }
 
     changePanelVisibleStatus() {
@@ -161,12 +168,19 @@ export class CodeSpace {
         }
     }
     content: string = '';
+    // leftPanelPercent: number = 26;
+    // rightPanelPercent: number = 74;
 
     activeFile(openFile?: OpenFile) {
         if(openFile){
             this.activeOpenFile = openFile;
+            let oldLanguage = this.editorOptions.language;
             this.editorOptions.language = getFileLanguage(openFile.name);
             this.content = openFile.content;
+            if(this.editorOptions.language !== oldLanguage){
+                this.monacoEditorViewUpdate();
+            }
+
         }
     }
 }

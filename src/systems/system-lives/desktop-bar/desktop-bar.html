@@ -9,7 +9,7 @@
   <!-- 自下而上展开的程序列表 -->
   <div class="app-list" [class.show]="showAppList">
     <ul>
-      @for(app of apps; track app.programId) {
+      @for(app of programConfigs; track app.programId) {
         <li>
           <div class="app-entry">
             <button (click)="openApp(app.programId, app.programName)">

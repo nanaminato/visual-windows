@@ -2,20 +2,18 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from './server.service';
 import {WindowManagerService} from './windows-manager.service';
-import {ProgramManagerService} from './program-manager.service';
 import {ResumableSession} from '../../programs/terminal/models';
+import {Store} from '@ngrx/store';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ResumeService {
-    private managerService = inject(ProgramManagerService);
     private windowManagerService = inject(WindowManagerService);
     constructor(private http: HttpClient, private serverService: ServerService) {
 
     }
     async start(){
-        await this.managerService.loadProgramConfigs();
         await this.resumeTerminals();
     }
     async resumeTerminals(){

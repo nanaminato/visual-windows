@@ -11,9 +11,11 @@ import {
 import {CommonModule} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {WinIcon} from "../win-icon/win-icon";
-import {ProgramEvent} from '../../models';
-import {ProgramManagerService} from '../../system-services/impl/program-manager.service';
+import {ProgramConfig, ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
+import {firstValueFrom, map} from 'rxjs';
+import {Store} from '@ngrx/store';
+import {selectProgramConfigs} from '../../system-services/state/program-config.selector';
 type ResizeDirection =
     | 'top-left' | 'top' | 'top-right'
     | 'right' | 'bottom-right' | 'bottom'
@@ -31,12 +33,29 @@ type ResizeDirection =
 export class WindowsLive {
     @Input()
     win: WindowState | undefined;
-    private appManagerService: ProgramManagerService = inject(ProgramManagerService);
+    config: ProgramConfig | undefined;
+    async ngOnInit() {
+        this.config = await this.getAppWindowConfigOfWindow(this.win!.programId);
+    }
     @Output()
     appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
-
-    getAppWindowConfigOfWindow(programId: string) {
-        return this.appManagerService.getProgramConfig(programId);
+    private store = inject(Store);
+    programConfigs$ = this.store.select(selectProgramConfigs);
+    async getAppWindowConfigOfWindow(programId: string) {
+        return await firstValueFrom(
+            this.programConfigs$.pipe(
+                map(programConfigs => {
+                    if(!programConfigs){
+                        return undefined;
+                    }
+                    let configs = programConfigs.filter(app => app.programId === programId);
+                    if(configs.length>=1){
+                        return configs[0];
+                    }
+                    return undefined;
+                })
+            )
+        )
     }
 
     focusWindow(id: string) {

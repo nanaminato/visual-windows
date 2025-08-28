@@ -1,6 +1,8 @@
-import {Component, signal, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import { DesktopManager } from '../systems/system-lives/desktop-manager/desktop-manager';
 import { DesktopBar } from '../systems/system-lives/desktop-bar/desktop-bar';
+import {Store} from '@ngrx/store';
+import {programConfigActions} from '../systems/system-services/state/program-config.action';
 
 
 /*
@@ -19,4 +21,8 @@ import { DesktopBar } from '../systems/system-lives/desktop-bar/desktop-bar';
 })
 export class VisualWindow {
   protected readonly title = signal('VisualWindows');
+  private store = inject(Store);
+  ngOnInit() {
+      this.store.dispatch(programConfigActions.init())
+  }
 }

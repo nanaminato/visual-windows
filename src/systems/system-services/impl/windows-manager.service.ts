@@ -1,37 +1,42 @@
-import {BehaviorSubject} from 'rxjs';
-import {Injectable} from '@angular/core';
-import {ProgramManagerService} from './program-manager.service';
+import {BehaviorSubject, firstValueFrom, map, Observable} from 'rxjs';
+import {inject, Injectable} from '@angular/core';
 import {v4 as uuid} from 'uuid';
 import {componentMap, programWithCustomHeaders} from '../../programs/models';
 import {ProgramConfig, WindowState} from '../../models';
+import {selectProgramConfigs} from '../state/program-config.selector';
+import {Store} from '@ngrx/store';
 
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
     // 打开的程序
     private windows$ = new BehaviorSubject<WindowState[]>([]);
-    // 注册的程序，用于支持打开程序和激活程序等
-    programConfigs: ProgramConfig[] = [];
+    constructor() {
 
-    constructor(private appManagerService: ProgramManagerService) {
-        this.programConfigs = this.appManagerService.getProgramConfigs();
-        this.appManagerService.getProgramConfigObservables().subscribe(ws => {
-            this.programConfigs = ws;
-        })
         window.addEventListener('resize', this.onWindowResize);
     }
     getWindows() {
         return this.windows$.asObservable();
     }
+    private store = inject(Store);
+    programConfigs$ = this.store.select(selectProgramConfigs);
+    getRegisteredProgramByProgramId(programId: string): Observable<ProgramConfig[]> {
+        return this.programConfigs$.pipe(
+            map(programConfigs => {
+                if (!programConfigs) {
+                    return [];
+                }
+                return programConfigs.filter(app => app.programId === programId);
+            })
+        );
+    }
+
     getWindowByProgramId(appId: string): WindowState[] {
         return this.windows$.getValue().filter(window => window.programId === appId);
-    }
-    getRegisteredProgramByProgramId(appId: string): ProgramConfig[] {
-        return this.programConfigs.filter(app=>app.programId===appId);
     }
     // 打开一个程序，如果程序是单例的，如果有打开的窗口，就不再打开新的窗口
     async openWindow(appId: string, title: string,params?: any) {
         let openedWindows = this.getWindowByProgramId(appId);
-        let registeredApps = this.getRegisteredProgramByProgramId(appId);
+        let registeredApps = await firstValueFrom(this.getRegisteredProgramByProgramId(appId));
         if(openedWindows) {
             if(openedWindows.length>0&&registeredApps[0].isSingleton){
                 this.focusWindow(openedWindows[0].id)

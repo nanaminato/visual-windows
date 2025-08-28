@@ -5,6 +5,9 @@ import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {ResumeService} from '../../system-services/impl/resume.service';
 import {WindowState} from '../../models';
+import {Subscription, take} from 'rxjs';
+import {Actions, ofType} from '@ngrx/effects';
+import {programConfigActions} from '../../system-services/state/program-config.action';
 
 @Component({
     selector: 'system-desktop-manager',
@@ -22,17 +25,22 @@ export class DesktopManager {
     // 拖拽相关状态
     private draggingWindowId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
-
+    private subscription: Subscription;
+    private actions$ = inject(Actions);
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        this.resumeService.start().then(c=>{
-            // this.windowManager.openWindow("file-explorer","file-explorer")
-            this.windowManager.openWindow("code-space","code", {
-                startPath: 'D:\\WebstormProjects\\Remote-File-Manager'
-            })
-        })
+        this.subscription = this.actions$.pipe(
+            ofType(programConfigActions.loadSuccess),
+            take(1)
+        ).subscribe(() => {
+            this.resumeService.start().then(() => {
+                this.windowManager.openWindow("code-space", "code", {
+                    startPath: 'D:\\WebstormProjects\\Remote-File-Manager'
+                });
+            });
+        });
 
     }
     focusWindow(id: string) {
@@ -110,6 +118,11 @@ export class DesktopManager {
                 }
                 break;
 
+        }
+    }
+    ngOnDestroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
         }
     }
 }
