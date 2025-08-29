@@ -8,6 +8,8 @@ import {Actions, ofType} from '@ngrx/effects';
 import {programConfigActions} from '../../system-services/state/program-config/program-config.action';
 import {ResumeService} from '../../system-services/resume.service';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
+import {WindowActions} from '../../system-services/state/window/window.actions';
+import {Store} from '@ngrx/store';
 
 @Component({
     selector: 'system-desktop-manager',
@@ -25,8 +27,9 @@ export class DesktopManager {
     // 拖拽相关状态
     private draggingWindowId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
-    private subscription: Subscription;
+    private readonly subscription: Subscription;
     private actions$ = inject(Actions);
+    private store$ = inject(Store);
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
@@ -36,9 +39,10 @@ export class DesktopManager {
             take(1)
         ).subscribe(() => {
             this.resumeService.start().then(() => {
-                this.windowManager.openWindow("code-space", "code", {
-                    startPath: 'D:\\WebstormProjects\\Remote-File-Manager'
-                });
+                this.store$.dispatch(
+                    WindowActions.openWindow(
+                        { id: "code-space", title: "code", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+                    ))
             });
         });
 

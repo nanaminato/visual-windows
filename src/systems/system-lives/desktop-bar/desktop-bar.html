@@ -1,7 +1,7 @@
 <nav class="bottom-navbar">
 
   <!-- Win 按钮 -->
-  <button class="win-button" (click)="toggleAppList()" title="Start Menu">
+  <button class="win-button" (click)="toggleProgramList()" title="Start Menu">
     <nz-icon nzType="windows" nzTheme="outline" />
 <!--    <img width="32" height="32" src="assets/system/win.png"/>-->
   </button>
@@ -12,7 +12,7 @@
       @for(app of programConfigs; track app.programId) {
         <li>
           <div class="app-entry">
-            <button (click)="openApp(app.programId, app.programName)">
+            <button (click)="openProgram(app.programId, app.programName)">
               <app-win-icon [programConfig]="app"> </app-win-icon>
               {{app.programName}}
             </button>

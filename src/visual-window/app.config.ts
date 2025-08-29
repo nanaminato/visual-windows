@@ -9,6 +9,7 @@ import {provideEffects} from '@ngrx/effects';
 import {programConfigReducer} from '../systems/system-services/state/program-config/program-config.reducer';
 import {ProgramConfigEffects} from '../systems/system-services/state/program-config/program-config.effects';
 import {windowReducer} from '../systems/system-services/state/window/window.reducer';
+import {WindowEffects} from '../systems/system-services/state/window/window.effects';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -35,6 +36,6 @@ export const appConfig: ApplicationConfig = {
             strictActionImmutability: false,
         }
     }),
-    provideEffects(ProgramConfigEffects),
+    provideEffects(ProgramConfigEffects, WindowEffects),
 ]
 };

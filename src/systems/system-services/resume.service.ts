@@ -3,24 +3,28 @@ import {HttpClient} from '@angular/common/http';
 import {ServerService} from './server.service';
 import {WindowManagerService} from './windows-manager.service';
 import {ResumableSession} from '../programs/terminal/models';
+import {WindowActions} from './state/window/window.actions';
+import {Store} from '@ngrx/store';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ResumeService {
-    private windowManagerService = inject(WindowManagerService);
     constructor(private http: HttpClient, private serverService: ServerService) {
 
     }
     async start(){
         await this.resumeTerminals();
     }
+    private store$ = inject(Store);
     async resumeTerminals(){
         let resumableSession = await this.getResumableTerminals();
         for(let sessionId of resumableSession.terminals){
-            await this.windowManagerService.openWindow("terminal", "终端", {
-                sessionId: sessionId
-            })
+            this.store$.dispatch(
+                WindowActions.openWindow(
+                { id: "terminal", title: "终端", params: {sessionId: sessionId} }
+            ))
+
         }
     }
     getResumableTerminals(): Promise<ResumableSession>{

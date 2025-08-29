@@ -5,6 +5,7 @@ import {GroupWindowState, ProgramConfig, WindowState} from '../../models';
 import {Store} from '@ngrx/store';
 import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
+import {WindowActions} from '../../system-services/state/window/window.actions';
 
 @Component({
     selector: 'system-desktop-bar',
@@ -39,7 +40,6 @@ export class DesktopBar {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
             this.divideIntoGroups();
-            // ws.filter(w => !w.minimized);
         });
         this.programConfigs$.subscribe(ws => {
             this.programConfigs = ws;
@@ -59,12 +59,15 @@ export class DesktopBar {
             windowStates
         }));
     }
-    toggleAppList() {
+    toggleProgramList() {
         this.showAppList = !this.showAppList;
     }
-
-    async openApp(appId: string, title: string) {
-        await this.windowManager.openWindow(appId, title);
+    private store$ = inject(Store);
+    async openProgram(programId: string, title: string) {
+        this.store$.dispatch(
+            WindowActions.openWindow(
+                { id: programId, title: title }
+            ))
         this.showAppList = false;
     }
 
@@ -77,11 +80,6 @@ export class DesktopBar {
         }
 
     }
-
-    getWindowsByApp(appId: string): WindowState[] {
-        return this.windows.filter(w => w.programId === appId);
-    }
-
     openGroupAppId: string | null = null;
 
 // 点击多窗口组，展开/收起窗口列表

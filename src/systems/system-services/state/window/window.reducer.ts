@@ -12,7 +12,7 @@ export const initialState: WindowStateSlice = {
 
 export const windowReducer = createReducer(
     initialState,
-    on(WindowActions.openWindow, (state, { window }) => {
+    on(WindowActions.openWindowSuccess, (state, { window }) => {
         const updatedWindows = state.windows.map(w => ({ ...w, active: false }));
         return {
             ...state,
