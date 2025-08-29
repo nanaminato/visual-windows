@@ -1,5 +1,5 @@
 import {createActionGroup, emptyProps, props} from '@ngrx/store';
-import {ProgramConfig} from '../../models';
+import {ProgramConfig} from '../../../models';
 
 export const programConfigActions = createActionGroup({
     source: "program config",

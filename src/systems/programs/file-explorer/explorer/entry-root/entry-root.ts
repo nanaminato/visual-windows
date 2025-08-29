@@ -2,7 +2,7 @@ import {Component, EventEmitter, inject, Output} from '@angular/core';
 import {ExplorerService} from '../services/explorer.service';
 import {FileNodeViewModel} from '../models';
 import {FileNode} from './file-node/file-node';
-import {SystemInfoService} from '../../../../system-services/impl/info.service';
+import {SystemInfoService} from '../../../../system-services/info.service';
 
 @Component({
   selector: 'app-entry-root',

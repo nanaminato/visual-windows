@@ -1,7 +1,4 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {ExplorerService} from '../../file-explorer/explorer/services/explorer.service';
-import {FileNodeViewModel} from '../../file-explorer/explorer/models';
-import {SystemInfoService} from '../../../system-services/impl/info.service';
 import {CodeFileNode} from './file-node/code-file-node';
 import {CodeFileNodeViewModel} from '../models';
 

@@ -6,9 +6,9 @@ import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {NgxMonacoEditorConfig, provideMonacoEditor} from 'ngx-monaco-editor-v2';
 import { provideStore } from '@ngrx/store';
 import {provideEffects} from '@ngrx/effects';
-import {ProgramConfigEffects} from '../systems/system-services/state/program-config.effects';
-import {programConfigReducer} from '../systems/system-services/state/program-config.reducer';
-
+import {programConfigReducer} from '../systems/system-services/state/program-config/program-config.reducer';
+import {ProgramConfigEffects} from '../systems/system-services/state/program-config/program-config.effects';
+import {windowReducer} from '../systems/system-services/state/window/window.reducer';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -27,7 +27,13 @@ export const appConfig: ApplicationConfig = {
     provideNoopAnimations(),
     provideMonacoEditor(monacoConfig),
     provideStore({
-        "programConfig": programConfigReducer
+        "programConfig": programConfigReducer,
+        "window": windowReducer,
+    },{
+        runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false,
+        }
     }),
     provideEffects(ProgramConfigEffects),
 ]

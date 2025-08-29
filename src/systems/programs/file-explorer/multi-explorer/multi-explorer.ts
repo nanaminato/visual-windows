@@ -3,9 +3,9 @@ import {FileExplorer} from '../explorer/file-explorer';
 import {NzTabsModule} from 'ng-zorro-antd/tabs';
 import {FileExplorerInit, PropagateTitle} from './models';
 import {v4 as uuid} from 'uuid';
-import {SystemInfoService} from '../../../system-services/impl/info.service';
 import {ProgramEvent, SystemInfo} from '../../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {SystemInfoService} from '../../../system-services/info.service';
 @Component({
   selector: 'app-multi-explorer',
     imports: [

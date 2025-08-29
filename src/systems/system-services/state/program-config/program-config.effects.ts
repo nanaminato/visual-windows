@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {ProgramConfigService} from '../impl/program-config.service';
 import {programConfigActions} from './program-config.action';
 import {catchError, exhaustMap, map, of} from 'rxjs';
+import {ProgramConfigService} from '../../program-config.service';
 
 @Injectable({
     providedIn: "root",

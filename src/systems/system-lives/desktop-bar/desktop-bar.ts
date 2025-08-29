@@ -1,10 +1,10 @@
 import {Component, HostListener, inject} from '@angular/core';
-import {WindowManagerService} from '../../system-services/impl/windows-manager.service';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WinIcon} from '../win-icon/win-icon';
 import {GroupWindowState, ProgramConfig, WindowState} from '../../models';
 import {Store} from '@ngrx/store';
-import {selectProgramConfigs} from '../../system-services/state/program-config.selector';
+import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
+import {WindowManagerService} from '../../system-services/windows-manager.service';
 
 @Component({
     selector: 'system-desktop-bar',

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {serverEnvironment} from '../../../environments/environment';
+import {serverEnvironment} from '../../environments/environment';
 
 @Injectable({
     providedIn: "root",

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import {ProgramConfig} from '../../models';
 import {programConfigActions} from './program-config.action';
+import {ProgramConfig} from '../../../models';
 
 export interface ProgramConfigState {
     programConfigs: ProgramConfig[] | undefined;

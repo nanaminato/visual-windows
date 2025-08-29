@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
-import {ServerService} from '../../../../system-services/impl/server.service';
 import {HttpClient} from '@angular/common/http';
 import {DriverInfo, EasyFolder} from '../models';
 import {LightFile} from '../models';
+import {ServerService} from '../../../../system-services/server.service';
 
 @Injectable({
     providedIn: 'root'

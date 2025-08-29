@@ -1,13 +1,13 @@
 import {Component, HostListener, inject} from '@angular/core';
-import {WindowManagerService} from '../../system-services/impl/windows-manager.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
-import {ResumeService} from '../../system-services/impl/resume.service';
 import {WindowState} from '../../models';
 import {Subscription, take} from 'rxjs';
 import {Actions, ofType} from '@ngrx/effects';
-import {programConfigActions} from '../../system-services/state/program-config.action';
+import {programConfigActions} from '../../system-services/state/program-config/program-config.action';
+import {ResumeService} from '../../system-services/resume.service';
+import {WindowManagerService} from '../../system-services/windows-manager.service';
 
 @Component({
     selector: 'system-desktop-manager',

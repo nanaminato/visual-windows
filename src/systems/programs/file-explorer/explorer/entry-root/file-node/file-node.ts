@@ -2,7 +2,7 @@ import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {FileNodeViewModel} from '../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {ExplorerService} from '../../services/explorer.service';
-import {SystemInfoService} from '../../../../../system-services/impl/info.service';
+import {SystemInfoService} from '../../../../../system-services/info.service';
 
 @Component({
   selector: 'app-file-node',

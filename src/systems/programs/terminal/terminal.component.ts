@@ -8,7 +8,7 @@ import { WebLinksAddon } from '@xterm/addon-web-links';
 import { ClipboardAddon} from "@xterm/addon-clipboard"
 import { ImageAddon } from "@xterm/addon-image"
 import { Unicode11Addon} from "@xterm/addon-unicode11"
-import {ServerService} from '../../system-services/impl/server.service';
+import {ServerService} from '../../system-services/server.service';
 @Component({
   selector: 'app-terminal',
   imports: [],

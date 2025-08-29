@@ -18,8 +18,8 @@ import {FormsModule} from '@angular/forms';
 import {getFileLanguage} from './services';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 import {CommonModule} from '@angular/common';
-import {selectProgramConfigs} from '../../system-services/state/program-config.selector';
 import {Store} from '@ngrx/store';
+import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
 
 @Component({
     selector: 'app-code-space',

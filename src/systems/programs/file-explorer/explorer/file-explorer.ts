@@ -1,6 +1,5 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {PropagateTitle} from '../multi-explorer/models';
-import {SystemInfoService} from '../../../system-services/impl/info.service';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
@@ -21,6 +20,7 @@ import {
     normalizePath,
     resolveRelativePath
 } from './services/explorer.util';
+import {SystemInfoService} from '../../../system-services/info.service';
 
 @Component({
     selector: 'file-explorer',

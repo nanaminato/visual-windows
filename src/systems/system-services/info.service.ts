@@ -1,8 +1,8 @@
 import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import {SystemInfo} from '../../models';
 import {ServerService} from './server.service';
 import {NzMessageService} from 'ng-zorro-antd/message';
+import {SystemInfo} from '../models';
 
 @Injectable({
     providedIn: 'root',
