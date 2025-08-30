@@ -3,7 +3,7 @@ import {inject, Injectable} from '@angular/core';
 import {ServerService} from './server.service';
 import {SystemInfo} from '../models';
 import {firstValueFrom} from 'rxjs';
-import {selectSystemInfo} from './state/program-config/system.selector';
+import {selectSystemInfo} from './state/system/system.selector';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {Store} from '@ngrx/store';
 
@@ -21,7 +21,7 @@ export class SystemInfoService{
     }
     public async isLinuxAsync(): Promise<boolean> {
         const info = await firstValueFrom(this.store.select(selectSystemInfo));
-        console.log(info);
+        // console.log(info);
         if (!info) {
             this.messageService.error("系统配置还没有加载");
             return false;

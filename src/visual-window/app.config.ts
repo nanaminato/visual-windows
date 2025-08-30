@@ -6,10 +6,10 @@ import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {NgxMonacoEditorConfig, provideMonacoEditor} from 'ngx-monaco-editor-v2';
 import { provideStore } from '@ngrx/store';
 import {provideEffects} from '@ngrx/effects';
-import {SystemEffects} from '../systems/system-services/state/program-config/system-effects.service';
+import {SystemEffects} from '../systems/system-services/state/system/system-effects.service';
 import {windowReducer} from '../systems/system-services/state/window/window.reducer';
 import {WindowEffects} from '../systems/system-services/state/window/window.effects';
-import {programConfigReducer, systemInfoReducer} from '../systems/system-services/state/program-config/system.reducer';
+import {programConfigReducer, systemInfoReducer} from '../systems/system-services/state/system/system.reducer';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",

@@ -1,6 +1,8 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {LightFile} from '../models';
 import {DatePipe} from '@angular/common';
+import {Store} from '@ngrx/store';
+import {WindowActions} from '../../../../system-services/state/window/window.actions';
 
 @Component({
   selector: 'app-folder-list-view',
@@ -44,4 +46,44 @@ export class FolderListView {
     fileDbl(file: LightFile) {
         this.fileProcess.emit(file);
     }
+    constructor() {
+        document.addEventListener('click', () => {
+            if (this.contextMenuVisible) {
+                this.contextMenuVisible = false;
+            }
+        });
+    }
+    contextMenuVisible = false;
+    contextMenuPosition = { x: 0, y: 0 };
+    contextMenuFile: LightFile | null = null;
+
+    // 右键菜单事件处理
+    onRightClick(event: MouseEvent, file: LightFile) {
+        event.preventDefault();
+        this.contextMenuVisible = true;
+        this.contextMenuPosition = { x: event.clientX, y: event.clientY };
+        this.contextMenuFile = file;
+    }
+    private store = inject(Store);
+    onContextMenuAction(action: string, file: LightFile | null) {
+        this.contextMenuVisible = false;
+        switch (action) {
+            case 'openCode':
+                this.store.dispatch(WindowActions.openWindow({
+                    id: 'code-space',
+                    title: 'code space',
+                    params: {
+                        params: file
+                    }
+                }))
+                break;
+            case 'properties':
+
+                break;
+            case 'copyPath':
+
+                return;
+        }
+    }
+
 }

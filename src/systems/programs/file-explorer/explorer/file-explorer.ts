@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, inject, Input, Output} from '@angular/core';
 import {PropagateTitle} from '../multi-explorer/models';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -21,6 +21,9 @@ import {
     resolveRelativePath
 } from './services/explorer.util';
 import {SystemInfoService} from '../../../system-services/info.service';
+import {WindowManagerService} from '../../../system-services/windows-manager.service';
+import {Store} from '@ngrx/store';
+import {WindowActions} from '../../../system-services/state/window/window.actions';
 
 @Component({
     selector: 'file-explorer',
@@ -66,6 +69,7 @@ export class FileExplorer {
 
     isLinux: boolean = false;
     async ngOnInit() {
+        let input = this.currentPath;
         this.isLinux = await this.systemInfoService.isLinuxAsync();
         if(this.currentPath===''){
             if(this.isLinux){
@@ -74,6 +78,9 @@ export class FileExplorer {
                 this.currentPath = "/"
             }
             this.navigatePath = this.currentPath;
+        }
+        if(input!==''){
+            await this.tryNavigateToFolder(this.currentPath);
         }
         this.history = [this.currentPath];
         this.historyIndex = 0;
@@ -143,13 +150,19 @@ export class FileExplorer {
             this.messageService.error(error.message);
         }
     }
-
+    private windowManagerService: WindowManagerService = inject(WindowManagerService);
     async onFileNavigate($event: LightFile) {
         if($event.isDirectory){
             this.navigatePath = $event.path;
             await this.tryNavigateToFolder($event.path);
         }else{
-            //todo 调用文件关联程序打开
+            this.windowManagerService.openFile({
+                name: $event.name,
+                isFolder: false,
+                size: $event.size,
+            },{
+                params: $event,
+            })
         }
     }
 
@@ -216,6 +229,22 @@ export class FileExplorer {
 
         this.tryNavigateToFolder(targetPath);
     }
-
-
+    @HostListener('window:keydown', ['$event'])
+    handleKeyDown(event: KeyboardEvent) {
+        if (event.ctrlKey && event.key.toLowerCase() === ' ') {
+            event.preventDefault();
+            this.onCtrlNPressed();
+        }
+    }
+    private store = inject(Store);
+    private onCtrlNPressed() {
+        console.log('onCtrlNPressed');
+        this.store.dispatch(WindowActions.openWindow({
+            id: 'file-explorer',
+            title: '',
+            params: {
+                startPath: this.currentPath
+            }
+        }))
+    }
 }

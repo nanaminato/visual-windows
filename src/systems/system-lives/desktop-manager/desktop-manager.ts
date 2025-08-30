@@ -5,7 +5,7 @@ import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
 import {Subscription, take} from 'rxjs';
 import {Actions, ofType} from '@ngrx/effects';
-import {systemActions} from '../../system-services/state/program-config/system.action';
+import {systemActions} from '../../system-services/state/system/system.action';
 import {ResumeService} from '../../system-services/resume.service';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
@@ -39,18 +39,11 @@ export class DesktopManager {
             take(1)
         ).subscribe(() => {
             this.resumeService.start().then(() => {
-                this.store$.dispatch(
-                    WindowActions.openWindow(
-                        { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-                    )
-                );
-                this.store$.dispatch(
-                    WindowActions.openWindow(
-                        { id: "univer", title: "univer", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-                    )
-                );
-
-
+                // this.store$.dispatch(
+                //     WindowActions.openWindow(
+                //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+                //     )
+                // );
             });
         });
 

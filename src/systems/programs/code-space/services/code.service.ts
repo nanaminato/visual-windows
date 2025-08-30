@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from '../../../system-services/server.service';
 import {OpenFile} from '../models';
+import {firstValueFrom} from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -9,41 +10,27 @@ import {OpenFile} from '../models';
 export class CodeService{
     private http: HttpClient = inject(HttpClient);
     private serverService: ServerService = inject(ServerService);
-    getCode(path: string): Promise<OpenFile> {
-        return new Promise((resolve, reject) => {
-            let subscription = this.http.post<OpenFile>
-            (`${this.serverService.getServerBase()}/api/v1/code/open`,{path}).subscribe(
-                {
-                    next: (value: OpenFile) => {
-                        value.content = atob(value.content);
-                        resolve(value);
-                        subscription.unsubscribe();
-                    },
-                    error: err=> {
-                        reject(err);
-                        subscription.unsubscribe();
-                    }
-                }
-            )
-            return ()=>subscription.unsubscribe();
-        })
+    async getCode(path: string): Promise<OpenFile> {
+        const value = await firstValueFrom(
+            this.http.post<OpenFile>(`${this.serverService.getServerBase()}/api/v1/code/open`, { path })
+        );
+        value.content = atob(value.content);
+        return value;
     }
+
     saveCode(openFile: OpenFile): Promise<any> {
         return new Promise((resolve, reject) => {
-            let subscription = this.http.post
+            this.http.post
             (`${this.serverService.getServerBase()}/api/v1/code/save`,openFile).subscribe(
                 {
                     next: (value: any) => {
                         resolve(value);
-                        subscription.unsubscribe();
                     },
                     error: err=> {
                         reject(err);
-                        subscription.unsubscribe();
                     }
                 }
             )
-            return ()=>subscription.unsubscribe();
         })
     }
 }

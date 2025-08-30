@@ -4,18 +4,32 @@ import { Store } from '@ngrx/store';
 import {WindowState} from '../models';
 import {selectWindows} from './state/window/window.selectors';
 import {WindowActions} from './state/window/window.actions';
+import {FileEntry} from '../programs/code-space/models';
+import {FileAssociationService} from '../programs/file-explorer/services/file-association.service';
+import {getFileExtension} from '../programs/code-space/models/open-file';
+import {NzMessageService} from 'ng-zorro-antd/message';
 
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService implements OnDestroy {
     private store = inject(Store);
 
     windows$ = this.store.select(selectWindows);
-
+    fileAssociationService = inject(FileAssociationService);
+    private messageService = inject(NzMessageService);
     constructor() {
         window.addEventListener('resize', this.onWindowResize);
     }
     openWindow(appId: string, title: string, params?: any) {
         this.store.dispatch(WindowActions.openWindow({ id: appId, title, params }));
+    }
+    openFile(openFile: FileEntry, params: any) {
+        let ext = getFileExtension(openFile);
+        let associate = this.fileAssociationService.getAssociationByExtension(ext);
+        if(associate) {
+            this.openWindow(associate.programId,associate.programName,params)
+        }else{
+            this.messageService.error('cannot find a program to open this file')
+        }
     }
 
     getWindows(): Observable<WindowState[]> {

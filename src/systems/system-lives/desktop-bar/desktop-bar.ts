@@ -5,7 +5,7 @@ import {GroupWindowState, ProgramConfig, WindowState} from '../../models';
 import {Store} from '@ngrx/store';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
-import {selectProgramConfigs} from '../../system-services/state/program-config/system.selector';
+import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
 
 @Component({
     selector: 'system-desktop-bar',

@@ -36,25 +36,33 @@
             </button>
         </div>
         <as-split direction="horizontal" (dragEnd)="monacoEditorViewUpdate()">
-            <as-split-area [size]="26" [visible]="leftPanelVisible">
+            <as-split-area [minSize]="20" size="26" [visible]="leftPanelVisible">
                 <div class="w-100 flex-grow-0 flex-shrink-0">
-                    @if(startPath!==''){
-                        <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>
+                    @if(startFolder!==''){
+                        <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startFolder"></app-folder-root>
                     }
                 </div>
             </as-split-area>
-            <as-split-area [size]="74">
+            <as-split-area size="74">
                 <div class="d-flex flex-column w-100 h-100 flex-grow-0 flex-shrink-0">
                     <div class="w-100 open-codes-header" [hidden]="openFiles.length===0">
                         @for(openFile of openFiles; track openFile.path){
                             <div class="px-2 py-1 open-file-item"
                                  (click)="activeFile(openFile)"
+                                 (contextmenu)="onContextMenu($event, openFile)"
                                  [class.active]="openFile.path===activeOpenFile?.path">
                                 <img width="15" height="15" [src]="getIconPath(openFile.name)" alt="文件图标">
                                 <div>{{openFile.name}}</div>
                                 <button class="plane-button" (click)="closeFile(openFile, $event)">
                                     <nz-icon nzType="close" />
                                 </button>
+                                @if(contextMenuVisible && contextMenuFile?.path === openFile.path){
+                                    <div class="context-menu" [style.top.px]="contextMenuPosition.y" [style.left.px]="contextMenuPosition.x" (click)="$event.stopPropagation()">
+                                        <div class="context-menu-item" (click)="closeFile(contextMenuFile, $event)">关闭</div>
+                                        <div class="context-menu-item" (click)="closeOtherFiles(contextMenuFile, $event)">关闭其他标签页</div>
+                                        <div class="context-menu-item" (click)="closeAllFiles($event)">关闭所有标签页</div>
+                                    </div>
+                                }
                             </div>
                         }
                     </div>
@@ -66,42 +74,5 @@
                 </div>
             </as-split-area>
         </as-split>
-<!--        <app-split-panel [leftVisible]="leftPanelVisible"-->
-<!--                         [leftSize]="'200px'"-->
-<!--                         [minLeft]="'100px'"-->
-<!--                         [minRight]="'100px'"-->
-<!--                         (sizeChanged)="monacoEditorViewUpdate()"-->
-<!--                         class="w-100 h-100 my-border">-->
-<!--            <div left>-->
-<!--                <div class="w-100 flex-grow-0 flex-shrink-0">-->
-<!--                    @if(startPath!==''){-->
-<!--                        <app-folder-root class="scroll-container" (fileSelected)="onFileOpen($event)" [baseFolder]="startPath"></app-folder-root>-->
-<!--                    }-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div right>-->
-<!--                <div class="d-flex flex-column w-100 h-100 flex-grow-0 flex-shrink-0">-->
-<!--                    <div class="w-100 open-codes-header" [hidden]="openFiles.length===0">-->
-<!--                        @for(openFile of openFiles; track openFile.path){-->
-<!--                            <div class="px-2 py-1 open-file-item"-->
-<!--                                 (click)="activeFile(openFile)"-->
-<!--                                 [class.active]="openFile.path===activeOpenFile?.path">-->
-<!--                                <img width="15" height="15" [src]="getIconPath(openFile.name)" alt="文件图标">-->
-<!--                                <div>{{openFile.name}}</div>-->
-<!--                                <button class="plane-button" (click)="closeFile(openFile, $event)">-->
-<!--                                    <nz-icon nzType="close" />-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        }-->
-<!--                    </div>-->
-<!--                    <div class="d-flex flex-grow-1">-->
-<!--                        @if(editorVisible){-->
-<!--                            <ngx-monaco-editor class="w-100 h-100" [options]="editorOptions" [(ngModel)]="content"></ngx-monaco-editor>-->
-<!--                        }-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </app-split-panel>-->
-
     </div>
 </div>

@@ -11,6 +11,22 @@ export class FileAssociationService {
 
     constructor() {
         this.load();
+        this.initialize();
+    }
+    private initialize() {
+        if(this.associations.length === 0) {
+            this.associations = [
+                {
+                    programId: 'code-space',
+                    programName: 'code space',
+                    extensions: [
+                        'css','js','ts','','txt','json','html','ini','md',
+                        'cs','c','cpp','py','java','php','vue','tsx',
+                        'log','mjs','gitignore',''
+                    ],
+                }
+            ];
+        }
     }
 
     private load() {
@@ -22,6 +38,7 @@ export class FileAssociationService {
                 this.associations = [];
             }
         }
+
     }
 
     private save() {
@@ -34,21 +51,17 @@ export class FileAssociationService {
 
     getAssociationByExtension(ext: string): FileAssociation | undefined {
         ext = ext.toLowerCase();
-        return this.associations.find(a => a.extension.toLowerCase() === ext);
+        return this.associations.find(a => a.extensions.findIndex(e=>ext===e)>-1);
     }
 
     addOrUpdateAssociation(assoc: FileAssociation) {
-        const index = this.associations.findIndex(a => a.extension.toLowerCase() === assoc.extension.toLowerCase());
+        const index = this.associations.findIndex(a => a.programId === assoc.programId);
         if (index >= 0) {
-            this.associations[index] = assoc;
+            let existingExtensions = this.associations[index].extensions;
+            this.associations[index].extensions = [...existingExtensions, ...assoc.extensions];
         } else {
             this.associations.push(assoc);
         }
-        this.save();
-    }
-
-    removeAssociation(ext: string) {
-        this.associations = this.associations.filter(a => a.extension.toLowerCase() !== ext.toLowerCase());
         this.save();
     }
 }

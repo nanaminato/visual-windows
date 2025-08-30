@@ -10,7 +10,9 @@
     </thead>
     <tbody>
         @for (file of files; track file.path) {
-            <tr role="row" tabindex="0" class="folder-list-row" (dblclick)="fileDbl(file)">
+            <tr role="row" tabindex="0" class="folder-list-row"
+                (dblclick)="fileDbl(file)"
+                (contextmenu)="onRightClick($event, file)">
                 <td role="gridcell" class="file-name">
                     @if (file.isDirectory) {
                         📁 {{ file.name }}
@@ -36,3 +38,15 @@
         }
     </tbody>
 </table>
+
+@if(contextMenuVisible){
+    <ul
+        class="context-menu"
+        [style.top.px]="contextMenuPosition.y"
+        [style.left.px]="contextMenuPosition.x"
+        (click)="$event.stopPropagation()">
+        <li (click)="onContextMenuAction('openCode', contextMenuFile)">通过code打开</li>
+        <li (click)="onContextMenuAction('properties', contextMenuFile)">属性</li>
+        <li (click)="onContextMenuAction('copyPath', contextMenuFile)">复制文件地址</li>
+    </ul>
+}

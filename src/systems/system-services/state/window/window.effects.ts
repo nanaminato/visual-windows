@@ -7,7 +7,7 @@ import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
 import {componentMap, programWithCustomHeaders} from '../../../programs/models';
-import {selectProgramConfigs} from '../program-config/system.selector';
+import {selectProgramConfigs} from '../system/system.selector';
 
 @Injectable()
 export class WindowEffects {

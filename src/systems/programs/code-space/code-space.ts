@@ -4,7 +4,6 @@ import {
     inject,
     Input,
     Output,
-    Renderer2,
 } from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramConfig, ProgramEvent} from '../../models';
@@ -19,7 +18,8 @@ import {getFileLanguage} from './services';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 import {CommonModule} from '@angular/common';
 import {Store} from '@ngrx/store';
-import {selectProgramConfigs} from '../../system-services/state/program-config/system.selector';
+import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
+import {LightFile} from '../file-explorer/explorer/models';
 
 @Component({
     selector: 'app-code-space',
@@ -46,23 +46,42 @@ export class CodeSpace {
     @Input()
     active: boolean | undefined;
     @Input()
-    startPath: string = "";
+    startFolder: string = "";
+    @Input()
+    params: LightFile | undefined;
 
     @Input()
     startFile: string = "";
     async ngOnInit() {
-        if(this.startPath!==''){
-            this.leftPanelVisible = true;
+        if(this.params){
+            if(this.params.isDirectory){
+                this.startFolder = this.params.path;
+            }else{
+                this.startFile = this.params.path;
+            }
         }
+
         this.programConfigs$.subscribe(ws => {
             this.programConfigs = ws;
         })
     }
+    async ngAfterViewInit() {
+        if(this.startFolder!==''){
+            this.leftPanelVisible = true;
+        }else if(this.startFile!==''){
+            await this.onFileOpen({
+                name: 'any',
+                path: this.startFile,
+                deep: 0,
+                expandedWhenInit: false,
+                isDirectory: false,
+            })
+        }
+        this.editorVisible = true;
+    }
     leftPanelVisible: boolean = false;
 
-    constructor(private renderer: Renderer2) {}
-
-    editorVisible: boolean = true;
+    editorVisible: boolean = false;
     @HostListener('window:resize', ['$event'])
     sizeChanged($event: any): void {
         this.monacoEditorViewUpdate()
@@ -74,7 +93,7 @@ export class CodeSpace {
         this.editorVisible = false;
         setTimeout(()=>{
             this.editorVisible = true;
-        },1)
+        },0)
     }
 
 
@@ -127,7 +146,7 @@ export class CodeSpace {
     programConfigs$ = this.store.select(selectProgramConfigs);
     programConfigs : ProgramConfig[] | undefined;
     getIcon() {
-        return this.programConfigs?.find(p=>p.programId==='code space');
+        return this.programConfigs?.find(p=>p.programId==='code-space');
     }
 
     changePanelVisibleStatus() {
@@ -144,32 +163,23 @@ export class CodeSpace {
         if(index > -1){
             this.activeOpenFile = this.openFiles[index];
         }else{
-            let openFile = await this.codeService.getCode($event.path);
-            this.activeOpenFile = openFile;
-            this.openFiles.push(openFile);
-            if(this.openFiles.length === 1){
-                this.monacoEditorViewUpdate()
+            try{
+                let openFile = await this.codeService.getCode($event.path);
+                this.activeOpenFile = openFile;
+                this.openFiles.push(openFile);
+                if(this.openFiles.length === 1){
+                    this.monacoEditorViewUpdate()
+                }
+                this.activeFile(this.activeOpenFile);
+            }catch(err){
+                console.log(err);
             }
         }
-        this.activeFile(this.activeOpenFile);
     }
 
     protected readonly getIconPath = getIconPath;
-    editorOptions = {theme: 'vs-dark', language: 'javascript'};
-
-    closeFile(openFile: OpenFile, $event: MouseEvent) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.openFiles = this.openFiles.filter(file => file.path !== openFile.path);
-        if(this.openFiles.length > 0){
-            this.activeFile(this.openFiles[0])
-        }else{
-            this.content = ''
-        }
-    }
+    editorOptions = {theme: 'vs-light', language: 'javascript'};
     content: string = '';
-    // leftPanelPercent: number = 26;
-    // rightPanelPercent: number = 74;
 
     activeFile(openFile?: OpenFile) {
         if(openFile){
@@ -182,5 +192,68 @@ export class CodeSpace {
             }
 
         }
+    }
+    contextMenuVisible: boolean = false;
+    contextMenuPosition = {x: 0, y: 0};
+    contextMenuFile: OpenFile | undefined =undefined;
+
+    onContextMenu(event: MouseEvent, openFile: OpenFile) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.contextMenuFile = openFile;
+        this.contextMenuPosition = {x: event.clientX, y: event.clientY};
+        this.contextMenuVisible = true;
+    }
+
+    // 关闭当前文件
+    closeFile(openFile: OpenFile | undefined, event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.contextMenuVisible = false;
+
+        this.openFiles = this.openFiles.filter(file => file.path !== openFile!.path);
+
+        if(this.openFiles.length > 0){
+            if(this.activeOpenFile?.path === openFile!.path){
+                this.activeFile(this.openFiles[0]);
+            }
+        }else{
+            this.activeOpenFile = undefined;
+            this.content = '';
+        }
+    }
+
+    // 关闭其他标签页
+    closeOtherFiles(openFile: OpenFile | undefined, event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.contextMenuVisible = false;
+
+        this.openFiles = this.openFiles.filter(file => file.path === openFile!.path);
+        this.activeFile(openFile!);
+    }
+
+    // 关闭所有标签页
+    closeAllFiles(event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.contextMenuVisible = false;
+
+        this.openFiles = [];
+        this.activeOpenFile = undefined;
+        this.content = '';
+    }
+
+    // 点击空白处关闭菜单
+    constructor() {
+        document.addEventListener('click', () => {
+            if(this.contextMenuVisible){
+                this.contextMenuVisible = false;
+            }
+        });
     }
 }
