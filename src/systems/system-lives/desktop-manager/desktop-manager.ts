@@ -41,7 +41,7 @@ export class DesktopManager {
             this.resumeService.start().then(() => {
                 this.store$.dispatch(
                     WindowActions.openWindow(
-                        { id: "code-space", title: "code", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+                        { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
                     )
                 );
                 this.store$.dispatch(

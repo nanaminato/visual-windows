@@ -46,18 +46,39 @@ export class DesktopBar {
         })
     }
     divideIntoGroups() {
-        const groupsMap = new Map<string, WindowState[]>();
-        // 遍历所有窗口，根据 appId 分组
+        const newGroupsMap = new Map<string, WindowState[]>();
         for (const window of this.windows) {
-            if (!groupsMap.has(window.programId)) {
-                groupsMap.set(window.programId, []);
+            if (!newGroupsMap.has(window.programId)) {
+                newGroupsMap.set(window.programId, []);
             }
-            groupsMap.get(window.programId)!.push(window);
+            newGroupsMap.get(window.programId)!.push(window);
         }
-        this.groupWindows = Array.from(groupsMap.entries()).map(([appId, windowStates]) => ({
-            programId: appId,
-            windowStates
-        }));
+
+        // 2. 更新已有分组，过滤掉没有窗口的分组
+        const updatedGroups: GroupWindowState[] = [];
+        for (const group of this.groupWindows) {
+            const newWindowStates = newGroupsMap.get(group.programId) || [];
+            if (newWindowStates.length > 0) {
+                updatedGroups.push({
+                    programId: group.programId,
+                    windowStates: newWindowStates
+                });
+                // 从 newGroupsMap 中删除，表示已处理
+                newGroupsMap.delete(group.programId);
+            }
+            // 如果没有对应窗口，分组就不加入，等于删除
+        }
+
+        // 3. 剩余的新分组追加到后面
+        for (const [programId, windowStates] of newGroupsMap.entries()) {
+            updatedGroups.push({
+                programId,
+                windowStates
+            });
+        }
+
+        // 4. 赋值回 groupWindows
+        this.groupWindows = updatedGroups;
     }
     toggleProgramList() {
         this.showAppList = !this.showAppList;

@@ -23,14 +23,24 @@ export const windowReducer = createReducer(
         ...state,
         windows: state.windows.filter(w => w.id !== id)
     })),
-    on(WindowActions.focusWindow, (state, { id }) => ({
-        ...state,
-        windows: state.windows.map(w => ({
-            ...w,
-            active: w.id === id,
-            minimized: w.id === id ? false : w.minimized
-        }))
-    })),
+    on(WindowActions.focusWindow, (state, { id }) => {
+        const focusedWindow = state.windows.find(w => w.id === id);
+        if (!focusedWindow) {
+            return state;
+        }
+
+        const newWindows = [
+            ...state.windows
+                .filter(w => w.id !== id)
+                .map(w => ({ ...w, active: false, minimized: w.minimized })),
+            { ...focusedWindow, active: true, minimized: false }
+        ];
+
+        return {
+            ...state,
+            windows: newWindows
+        };
+    }),
     on(WindowActions.minimizeWindow, (state, { id }) => ({
         ...state,
         windows: state.windows.map(w =>
