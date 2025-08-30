@@ -22,10 +22,7 @@ export class EntryRoot {
     music: FileNodeViewModel | undefined;
     pictures: FileNodeViewModel | undefined;
     videos: FileNodeViewModel | undefined;
-    systemInfoService: SystemInfoService = inject(SystemInfoService);
-    constructor() {
-
-    }
+    private systemInfoService = inject(SystemInfoService);
     async ngOnInit() {
         this.computer = {
             name: '',

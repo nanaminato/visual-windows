@@ -5,7 +5,6 @@ import {FileExplorerInit, PropagateTitle} from './models';
 import {v4 as uuid} from 'uuid';
 import {ProgramEvent, SystemInfo} from '../../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {SystemInfoService} from '../../../system-services/info.service';
 @Component({
   selector: 'app-multi-explorer',
     imports: [
@@ -25,12 +24,9 @@ export class MultiExplorer {
     startPath: string = "";
     fileExplorers: FileExplorerInit[] = [];
     selectedIndex: number = 0;
-    private systemInfoService = inject(SystemInfoService);
     systemInfo: SystemInfo | undefined = undefined;
-    // 初始化，打开一个文件浏览器tab页
     async ngOnInit() {
         this.openFileExplorer(this.startPath);
-        this.systemInfo = await this.systemInfoService.getInfo();
     }
     openFileExplorer(path: string) {
         this.fileExplorers.push({
@@ -64,7 +60,6 @@ export class MultiExplorer {
     handleTitleChange($event: PropagateTitle) {
         const ele = this.fileExplorers.find(f => f.fileExplorerId === $event.fileExplorerId);
         if (ele) {
-            // console.log($event.title)
             ele.title = $event.title;
         }
     }

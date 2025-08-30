@@ -5,7 +5,7 @@ import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
 import {Subscription, take} from 'rxjs';
 import {Actions, ofType} from '@ngrx/effects';
-import {programConfigActions} from '../../system-services/state/program-config/program-config.action';
+import {systemActions} from '../../system-services/state/program-config/system.action';
 import {ResumeService} from '../../system-services/resume.service';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
@@ -35,7 +35,7 @@ export class DesktopManager {
             this.windows = ws;
         });
         this.subscription = this.actions$.pipe(
-            ofType(programConfigActions.loadSuccess),
+            ofType(systemActions.configLoadSuccess),
             take(1)
         ).subscribe(() => {
             this.resumeService.start().then(() => {

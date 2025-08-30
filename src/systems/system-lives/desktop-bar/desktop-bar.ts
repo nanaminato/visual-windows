@@ -3,9 +3,9 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WinIcon} from '../win-icon/win-icon';
 import {GroupWindowState, ProgramConfig, WindowState} from '../../models';
 import {Store} from '@ngrx/store';
-import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
+import {selectProgramConfigs} from '../../system-services/state/program-config/system.selector';
 
 @Component({
     selector: 'system-desktop-bar',

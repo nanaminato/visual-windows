@@ -1,7 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from './server.service';
-import {WindowManagerService} from './windows-manager.service';
 import {ResumableSession} from '../programs/terminal/models';
 import {WindowActions} from './state/window/window.actions';
 import {Store} from '@ngrx/store';

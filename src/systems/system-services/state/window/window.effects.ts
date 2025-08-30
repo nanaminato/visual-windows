@@ -2,12 +2,12 @@ import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import { switchMap, withLatestFrom, map, catchError, of } from 'rxjs';
+import { switchMap, withLatestFrom, catchError, of } from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
-import {selectProgramConfigs} from '../program-config/program-config.selector';
 import {WindowState} from '../../../models';
 import {componentMap, programWithCustomHeaders} from '../../../programs/models';
+import {selectProgramConfigs} from '../program-config/system.selector';
 
 @Injectable()
 export class WindowEffects {
@@ -30,7 +30,7 @@ export class WindowEffects {
                     throw new Error("No program configs found");
 
                 }
-                const registeredApps = programConfigs.filter(app => app.programId === appId);
+                const registeredApps = programConfigs.filter(programConfig => programConfig.programId === appId);
                 const registeredApp = registeredApps[0];
 
                 // 如果是单例且已打开，直接聚焦
@@ -72,7 +72,6 @@ export class WindowEffects {
                     return of(WindowActions.openWindowSuccess({ window: newWindow }));
                 }
             }),
-            // 这里处理异步 Promise 转 Observable
             switchMap(actionOrPromise => {
                 if (actionOrPromise instanceof Promise) {
                     return actionOrPromise.then(action => action);

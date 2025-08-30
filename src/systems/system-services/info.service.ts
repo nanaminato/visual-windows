@@ -1,56 +1,31 @@
 import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
 import {ServerService} from './server.service';
-import {NzMessageService} from 'ng-zorro-antd/message';
 import {SystemInfo} from '../models';
+import {firstValueFrom} from 'rxjs';
+import {selectSystemInfo} from './state/program-config/system.selector';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {Store} from '@ngrx/store';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SystemInfoService{
-
-    public info: SystemInfo|undefined = undefined;
     private serverService = inject(ServerService);
-    public ready: Promise<void>;
-    constructor(private http: HttpClient, private messageService: NzMessageService) {
-        this.ready = this.fetchSystemInfo()
-            .then(info => {
-                this.info = info;
-            })
-            .catch(err => {
-                this.messageService.error("系统配置加载失败");
-                // 这里可以根据需求决定是否抛错或继续
-            });
-    }
-    public async getInfo(){
-        await this.ready;
-        return this.info!;
-    }
-    private fetchSystemInfo(): Promise<SystemInfo> {
-        return new Promise((resolve, reject) => {
-            let subscription = this.http.get<SystemInfo>
-            (`${this.serverService.getServerBase()}/api/v1/systemInfo`).subscribe(
-                {
-                    next: (value: SystemInfo) => {
-                        resolve(value);
-                        subscription.unsubscribe();
-                    },
-                    error: err=> {
-                        reject(err);
-                        subscription.unsubscribe();
-                    }
-                }
-            )
-            return ()=>subscription.unsubscribe();
-        })
+    private http: HttpClient = inject(HttpClient);
+    private messageService = inject(NzMessageService);
+    private store = inject(Store)
+    fetchSystemInfo(){
+        return this.http.get<SystemInfo>
+        (`${this.serverService.getServerBase()}/api/v1/systemInfo`);
     }
     public async isLinuxAsync(): Promise<boolean> {
-        await this.ready;
-        if (!this.info) {
+        const info = await firstValueFrom(this.store.select(selectSystemInfo));
+        console.log(info);
+        if (!info) {
             this.messageService.error("系统配置还没有加载");
             return false;
         }
-        return !this.info.platform.toLowerCase().startsWith("window");
+        return !info.platform.toLowerCase().startsWith("window");
     }
-
 }

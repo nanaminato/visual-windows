@@ -2,7 +2,7 @@ import {Component, inject, signal} from '@angular/core';
 import { DesktopManager } from '../systems/system-lives/desktop-manager/desktop-manager';
 import { DesktopBar } from '../systems/system-lives/desktop-bar/desktop-bar';
 import {Store} from '@ngrx/store';
-import {programConfigActions} from '../systems/system-services/state/program-config/program-config.action';
+import {systemActions} from '../systems/system-services/state/program-config/system.action';
 
 /*
 * 顶层组件
@@ -22,6 +22,7 @@ export class VisualWindow {
   protected readonly title = signal('VisualWindows');
   private store = inject(Store);
   ngOnInit() {
-      this.store.dispatch(programConfigActions.init())
+      this.store.dispatch(systemActions.systemInfoInit())
+      this.store.dispatch(systemActions.configInit())
   }
 }

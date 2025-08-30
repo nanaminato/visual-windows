@@ -15,7 +15,7 @@ import {ProgramConfig, ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
 import {firstValueFrom, map} from 'rxjs';
 import {Store} from '@ngrx/store';
-import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
+import {selectProgramConfigs} from '../../system-services/state/program-config/system.selector';
 type ResizeDirection =
     | 'top-left' | 'top' | 'top-right'
     | 'right' | 'bottom-right' | 'bottom'

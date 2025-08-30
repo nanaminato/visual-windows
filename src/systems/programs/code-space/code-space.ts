@@ -19,7 +19,7 @@ import {getFileLanguage} from './services';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 import {CommonModule} from '@angular/common';
 import {Store} from '@ngrx/store';
-import {selectProgramConfigs} from '../../system-services/state/program-config/program-config.selector';
+import {selectProgramConfigs} from '../../system-services/state/program-config/system.selector';
 
 @Component({
     selector: 'app-code-space',

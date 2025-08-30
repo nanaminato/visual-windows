@@ -6,15 +6,17 @@ import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {NgxMonacoEditorConfig, provideMonacoEditor} from 'ngx-monaco-editor-v2';
 import { provideStore } from '@ngrx/store';
 import {provideEffects} from '@ngrx/effects';
-import {programConfigReducer} from '../systems/system-services/state/program-config/program-config.reducer';
-import {ProgramConfigEffects} from '../systems/system-services/state/program-config/program-config.effects';
+import {SystemEffects} from '../systems/system-services/state/program-config/system-effects.service';
 import {windowReducer} from '../systems/system-services/state/window/window.reducer';
 import {WindowEffects} from '../systems/system-services/state/window/window.effects';
+import {programConfigReducer, systemInfoReducer} from '../systems/system-services/state/program-config/system.reducer';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
     defaultOptions: { scrollBeyondLastLine: false },
-    onMonacoLoad: () => { console.log((<any>window).monaco); }, // here monaco object will be available as window.monaco use this function to extend monaco editor functionalities.
+    onMonacoLoad: () => {
+        console.log((<any>window).monaco);
+    }, // here monaco object will be available as window.monaco use this function to extend monaco editor functionalities.
     requireConfig: { preferScriptTags: true }, // allows to oweride configuration passed to monacos loader
     monacoRequire: (<any>window).monacoRequire // pass here monacos require function if you loaded monacos loader (loader.js) yourself
 };
@@ -30,12 +32,13 @@ export const appConfig: ApplicationConfig = {
     provideStore({
         "programConfig": programConfigReducer,
         "window": windowReducer,
+        "systemInfo": systemInfoReducer,
     },{
         runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false,
         }
     }),
-    provideEffects(ProgramConfigEffects, WindowEffects),
+    provideEffects(SystemEffects, WindowEffects),
 ]
 };
