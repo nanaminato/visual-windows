@@ -31,6 +31,8 @@
     "@ngrx/effects": "^20.0.1",
     "@ngrx/operators": "^20.0.1",
     "@ngrx/store": "^20.0.1",
+    "@univerjs/preset-sheets-core": "^0.10.6",
+    "@univerjs/presets": "^0.10.6",
     "@xterm/addon-clipboard": "^0.1.0",
     "@xterm/addon-image": "^0.8.0",
     "@xterm/addon-unicode11": "^0.8.0",

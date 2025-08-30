@@ -42,7 +42,15 @@ export class DesktopManager {
                 this.store$.dispatch(
                     WindowActions.openWindow(
                         { id: "code-space", title: "code", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-                    ))
+                    )
+                );
+                this.store$.dispatch(
+                    WindowActions.openWindow(
+                        { id: "univer", title: "univer", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+                    )
+                );
+
+
             });
         });
 

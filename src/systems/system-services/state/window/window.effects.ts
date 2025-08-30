@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import { switchMap, withLatestFrom, catchError, of } from 'rxjs';
+import {switchMap, withLatestFrom, catchError, of, mergeMap} from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
@@ -20,7 +20,7 @@ export class WindowEffects {
                 this.store.select(selectWindows),
                 this.store.select(selectProgramConfigs)
             ),
-            switchMap(([action, windows, programConfigs]) => {
+            mergeMap(([action, windows, programConfigs]) => {
                 const { id: appId, title, params } = action;
                 // 找出已打开的窗口
                 const openedWindows = windows.filter(w => w.programId === appId);

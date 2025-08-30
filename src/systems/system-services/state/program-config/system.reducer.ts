@@ -17,9 +17,6 @@ export const systemInfoInitialState: SystemInfoState = {
 
 export const programConfigReducer = createReducer(
     programConfigInitialState,
-    on(systemActions.configInit, (state) => ({
-        ...state,
-    })),
     on(systemActions.configLoadSuccess, (state, { programConfigs }) => ({
         ...state,
         programConfigs,
@@ -30,9 +27,6 @@ export const programConfigReducer = createReducer(
 );
 export const systemInfoReducer = createReducer(
     systemInfoInitialState,
-    on(systemActions.systemInfoInit, (state) => ({
-        ...state,
-    })),
     on(systemActions.systemInfoLoadSuccess, (_state, { systemInfo }) => ({
         systemInfo: systemInfo,
     })),
