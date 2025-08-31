@@ -20,6 +20,9 @@ button.disabled > nz-icon{
     width: 100%;
 
 }
+.touch-drag{
+    touch-action: none;
+}
 
 .program-header {
     padding: 4px 8px 0;

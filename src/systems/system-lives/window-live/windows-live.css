@@ -17,6 +17,7 @@
 /*    z-index: 10;*/
 /*}*/
 .title-bar {
+    /*touch-action: none;*/
     background: #444;
     color: white;
     padding: 4px 8px;
@@ -29,7 +30,6 @@
 .mini-btn,.max-btn,.close-btn {
     background: transparent;
     border: none;
-    /*color: white;*/
     font-size: 20px;
     cursor: pointer;
     line-height: 1;

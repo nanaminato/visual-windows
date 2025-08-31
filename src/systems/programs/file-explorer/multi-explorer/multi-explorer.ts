@@ -115,4 +115,14 @@ export class MultiExplorer {
             event: $event
         });
     }
+    touchDrag($event: TouchEvent) {
+        if(!this.id){
+            return;
+        }
+        this.appEventEmitter.emit({
+            type: 7,
+            id: this.id,
+            event: $event
+        });
+    }
 }

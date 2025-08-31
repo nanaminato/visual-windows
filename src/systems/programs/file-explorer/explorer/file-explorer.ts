@@ -237,6 +237,7 @@ export class FileExplorer {
         }
     }
     private store = inject(Store);
+
     private onCtrlNPressed() {
         console.log('onCtrlNPressed');
         this.store.dispatch(WindowActions.openWindow({
@@ -246,5 +247,9 @@ export class FileExplorer {
                 startPath: this.currentPath
             }
         }))
+    }
+
+    onRefreshRequest() {
+        this.refresh();
     }
 }

@@ -142,6 +142,16 @@ export class CodeSpace {
             event: $event
         });
     }
+    touchDrag($event: TouchEvent) {
+        if(!this.id){
+            return;
+        }
+        this.appEventEmitter.emit({
+            type: 7,
+            id: this.id,
+            event: $event
+        });
+    }
     private store = inject(Store);
     programConfigs$ = this.store.select(selectProgramConfigs);
     programConfigs : ProgramConfig[] | undefined;

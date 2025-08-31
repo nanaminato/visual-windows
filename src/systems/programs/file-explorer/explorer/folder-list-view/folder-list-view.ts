@@ -15,6 +15,8 @@ import {WindowActions} from '../../../../system-services/state/window/window.act
 export class FolderListView {
     @Input()
     files: LightFile[] = [];
+    @Input()
+    currentPath: string | undefined;
     // 计算文件类型显示文本
     getFileType(file: LightFile): string {
         if (file.isDirectory) {
@@ -55,25 +57,51 @@ export class FolderListView {
     }
     contextMenuVisible = false;
     contextMenuPosition = { x: 0, y: 0 };
-    contextMenuFile: LightFile | null = null;
+    contextMenuFile: LightFile | undefined = undefined;
 
     // 右键菜单事件处理
     onRightClick(event: MouseEvent, file: LightFile) {
         event.preventDefault();
+        event.stopPropagation();
         this.contextMenuVisible = true;
         this.contextMenuPosition = { x: event.clientX, y: event.clientY };
         this.contextMenuFile = file;
     }
+    onWrapperRightClick(event: MouseEvent) {
+        event.preventDefault();
+        console.log('parent click');
+        const target = event.target as HTMLElement;
+        if (target.closest('tr.folder-list-row')) {
+            return; // 文件行右键事件另有处理
+        }
+        this.contextMenuVisible = true;
+        this.contextMenuPosition = { x: event.clientX, y: event.clientY };
+        this.contextMenuFile = undefined;
+    }
+
+    @Output() refreshRequest = new EventEmitter<void>();
     private store = inject(Store);
-    onContextMenuAction(action: string, file: LightFile | null) {
+    onContextMenuAction(action: string, file: LightFile | undefined) {
         this.contextMenuVisible = false;
         switch (action) {
+            case 'refresh':
+                this.refreshRequest.emit();
+                break;
             case 'openCode':
                 this.store.dispatch(WindowActions.openWindow({
                     id: 'code-space',
                     title: 'code space',
                     params: {
                         params: file
+                    }
+                }))
+                break;
+            case 'openTerminal':
+                this.store.dispatch(WindowActions.openWindow({
+                    id: 'terminal',
+                    title: '终端',
+                    params: {
+                        workDirectory: file===undefined? this.currentPath:file.path
                     }
                 }))
                 break;

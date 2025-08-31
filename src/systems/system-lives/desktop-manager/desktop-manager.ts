@@ -24,8 +24,9 @@ export class DesktopManager {
     private resumeService = inject(ResumeService);
     private windowManager = inject(WindowManagerService);
     windows: WindowState[] = [];
+    draggingWindowId: string | null = null;
     // 拖拽相关状态
-    private draggingWindowId: string | null = null;
+    draggingTouchWindowId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
     private readonly subscription: Subscription;
     private actions$ = inject(Actions);
@@ -72,10 +73,27 @@ export class DesktopManager {
         this.dragOffset.x = event.clientX - win.position.x;
         this.dragOffset.y = event.clientY - win.position.y;
     }
+    // 新增触摸拖动开始处理函数
+    startDragTouch(event: TouchEvent, windowId: string) {
+        event.preventDefault();
+        this.draggingTouchWindowId = windowId;
+
+        const win = this.windows.find(w => w.id === windowId);
+        if (!win) return;
+
+        // 这里只取第一个触点坐标
+        const touch = event.touches[0];
+        this.dragOffset.x = touch.clientX - win.position.x;
+        this.dragOffset.y = touch.clientY - win.position.y;
+    }
 
     @HostListener('document:mouseup')
     stopDrag() {
         this.draggingWindowId = null;
+    }
+    @HostListener('document:touchend')
+    stopDragTouch() {
+        this.draggingTouchWindowId = null;
     }
 
     @HostListener('document:mousemove', ['$event'])
@@ -95,7 +113,25 @@ export class DesktopManager {
         // 通知服务更新状态（实际项目建议深拷贝后更新）
         this.windowManager.getWindows().subscribe(); // 触发更新
     }
+    // 新增触摸拖动监听
+    @HostListener('document:touchmove', ['$event'])
+    onDragTouch(event: TouchEvent) {
+        if (!this.draggingTouchWindowId) return;
 
+        // event.preventDefault();
+
+        const win = this.windows.find(w => w.id === this.draggingTouchWindowId);
+        if (!win) return;
+
+        const touch = event.touches[0];
+        const newX = touch.clientX - this.dragOffset.x;
+        const newY = touch.clientY - this.dragOffset.y;
+
+        win.position.x = Math.max(0, newX);
+        win.position.y = Math.max(0, newY);
+
+        this.windowManager.getWindows().subscribe();
+    }
     appLiveEvent($event: ProgramEvent) {
         switch ($event.type) {
             case 1:
@@ -122,6 +158,9 @@ export class DesktopManager {
                     // 触发变更检测或刷新视图
                 }
                 break;
+            case 7:
+                this.startDragTouch($event.event as TouchEvent, $event.id);
+                break;
 
         }
     }
@@ -130,4 +169,7 @@ export class DesktopManager {
             this.subscription.unsubscribe();
         }
     }
+
+
+
 }

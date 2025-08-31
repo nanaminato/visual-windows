@@ -11,7 +11,7 @@
                 <img src="assets/icons/code-space/more.svg" width="20" height="20">
             </button>
         </div>
-        <div class="flex-grow-1" (mousedown)="startDrag($event)">
+        <div class="flex-grow-1 touch-drag" (mousedown)="startDrag($event)" (touchstart)="touchDrag($event)">
 
         </div>
         <div class="d-flex flex-row ">

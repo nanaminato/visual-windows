@@ -19,6 +19,9 @@ export class TerminalComponent {
     private serverService = inject(ServerService);
     @Input()
     sessionId?: string | undefined;
+    @Input()
+    workDirectory?: string | undefined;
+
     private socket: WebSocket | undefined;
     private xterm: Terminal | undefined;
     @ViewChild('terminalContainer', { static: true })
@@ -26,7 +29,6 @@ export class TerminalComponent {
     private http = inject(HttpClient);
     fitAddon!: FitAddon | undefined;
     ngOnInit()  {
-        // console.log("initialized with terminal");
         this.xterm = new Terminal({
             allowProposedApi: true,
             cursorBlink: true,
@@ -78,7 +80,10 @@ export class TerminalComponent {
     createTerminalSession() {
         let url = `${this.serverService.getServerBase()}/api/v1/terminal/`;
         return new Promise<TerminalSession>((resolve,reject) => {
-            let subscription = this.http.post<TerminalSession>(url,{}).subscribe({
+            let subscription = this.http.post<TerminalSession>(url,{
+                cwd: this.workDirectory,
+                app: null
+            }).subscribe({
                 next: (sessionId: TerminalSession) => {
                     resolve(sessionId);
                     console.log(sessionId);
@@ -117,7 +122,5 @@ export class TerminalComponent {
     ngOnDestroy() {
         this.socket?.close();
     }
-
-
 
 }

@@ -72,11 +72,11 @@
         <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
             <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
         </nz-splitter-panel>
-        <nz-splitter-panel>
+        <nz-splitter-panel >
             @if(driverView){
                 <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
             }@else{
-                <app-folder-list-view [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
+                <app-folder-list-view (refreshRequest)="onRefreshRequest()" [currentPath]="currentPath"  [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
             }
         </nz-splitter-panel>
     </nz-splitter>

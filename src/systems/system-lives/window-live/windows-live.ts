@@ -134,6 +134,9 @@ export class WindowsLive {
                             case 5:
                                 this.startDrag(eventData.event as unknown as MouseEvent, eventData.id);
                                 break;
+                            case 7:
+                                this.touchDrag(eventData.event as TouchEvent, eventData.id);
+                                break;
                         }
                     });
                 }
@@ -162,6 +165,13 @@ export class WindowsLive {
     startDrag(eventData: MouseEvent, id: string) {
         this.appEventEmitter.emit({
             type: 5,
+            id: id,
+            event: eventData
+        });
+    }
+    touchDrag(eventData: TouchEvent, id: string) {
+        this.appEventEmitter.emit({
+            type: 7,
             id: id,
             event: eventData
         });
@@ -284,5 +294,4 @@ export class WindowsLive {
             this.componentRef.instance.parentSizeChange();
         }
     };
-
 }

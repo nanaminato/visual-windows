@@ -1,7 +1,7 @@
 export const serverEnvironment = {
-    production: false,
-    protocol: 'http',
-    baseUrl: "localhost:5111",
+    production: true,
+    protocol: '',
+    baseUrl: "/",
     // baseUrl: "192.168.1.7:5000",
     // baseUrl: "192.168.1.8:5000",
     // baseUrl: "192.168.1.9:5000",
