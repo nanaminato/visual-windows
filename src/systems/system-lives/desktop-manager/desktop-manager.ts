@@ -1,5 +1,4 @@
 import {Component, HostListener, inject} from '@angular/core';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
@@ -14,7 +13,6 @@ import {Store} from '@ngrx/store';
 @Component({
     selector: 'system-desktop-manager',
     imports: [
-        MatSnackBarModule,
         WindowsLive,
     ],
     templateUrl: './desktop-manager.html',
@@ -117,9 +115,6 @@ export class DesktopManager {
     @HostListener('document:touchmove', ['$event'])
     onDragTouch(event: TouchEvent) {
         if (!this.draggingTouchWindowId) return;
-
-        // event.preventDefault();
-
         const win = this.windows.find(w => w.id === this.draggingTouchWindowId);
         if (!win) return;
 

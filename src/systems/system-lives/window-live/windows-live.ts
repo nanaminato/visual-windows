@@ -187,32 +187,60 @@ export class WindowsLive {
     private minWidth = 200;
     private minHeight = 100;
 
-    constructor() {}
-
-    startResize(event: MouseEvent, id: string, direction: ResizeDirection) {
+    startResize(event: MouseEvent | TouchEvent, id: string, direction: ResizeDirection) {
         event.stopPropagation();
-        event.preventDefault();
+        if (event.cancelable) {
+            event.preventDefault();
+        }
 
         this.resizing = true;
         this.resizeDir = direction;
         this.resizeWinId = id;
 
-        this.startPos = { x: event.clientX, y: event.clientY };
+        let clientX = 0;
+        let clientY = 0;
+        if ('touches' in event && event.touches.length > 0) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+
+            window.addEventListener('touchmove', this.onResizeMove, { passive: false });
+            window.addEventListener('touchend', this.stopResize);
+            window.addEventListener('touchcancel', this.stopResize);
+
+        } else if ('clientX' in event) {
+            clientX = event.clientX;
+            clientY = event.clientY;
+
+            window.addEventListener('mousemove', this.onResizeMove);
+            window.addEventListener('mouseup', this.stopResize);
+        }
+
         if (!this.win || this.win.id !== id) return;
 
+        this.startPos = { x: clientX, y: clientY };
         this.startSize = { width: this.win.size.width, height: this.win.size.height };
         this.startPosWin = { x: this.win.position.x, y: this.win.position.y };
-
-        // 监听全局鼠标事件
-        window.addEventListener('mousemove', this.onResizeMove);
-        window.addEventListener('mouseup', this.stopResize);
     }
 
-    onResizeMove = (event: MouseEvent) => {
+    onResizeMove = (event: MouseEvent | TouchEvent) => {
         if (!this.resizing || !this.win || !this.resizeDir) return;
 
-        const dx = event.clientX - this.startPos.x;
-        const dy = event.clientY - this.startPos.y;
+        event.preventDefault();
+
+        let clientX = 0;
+        let clientY = 0;
+
+        if ('touches' in event) {
+            if (event.touches.length === 0) return;
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+
+        const dx = clientX - this.startPos.x;
+        const dy = clientY - this.startPos.y;
 
         let newWidth = this.startSize.width;
         let newHeight = this.startSize.height;
@@ -256,7 +284,6 @@ export class WindowsLive {
                 break;
         }
 
-        // 限制最小尺寸
         if (newWidth < this.minWidth) {
             newWidth = this.minWidth;
             if (['top-left', 'bottom-left', 'left'].includes(this.resizeDir)) {
@@ -270,10 +297,8 @@ export class WindowsLive {
             }
         }
 
-
-
         this.appEventEmitter.emit({
-            type: 6, // 自定义类型，比如 resize
+            type: 6,
             id: this.resizeWinId!,
             event: {
                 position: { x: newX, y: newY },
@@ -282,15 +307,21 @@ export class WindowsLive {
         });
     };
 
-    stopResize = (event: MouseEvent) => {
+    stopResize = (event: MouseEvent | TouchEvent) => {
         if (!this.resizing) return;
+
         this.resizing = false;
         this.resizeDir = null;
         this.resizeWinId = null;
+
         window.removeEventListener('mousemove', this.onResizeMove);
         window.removeEventListener('mouseup', this.stopResize);
 
-        if (this.componentRef && typeof this.componentRef.instance.parentSizeChange=== 'function') {
+        window.removeEventListener('touchmove', this.onResizeMove);
+        window.removeEventListener('touchend', this.stopResize);
+        window.removeEventListener('touchcancel', this.stopResize);
+
+        if (this.componentRef && typeof this.componentRef.instance.parentSizeChange === 'function') {
             this.componentRef.instance.parentSizeChange();
         }
     };

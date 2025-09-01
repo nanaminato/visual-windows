@@ -12,11 +12,6 @@ export const componentMap: Map<string, () => Promise<any>> = new Map([
         ()=> import("../code-space/code-space")
         .then(m => m.CodeSpace),
     ],
-    [
-        'univer',
-        ()=>import("../univer/univer")
-            .then(c=>c.UniverComponent)
-    ]
 ]);
 export const programWithCustomHeaders = [
     'file-explorer',
