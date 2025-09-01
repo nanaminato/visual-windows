@@ -24,6 +24,13 @@ export class FileAssociationService {
                         'cs','c','cpp','py','java','php','vue','tsx',
                         'log','mjs','gitignore',''
                     ],
+                },
+                {
+                    programId: 'image-viewer',
+                    programName: '图片查看器',
+                    extensions: [
+                        'png','svg','jpg','jpeg','png','gif','webp','webp',
+                    ],
                 }
             ];
         }

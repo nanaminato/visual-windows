@@ -156,13 +156,15 @@ export class FileExplorer {
             this.navigatePath = $event.path;
             await this.tryNavigateToFolder($event.path);
         }else{
+            // 打开文本型文件
             this.windowManagerService.openFile({
                 name: $event.name,
                 isFolder: false,
                 size: $event.size,
             },{
-                params: $event,
+                file: $event,
             })
+
         }
     }
 

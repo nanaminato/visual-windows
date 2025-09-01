@@ -12,6 +12,11 @@ export const componentMap: Map<string, () => Promise<any>> = new Map([
         ()=> import("../code-space/code-space")
         .then(m => m.CodeSpace),
     ],
+    [
+        'image-viewer',
+        ()=> import("../image-viewer/image-viewer")
+        .then(m => m.ImageViewer),
+    ]
 ]);
 export const programWithCustomHeaders = [
     'file-explorer',

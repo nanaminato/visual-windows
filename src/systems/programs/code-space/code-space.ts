@@ -48,16 +48,16 @@ export class CodeSpace {
     @Input()
     startFolder: string = "";
     @Input()
-    params: LightFile | undefined;
+    file: LightFile | undefined;
 
     @Input()
     startFile: string = "";
     async ngOnInit() {
-        if(this.params){
-            if(this.params.isDirectory){
-                this.startFolder = this.params.path;
+        if(this.file){
+            if(this.file.isDirectory){
+                this.startFolder = this.file.path;
             }else{
-                this.startFile = this.params.path;
+                this.startFile = this.file.path;
             }
         }
 
