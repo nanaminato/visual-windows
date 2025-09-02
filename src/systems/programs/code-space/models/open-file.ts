@@ -2,8 +2,9 @@ export interface OpenFile{
     name: string,
     path: string,
     content: string,
-    encoding: string,
-    lineEnding: string,
+    decodeText?: string,
+    encoding?: string,
+    lineEnding?: string,
 }
 export interface FileEntry{
     name: string,

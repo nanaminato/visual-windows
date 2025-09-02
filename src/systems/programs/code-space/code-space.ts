@@ -197,7 +197,7 @@ export class CodeSpace {
             this.activeOpenFile = openFile;
             let oldLanguage = this.editorOptions.language;
             this.editorOptions.language = getFileLanguage(openFile.name);
-            this.content = openFile.content;
+            this.content = openFile.decodeText??'';
             if(this.editorOptions.language !== oldLanguage){
                 this.monacoEditorViewUpdate();
             }

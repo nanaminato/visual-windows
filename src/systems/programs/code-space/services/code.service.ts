@@ -14,7 +14,17 @@ export class CodeService{
         const value = await firstValueFrom(
             this.http.post<OpenFile>(`${this.serverService.getServerBase()}/api/v1/code/open`, { path })
         );
-        value.content = atob(value.content);
+        // atob得到的是Latin1编码的二进制字符串，需要转成Uint8Array
+        const binaryStr = atob(value.content);
+        const len = binaryStr.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+        }
+
+        // 用TextDecoder解码成UTF-8字符串
+        const decoder = new TextDecoder('utf-8');
+        value.decodeText = decoder.decode(bytes);
         return value;
     }
 
