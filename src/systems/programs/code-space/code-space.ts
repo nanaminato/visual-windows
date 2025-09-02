@@ -20,6 +20,7 @@ import {CommonModule} from '@angular/common';
 import {Store} from '@ngrx/store';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
 import {LightFile} from '../file-explorer/explorer/models';
+import {codeSpaceProgram} from '../models/register-app';
 
 @Component({
     selector: 'app-code-space',
@@ -156,7 +157,7 @@ export class CodeSpace {
     programConfigs$ = this.store.select(selectProgramConfigs);
     programConfigs : ProgramConfig[] | undefined;
     getIcon() {
-        return this.programConfigs?.find(p=>p.programId==='code-space');
+        return this.programConfigs?.find(p=>p.programId===codeSpaceProgram);
     }
 
     changePanelVisibleStatus() {

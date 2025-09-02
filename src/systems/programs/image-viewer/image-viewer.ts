@@ -24,7 +24,6 @@ export class ImageViewer {
     private lastTranslateY = 0;
 
     private explorerService = inject(ExplorerService);
-    private http = inject(HttpClient);
     images: LightFile[] = [];
     currentIndex = 0;
     zoom = 1;
@@ -139,24 +138,8 @@ export class ImageViewer {
         console.warn('图片加载失败:', this.images[this.currentIndex].path);
     }
     private serverService = inject(ServerService);
-    private updateImageSrc(): Promise<string> {
+    private updateImageSrc(){
         const pathParam = this.images[this.currentIndex].path;
-        const baseUrl = this.serverService.getServerBase()+'/api/v1/fileSystem/download-file';
-        return new Promise<string>((resolve, reject) => {
-            this.http.post(baseUrl, { path: pathParam }, { responseType: 'blob' }).subscribe({
-                next: (blob: Blob) => {
-                    // 释放之前的 URL 对象
-                    if (this.imageSrc && this.imageSrc.startsWith('blob:')) {
-                        URL.revokeObjectURL(this.imageSrc);
-                    }
-                    this.imageSrc = URL.createObjectURL(blob);
-                    resolve(this.imageSrc);
-                },
-                error: (err) => {
-                    reject(err);
-                }
-            });
-        });
-
+        this.imageSrc = this.serverService.getServerBase()+`/api/v1/fileSystem/image?path=${pathParam}`;
     }
 }

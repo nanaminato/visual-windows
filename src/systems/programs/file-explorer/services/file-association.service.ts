@@ -1,5 +1,6 @@
 import {FileAssociation} from '../models';
 import {Injectable} from '@angular/core';
+import {codeSpaceProgram, imageViewerProgram} from '../../models/register-app';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +18,7 @@ export class FileAssociationService {
         if(this.associations.length === 0) {
             this.associations = [
                 {
-                    programId: 'code-space',
+                    programId: codeSpaceProgram,
                     programName: 'code space',
                     extensions: [
                         'css','js','ts','','txt','json','html','ini','md',
@@ -26,7 +27,7 @@ export class FileAssociationService {
                     ],
                 },
                 {
-                    programId: 'image-viewer',
+                    programId: imageViewerProgram,
                     programName: '图片查看器',
                     extensions: [
                         'png','svg','jpg','jpeg','png','gif','webp','webp',

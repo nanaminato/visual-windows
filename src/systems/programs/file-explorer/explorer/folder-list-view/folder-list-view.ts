@@ -3,6 +3,7 @@ import {LightFile} from '../models';
 import {DatePipe} from '@angular/common';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../../system-services/state/window/window.actions';
+import {codeSpaceProgram, terminalProgram} from '../../../models/register-app';
 
 @Component({
   selector: 'app-folder-list-view',
@@ -89,16 +90,16 @@ export class FolderListView {
                 break;
             case 'openCode':
                 this.store.dispatch(WindowActions.openWindow({
-                    id: 'code-space',
+                    id: codeSpaceProgram,
                     title: 'code space',
                     params: {
-                        params: file
+                        file: file
                     }
                 }))
                 break;
             case 'openTerminal':
                 this.store.dispatch(WindowActions.openWindow({
-                    id: 'terminal',
+                    id: terminalProgram,
                     title: '终端',
                     params: {
                         workDirectory: file===undefined? this.currentPath:file.path

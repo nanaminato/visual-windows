@@ -4,6 +4,7 @@ import {ServerService} from './server.service';
 import {ResumableSession} from '../programs/terminal/models';
 import {WindowActions} from './state/window/window.actions';
 import {Store} from '@ngrx/store';
+import {terminalProgram} from '../programs/models/register-app';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +22,7 @@ export class ResumeService {
         for(let sessionId of resumableSession.terminals){
             this.store$.dispatch(
                 WindowActions.openWindow(
-                { id: "terminal", title: "终端", params: {sessionId: sessionId} }
+                { id: terminalProgram, title: "终端", params: {sessionId: sessionId} }
             ))
 
         }

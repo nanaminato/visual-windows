@@ -1,24 +1,29 @@
+export const terminalProgram = 'terminal';
+export const fileExplorerProgram = 'file-explorer';
+export const codeSpaceProgram = 'code-space';
+export const imageViewerProgram = 'image-viewer';
+
 export const componentMap: Map<string, () => Promise<any>> = new Map([
-    ['terminal', () => import("../terminal/terminal.component")
+    [terminalProgram, () => import("../terminal/terminal.component")
         .then(m => m.TerminalComponent)
     ],
     [
-        'file-explorer',
+        fileExplorerProgram,
         ()=> import("../file-explorer/multi-explorer/multi-explorer")
             .then(f=>f.MultiExplorer),
     ],
     [
-        'code-space',
+        codeSpaceProgram,
         ()=> import("../code-space/code-space")
         .then(m => m.CodeSpace),
     ],
     [
-        'image-viewer',
+        imageViewerProgram,
         ()=> import("../image-viewer/image-viewer")
         .then(m => m.ImageViewer),
     ]
 ]);
 export const programWithCustomHeaders = [
-    'file-explorer',
-    'code-space'
+    fileExplorerProgram,
+    codeSpaceProgram
 ]
