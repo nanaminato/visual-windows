@@ -50,3 +50,6 @@ ng serve
 ```bash
 ng build
 ```
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE) 进行许可。
