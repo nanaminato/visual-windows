@@ -43,13 +43,19 @@ export class WindowEffects {
                     actionsToDispatch.push(WindowActions.focusWindow({ id: openedWindows[0].id }));
                     return from(actionsToDispatch);
                 }
-
+                let parentWindow: WindowState | undefined;
+                if(parentId) {
+                    parentWindow = windows.find(p=>p.id === parentId);
+                }
                 const newId = uuid();
                 const newWindow: WindowState = {
                     id: newId,
                     programId: appId,
                     title,
-                    position: { x: 100, y: 100 },
+                    position: {
+                        x: parentWindow?parentWindow.position.x+30:100,
+                        y: parentWindow?parentWindow.position.y+30:100
+                    },
                     size: {
                         width: registeredApp?.preferredSize?.width ?? 800,
                         height: registeredApp?.preferredSize?.height ?? 600

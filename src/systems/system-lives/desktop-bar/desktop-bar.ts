@@ -47,7 +47,8 @@ export class DesktopBar {
     }
     divideIntoGroups() {
         const newGroupsMap = new Map<string, WindowState[]>();
-        for (const window of this.windows) {
+        // modal = true 的窗口为模态弹窗, parent 不为空的是普通弹窗
+        for (const window of this.windows.filter(w=>(w.parentId===undefined)&&(w.modal===false||w.modal===undefined))) {
             if (!newGroupsMap.has(window.programId)) {
                 newGroupsMap.set(window.programId, []);
             }
@@ -97,7 +98,9 @@ export class DesktopBar {
         if(win.minimized){
             this.windowManager.focusWindow(winGroup.windowStates[0].id);
         }else{
-            this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
+            if(!win.disabled){
+                this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
+            }
         }
 
     }
@@ -124,5 +127,11 @@ export class DesktopBar {
     @HostListener('document:click')
     onDocumentClick() {
         this.openGroupAppId = null;
+    }
+
+    minimizeAllWindow() {
+        for(let window of this.windows){
+            this.windowManager.minimizeWindow(window.id);
+        }
     }
 }

@@ -26,18 +26,39 @@ export const windowReducer = createReducer(
             return state;
         }
 
-        const newWindows = [
-            ...state.windows
-                .filter(w => w.id !== id)
-                .map(w => ({ ...w, active: false, minimized: w.minimized })),
-            { ...focusedWindow, active: true, minimized: false }
-        ];
+        // 1. 初始化激活ID集合，使用Set避免重复
+        const activeIds = new Set<string>();
+        activeIds.add(id);
+
+        // 2. 递归查找所有子窗口
+        let added: boolean;
+        do {
+            added = false;
+            for (const w of state.windows) {
+                if (w.parentId && activeIds.has(w.parentId) && !activeIds.has(w.id)) {
+                    activeIds.add(w.id);
+                    added = true;
+                }
+            }
+        } while (added);
+
+        // 3. 更新窗口状态
+        const newWindows = state.windows.map(w => {
+            if (activeIds.has(w.id)) {
+                // 激活窗口及其所有子孙窗口，取消最小化
+                return { ...w, active: true, minimized: false };
+            } else {
+                // 其他窗口非激活，保持最小化状态不变
+                return { ...w, active: false };
+            }
+        });
 
         return {
             ...state,
             windows: newWindows
         };
     }),
+
     on(WindowActions.minimizeWindow, (state, { id }) => ({
         ...state,
         windows: state.windows.map(w =>

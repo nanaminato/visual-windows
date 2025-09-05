@@ -37,13 +37,13 @@ export class DesktopManager {
             ofType(systemActions.configLoadSuccess),
             take(1)
         ).subscribe(() => {
-            // this.resumeService.start().then(() => {
+            this.resumeService.start().then(() => {
             //     this.store$.dispatch(
             //         WindowActions.openWindow(
             //             { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
             //         )
             //     );
-            // });
+            });
         });
 
     }

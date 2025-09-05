@@ -1,118 +1,131 @@
 .bottom-navbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background: #222;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  color: white;
-  z-index: 1000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    color: white;
+    z-index: 1000;
 }
 
 .win-button {
-  font-size: 24px;
-  cursor: pointer;
-  background: #444;
-  border: none;
-  color: white;
-  margin-left: 16px;
-  padding: 2px 2px;
-  border-radius: 2px;
+    font-size: 24px;
+    cursor: pointer;
+    background: #444;
+    border: none;
+    color: white;
+    margin-left: 16px;
+    padding: 2px 2px;
+    border-radius: 2px;
 }
 
 .app-list {
-  position: fixed;
-  bottom: 48px; /* 任务栏高度 */
-  left: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: #333;
-  border-radius: 4px 4px 0 0;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.7);
-  width: 250px;
-  transform-origin: bottom;
-  transform: scaleY(0);
-  transition: transform 0.2s ease-out;
-  color: white;
-  z-index: 1001;
+    position: fixed;
+    bottom: 48px; /* 任务栏高度 */
+    left: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #333;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.7);
+    width: 250px;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    transition: transform 0.2s ease-out;
+    color: white;
+    z-index: 1001;
 }
 
 .app-list.show {
-  transform: scaleY(1);
+    transform: scaleY(1);
 }
 
 .app-list ul {
-  list-style: none;
-  margin: 0;
-  padding: 8px 0;
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
 }
 
 .app-entry {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
 }
 
 .app-entry > button {
-  background: transparent;
-  border: none;
-  color: white;
-  text-align: left;
-  padding: 4px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 .taskbar{
-  display: flex;
-  flex-direction: row;
-  margin: 0 0 0 20px;
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 20px;
 }
 .taskbar  span{
-  cursor: pointer;
-  user-select: none;
+    cursor: pointer;
+    user-select: none;
 }
 
 
 
 .grouped-taskbar-item {
-  position: relative;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
 }
 
 .dropdown-arrow {
-  font-size: 0.6em;
-  margin-left: 4px;
+    font-size: 0.6em;
+    margin-left: 4px;
 }
 
 .window-list-popup {
-  position: absolute;
-  bottom: 100%; /* 让弹窗从任务栏上方展开 */
-  left: 0;
-  background: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  z-index: 1000;
-  min-width: 150px;
+    position: absolute;
+    bottom: 100%; /* 让弹窗从任务栏上方展开 */
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+    min-width: 150px;
 }
 
 .window-list-item {
-  color: black;
-  padding: 6px 12px;
-  cursor: pointer;
-  white-space: nowrap;
+    color: black;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .window-list-item:hover {
-  background-color: #eee;
+    background-color: #eee;
 }
+.switch-button{
+    width: 20px;
+    height: 100%;
+}
+.switch-button > button {
+    width: 100%;
+    height: 100%;
+    background: transparent;
 
+}
+.switch-button > button:hover {
+    background: #323131;
+}
 
 

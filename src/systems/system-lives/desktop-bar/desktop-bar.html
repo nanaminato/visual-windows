@@ -1,55 +1,60 @@
 <nav class="bottom-navbar">
 
-  <!-- Win 按钮 -->
-  <button class="win-button" (click)="toggleProgramList()" title="Start Menu">
-    <nz-icon nzType="windows" nzTheme="outline" />
-<!--    <img width="32" height="32" src="assets/system/win.png"/>-->
-  </button>
+    <div class="d-flex flex-row align-items-center">
+        <!-- Win 按钮 -->
+        <button class="win-button" (click)="toggleProgramList()" title="Start Menu">
+            <nz-icon nzType="windows" nzTheme="outline" />
+            <!--    <img width="32" height="32" src="assets/system/win.png"/>-->
+        </button>
 
-  <!-- 自下而上展开的程序列表 -->
-  <div class="app-list" [class.show]="showAppList">
-    <ul>
-      @for(app of programConfigs; track app.programId) {
-        <li>
-          <div class="app-entry">
-            <button (click)="openProgram(app.programId, app.programName)">
-              <app-win-icon [programConfig]="app"> </app-win-icon>
-              {{app.programName}}
-            </button>
-          </div>
-        </li>
-      }
-    </ul>
-  </div>
-
-  <div class="taskbar dont-select">
-    @for(win of groupWindows; track win.programId) {
-      @if(win.windowStates.length>1){
-        <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.programId, $event)">
-          <!-- 应用图标 -->
-          <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
-          <!-- 下拉箭头 -->
-          <span class="dropdown-arrow">▼</span>
-
-          <!-- 弹出菜单 -->
-          @if(openGroupAppId === win.programId) {
-            <div class="window-list-popup" (click)="$event.stopPropagation()">
-              @for(window of win.windowStates; track window.id) {
-                <!-- 添加hover的时候，激活对应窗口,并关闭其他窗口                 -->
-                <div class="window-list-item" (click)="activateWindow(window)" >
-                  {{window.title || '无标题窗口'}}
-                </div>
-              }
-            </div>
-          }
+        <!-- 自下而上展开的程序列表 -->
+        <div class="app-list" [class.show]="showAppList">
+            <ul>
+                @for(app of programConfigs; track app.programId) {
+                    <li>
+                        <div class="app-entry">
+                            <button (click)="openProgram(app.programId, app.programName)">
+                                <app-win-icon [programConfig]="app"> </app-win-icon>
+                                {{app.programName}}
+                            </button>
+                        </div>
+                    </li>
+                }
+            </ul>
         </div>
-      }@else{
-        <div class="mx-3"
-             (click)="toggleWindow(win)"
-             >
-          <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
+
+        <div class="taskbar dont-select">
+            @for(win of groupWindows; track win.programId) {
+                @if(win.windowStates.length>1){
+                    <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.programId, $event)">
+                        <!-- 应用图标 -->
+                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
+                        <!-- 下拉箭头 -->
+                        <span class="dropdown-arrow">▼</span>
+
+                        <!-- 弹出菜单 -->
+                        @if(openGroupAppId === win.programId) {
+                            <div class="window-list-popup" (click)="$event.stopPropagation()">
+                                @for(window of win.windowStates; track window.id) {
+                                    <!-- 添加hover的时候，激活对应窗口,并关闭其他窗口                 -->
+                                    <div class="window-list-item" (click)="activateWindow(window)" >
+                                        {{window.title || '无标题窗口'}}
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }@else{
+                    <div class="mx-3"
+                         (click)="toggleWindow(win)"
+                    >
+                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
+                    </div>
+                }
+            }
         </div>
-      }
-    }
-  </div>
+    </div>
+    <div class="switch-button ">
+        <button class="border-0" (click)="minimizeAllWindow()"></button>
+    </div>
 </nav>

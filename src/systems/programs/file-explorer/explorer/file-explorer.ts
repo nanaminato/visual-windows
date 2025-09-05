@@ -24,7 +24,7 @@ import {SystemInfoService} from '../../../system-services/info.service';
 import {WindowManagerService} from '../../../system-services/windows-manager.service';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {fileExplorerProgram, filePickerProgram} from '../../models/register-app';
+import {codeSpaceProgram, fileExplorerProgram, filePickerProgram} from '../../models/register-app';
 
 @Component({
     selector: 'file-explorer',
