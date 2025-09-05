@@ -1,6 +1,18 @@
 :host{
     position: absolute;
 }
+.window.disabled {
+    pointer-events: none; /* 禁止所有交互 */
+    opacity: 0.9; /* 可选，视觉提示 */
+}
+.disabled-overlay {
+    position: relative;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: transparent;
+    z-index: 3;
+    cursor: not-allowed;
+}
+
 .window {
     position: absolute;
     background: white;

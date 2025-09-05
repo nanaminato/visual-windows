@@ -19,8 +19,8 @@ export class WindowManagerService implements OnDestroy {
     constructor() {
         window.addEventListener('resize', this.onWindowResize);
     }
-    openWindow(appId: string, title: string, params?: any) {
-        this.store.dispatch(WindowActions.openWindow({ id: appId, title, params }));
+    openWindow(appId: string, title: string, params?: any, parentId?: string, modal?: boolean) {
+        this.store.dispatch(WindowActions.openWindow({ id: appId, title, params, parentId,modal }));
     }
     openFile(openFile: FileEntry, params: any) {
         let ext = getFileExtension(openFile);
@@ -36,8 +36,8 @@ export class WindowManagerService implements OnDestroy {
         return this.windows$;
     }
 
-    closeWindow(id: string) {
-        this.store.dispatch(WindowActions.closeWindow({ id }));
+    closeWindow(id: string, parentId?: string) {
+        this.store.dispatch(WindowActions.closeWindow({ id, parentId }));
     }
 
     focusWindow(id: string) {

@@ -2,6 +2,7 @@ export const terminalProgram = 'terminal';
 export const fileExplorerProgram = 'file-explorer';
 export const codeSpaceProgram = 'code-space';
 export const imageViewerProgram = 'image-viewer';
+export const filePickerProgram = 'file-picker';
 
 export const componentMap: Map<string, () => Promise<any>> = new Map([
     [terminalProgram, () => import("../terminal/terminal.component")
@@ -21,6 +22,11 @@ export const componentMap: Map<string, () => Promise<any>> = new Map([
         imageViewerProgram,
         ()=> import("../image-viewer/image-viewer")
         .then(m => m.ImageViewer),
+    ],
+    [
+        filePickerProgram,
+        ()=> import('../file-explorer/file-picker/file-picker')
+        .then(m => m.FilePicker),
     ]
 ]);
 export const programWithCustomHeaders = [

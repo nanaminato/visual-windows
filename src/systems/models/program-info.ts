@@ -12,6 +12,7 @@ export interface ProgramEvent {
   type: number;
   id: string;
   event: any;
+  parentId?: string;
 }
 /*
 * 1 focus window

@@ -4,7 +4,11 @@
          [style.top.px]="win.position.y"
          [style.width.px]="win.size.width"
          [style.height.px]="win.size.height"
+         [class.disabled]="win.disabled"
          (mousedown)="focusWindow(win.id)">
+        <div [class.disabled-overlay]="win.disabled" >
+
+        </div>
         <div class="title-bar"
              [hidden]="win.customHeader">
             <div class="d-flex flex-row">

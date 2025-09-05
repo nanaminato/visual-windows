@@ -37,13 +37,13 @@ export class DesktopManager {
             ofType(systemActions.configLoadSuccess),
             take(1)
         ).subscribe(() => {
-            this.resumeService.start().then(() => {
-                // this.store$.dispatch(
-                //     WindowActions.openWindow(
-                //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-                //     )
-                // );
-            });
+            // this.resumeService.start().then(() => {
+            //     this.store$.dispatch(
+            //         WindowActions.openWindow(
+            //             { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+            //         )
+            //     );
+            // });
         });
 
     }
@@ -51,8 +51,8 @@ export class DesktopManager {
         this.windowManager.focusWindow(id);
     }
 
-    closeWindow(id: string) {
-        this.windowManager.closeWindow(id);
+    closeWindow(id: string, parentId?: string) {
+        this.windowManager.closeWindow(id, parentId);
     }
     minimizeWindow(id: string) {
         this.windowManager.minimizeWindow(id);
@@ -139,7 +139,7 @@ export class DesktopManager {
                 this.maximizeWindow($event.id);
                 break;
             case 4:
-                this.closeWindow($event.id);
+                this.closeWindow($event.id, $event.parentId);
                 console.log("close window "+$event.id);
                 break;
             case 5:

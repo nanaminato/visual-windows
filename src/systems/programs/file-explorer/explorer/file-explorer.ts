@@ -24,6 +24,7 @@ import {SystemInfoService} from '../../../system-services/info.service';
 import {WindowManagerService} from '../../../system-services/windows-manager.service';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
+import {fileExplorerProgram, filePickerProgram} from '../../models/register-app';
 
 @Component({
     selector: 'file-explorer',
@@ -43,6 +44,8 @@ import {WindowActions} from '../../../system-services/state/window/window.action
 export class FileExplorer {
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
+    //窗口程序id,用于获弹窗等阻塞主窗口
+    @Input() winId!: string;
     // 当前实际所在的位置
     @Input()
     currentPath: string = ''; // 例如 "/home/user"
@@ -240,10 +243,11 @@ export class FileExplorer {
     }
     private store = inject(Store);
 
+
     private onCtrlNPressed() {
         console.log('onCtrlNPressed');
         this.store.dispatch(WindowActions.openWindow({
-            id: 'file-explorer',
+            id: fileExplorerProgram,
             title: '',
             params: {
                 startPath: this.currentPath
@@ -253,5 +257,17 @@ export class FileExplorer {
 
     onRefreshRequest() {
         this.refresh();
+    }
+
+    showInfo() {
+        this.store.dispatch(WindowActions.openWindow({
+            id: fileExplorerProgram,
+            title: '选择文件',
+            params: {
+
+            },
+            parentId: this.winId,
+            modal: true
+        }))
     }
 }

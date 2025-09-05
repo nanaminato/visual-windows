@@ -37,6 +37,7 @@
             <ng-container >
                 <div [hidden]="selectedIndex !== $index" class="tab-panel">
                     <file-explorer
+                        [winId]="id!"
                         [uuid]="fileExplorer.fileExplorerId"
                         [currentPath]="fileExplorer.initPath"
                         (titleChange)="handleTitleChange($event)">

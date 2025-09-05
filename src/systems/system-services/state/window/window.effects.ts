@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import {Action, Store} from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import {switchMap, withLatestFrom, catchError, of, mergeMap} from 'rxjs';
+import {switchMap, withLatestFrom, catchError, of, mergeMap, from} from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
@@ -15,30 +15,35 @@ export class WindowEffects {
     private store = inject(Store);
     openWindow$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(WindowActions.openWindow), // 监听 'bing window' action
+            ofType(WindowActions.openWindow),
             withLatestFrom(
                 this.store.select(selectWindows),
                 this.store.select(selectProgramConfigs)
             ),
             mergeMap(([action, windows, programConfigs]) => {
-                const { id: appId, title, params } = action;
-                // 找出已打开的窗口
-                const openedWindows = windows.filter(w => w.programId === appId);
-                // 找出对应的程序配置
-                if(programConfigs===undefined){
-                    console.warn("No program configs found");
-                    throw new Error("No program configs found");
+                const { id: appId, title, params, parentId, modal } = action;
 
+                const actionsToDispatch: Action[] = [];
+
+                if (modal && parentId) {
+                    actionsToDispatch.push(WindowActions.setWindowDisabled({ id: parentId, disabled: true }));
                 }
-                const registeredApps = programConfigs.filter(programConfig => programConfig.programId === appId);
+
+                const openedWindows = windows.filter(w => w.programId === appId);
+
+                if (!programConfigs) {
+                    console.warn("No program configs found");
+                    return of({ type: 'NO_ACTION' });
+                }
+
+                const registeredApps = programConfigs.filter(pc => pc.programId === appId);
                 const registeredApp = registeredApps[0];
 
-                // 如果是单例且已打开，直接聚焦
                 if (openedWindows.length > 0 && registeredApp?.isSingleton) {
-                    return of(WindowActions.focusWindow({ id: openedWindows[0].id }));
+                    actionsToDispatch.push(WindowActions.focusWindow({ id: openedWindows[0].id }));
+                    return from(actionsToDispatch);
                 }
 
-                // 新建窗口
                 const newId = uuid();
                 const newWindow: WindowState = {
                     id: newId,
@@ -54,29 +59,28 @@ export class WindowEffects {
                     active: true,
                     params,
                     customHeader: programWithCustomHeaders.includes(appId),
+                    parentId,
+                    modal,
                 };
 
-                // 异步加载组件，转换成 Promise
                 const componentLoader = componentMap.get(appId);
+
                 if (componentLoader) {
-                    return componentLoader().then(component => {
-                        newWindow.component = component;
-                        return WindowActions.openWindowSuccess({ window: newWindow });
-                    }).catch(error => {
-                        console.error('load component error:', error);
-                        // 失败时不打开窗口，或者你可以返回一个失败的 action
-                        return { type: 'NO_ACTION' };
-                    });
+                    return from(componentLoader()).pipe(
+                        mergeMap(component => {
+                            newWindow.component = component;
+                            actionsToDispatch.push(WindowActions.openWindowSuccess({ window: newWindow }));
+                            return from(actionsToDispatch);
+                        }),
+                        catchError(error => {
+                            console.error('load component error:', error);
+                            return of({ type: 'NO_ACTION' });
+                        })
+                    );
                 } else {
-                    // 没有组件加载器，直接打开窗口
-                    return of(WindowActions.openWindowSuccess({ window: newWindow }));
+                    actionsToDispatch.push(WindowActions.openWindowSuccess({ window: newWindow }));
+                    return from(actionsToDispatch);
                 }
-            }),
-            switchMap(actionOrPromise => {
-                if (actionOrPromise instanceof Promise) {
-                    return actionOrPromise.then(action => action);
-                }
-                return of(actionOrPromise);
             }),
             catchError(error => {
                 console.error('openWindow effect error:', error);
@@ -84,4 +88,24 @@ export class WindowEffects {
             })
         )
     );
+
+    closeWindow$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WindowActions.closeWindow),
+            withLatestFrom(this.store.select(selectWindows)),
+            mergeMap(([action, windows]) => {
+                const win = windows.find(w => w.id === action.id);
+                if (!win) return of({ type: 'NO_ACTION' });
+
+                const actionsToDispatch = [];
+
+                // 如果是弹窗，恢复父窗口
+                if (win.parentId) {
+                    actionsToDispatch.push(WindowActions.setWindowDisabled({ id: win.parentId, disabled: false }));
+                }
+                return from(actionsToDispatch);
+            })
+        )
+    );
+
 }

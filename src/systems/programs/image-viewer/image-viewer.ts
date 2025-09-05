@@ -35,7 +35,7 @@ export class ImageViewer {
 
     ngOnInit(): void {
         if (!this.file) {
-            console.error('ImageViewerComponent: file input is required');
+            // console.error('ImageViewerComponent: file input is required');
             return;
         }
         const parentPath = this.getParentPath(this.file.path);

@@ -16,6 +16,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   styleUrl: './multi-explorer.css'
 })
 export class MultiExplorer {
+    // 窗口id, 用于实现自定义程序header
     @Input()
     id: string | undefined;
     @Input()
@@ -32,7 +33,7 @@ export class MultiExplorer {
         this.fileExplorers.push({
             fileExplorerId: uuid(),
             initPath: path,
-            title: ""
+            title: "",
         });
         this.selectedIndex = this.fileExplorers.length - 1;
     }

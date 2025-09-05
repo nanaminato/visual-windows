@@ -15,6 +15,10 @@ export interface WindowState {
     // 新增字段，保存最大化前的状态
     prevPosition?: { x: number; y: number };
     prevSize?: { width: number; height: number };
+
+    parentId?: string;
+    modal?: boolean;
+    disabled?: boolean;
 }
 export interface GroupWindowState {
     programId: string;

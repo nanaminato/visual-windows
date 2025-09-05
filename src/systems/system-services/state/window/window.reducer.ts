@@ -19,10 +19,7 @@ export const windowReducer = createReducer(
             windows: [...updatedWindows, window]
         };
     }),
-    on(WindowActions.closeWindow, (state, { id }) => ({
-        ...state,
-        windows: state.windows.filter(w => w.id !== id)
-    })),
+
     on(WindowActions.focusWindow, (state, { id }) => {
         const focusedWindow = state.windows.find(w => w.id === id);
         if (!focusedWindow) {
@@ -81,5 +78,27 @@ export const windowReducer = createReducer(
     on(WindowActions.updateWindows, (state, { windows }) => ({
         ...state,
         windows
-    }))
+    })),
+    on(WindowActions.setWindowDisabled, (state, { id, disabled }) => {
+        return {
+            ...state,
+            windows: state.windows.map(win =>
+                win.id === id ? { ...win, disabled } : win
+            )
+        };
+    }),
+    on(WindowActions.closeWindow, (state, { id, parentId }) => {
+        // 移除当前窗口
+        let windows = state.windows.filter(w => w.id !== id);
+        if (parentId) {
+            windows = windows.map(w =>
+                w.id === parentId ? { ...w, disabled: false } : w
+            );
+        }
+
+        return {
+            ...state,
+            windows
+        };
+    }),
 );

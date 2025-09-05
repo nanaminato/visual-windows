@@ -5,12 +5,13 @@ import {WindowState} from '../../../models';
 export const WindowActions = createActionGroup({
     source: 'Window',
     events: {
-        'open window': props<{id: string,title: string, params?: any}>(),
+        'open window': props<{id: string,title: string, params?: any,  parentId?: string; modal?: boolean }>(),
         'open window success': props<{ window: WindowState }>(),
-        'close window': props<{ id: string }>(),
+        'close window': props<{ id: string, parentId?: string }>(),
         'focus window': props<{ id: string }>(),
         'minimize window': props<{ id: string }>(),
         'maximize window': props<{ id: string; desktopWidth: number; desktopHeight: number; taskbarHeight: number }>(),
         'update windows': props<{ windows: WindowState[] }>(),
+        'set window disabled': props<{ id: string; disabled: boolean }>(),
     }
 });
