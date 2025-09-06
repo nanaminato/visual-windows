@@ -258,7 +258,6 @@ export class FileExplorer {
     onRefreshRequest() {
         this.refresh();
     }
-
     showInfo() {
         this.store.dispatch(WindowActions.openWindow({
             id: fileExplorerProgram,
@@ -267,7 +266,8 @@ export class FileExplorer {
 
             },
             parentId: this.winId,
-            modal: true
-        }))
+            modal: false,
+            closeWithParent: true
+        }));
     }
 }

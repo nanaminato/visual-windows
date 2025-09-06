@@ -19,6 +19,7 @@ export interface WindowState {
     parentId?: string;
     modal?: boolean;
     disabled?: boolean;
+    closeWithParent?: boolean;
 }
 export interface GroupWindowState {
     programId: string;

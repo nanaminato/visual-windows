@@ -21,7 +21,7 @@ export class WindowEffects {
                 this.store.select(selectProgramConfigs)
             ),
             mergeMap(([action, windows, programConfigs]) => {
-                const { id: appId, title, params, parentId, modal } = action;
+                const { id: appId, title, params, parentId, modal, closeWithParent } = action;
 
                 const actionsToDispatch: Action[] = [];
 
@@ -67,6 +67,7 @@ export class WindowEffects {
                     customHeader: programWithCustomHeaders.includes(appId),
                     parentId,
                     modal,
+                    closeWithParent,
                 };
 
                 const componentLoader = componentMap.get(appId);
@@ -91,25 +92,6 @@ export class WindowEffects {
             catchError(error => {
                 console.error('openWindow effect error:', error);
                 return of({ type: 'NO_ACTION' });
-            })
-        )
-    );
-
-    closeWindow$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(WindowActions.closeWindow),
-            withLatestFrom(this.store.select(selectWindows)),
-            mergeMap(([action, windows]) => {
-                const win = windows.find(w => w.id === action.id);
-                if (!win) return of({ type: 'NO_ACTION' });
-
-                const actionsToDispatch = [];
-
-                // 如果是弹窗，恢复父窗口
-                if (win.parentId) {
-                    actionsToDispatch.push(WindowActions.setWindowDisabled({ id: win.parentId, disabled: false }));
-                }
-                return from(actionsToDispatch);
             })
         )
     );

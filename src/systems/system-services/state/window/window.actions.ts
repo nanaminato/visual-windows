@@ -5,7 +5,7 @@ import {WindowState} from '../../../models';
 export const WindowActions = createActionGroup({
     source: 'Window',
     events: {
-        'open window': props<{id: string,title: string, params?: any,  parentId?: string; modal?: boolean }>(),
+        'open window': props<{id: string,title: string, params?: any,  parentId?: string; modal?: boolean, closeWithParent?: boolean }>(),
         'open window success': props<{ window: WindowState }>(),
         'close window': props<{ id: string, parentId?: string }>(),
         'focus window': props<{ id: string }>(),

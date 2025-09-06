@@ -1,7 +1,7 @@
 import {
     AfterViewInit,
     ComponentRef, Directive,
-    EventEmitter,
+    EventEmitter, Input,
     Output,
     Type,
     ViewChild,
@@ -12,53 +12,75 @@ import {Subscription} from 'rxjs';
 
 @Directive()
 export class Routable implements AfterViewInit {
+    @Input()
     path: string = '';
+
     navigates: Routes = [];
     loaded: boolean = false;
+
+    @Input()
+    routeDepth: number = 0;
 
     component: Type<any> | undefined;
     private componentRef: ComponentRef<any> | undefined;
 
+    // 父组件监听子组件的导航事件
     @Output()
     parentEmitter: EventEmitter<string> = new EventEmitter();
 
-    // ingore
-    @ViewChild('dynamic', { read: ViewContainerRef, static: false })
+    @ViewChild('dynamic', {read: ViewContainerRef, static: false})
     private dynamic!: ViewContainerRef;
 
+    private subscription?: Subscription;
+
     ngAfterViewInit() {
-        const navResult = this.navigateTo(this.path);
-        if (navResult) {
-            navResult.then((path) => {
-                this.path = path;
-                this.loaded = true;
-            });
-        }
+        // 父组件传入的全路径更新，初始化 fullPath
+        // this.fullPath = this.buildFullPath(this.path, this.routeDepth);
+        this.navigateTo(this.path).catch(console.error);
     }
 
     /**
-     * 导航到指定路径，返回 Promise<string> 表示导航完成的路径
+     * 导航到指定路径。这里path是全路径
      */
-    navigateTo(path: string): Promise<string> | undefined {
+    async navigateTo(path: string): Promise<string> {
         if (path === this.path && this.loaded) {
-            return undefined;
+            return path;
+        }
+        if(this.navigates.length === 0){
+            return Promise.resolve(path);
+        }
+        const pathSegments = path.split('/');
+        console.log(pathSegments);
+        const myPathSegment = pathSegments[this.routeDepth]??'';
+        console.log(`depth : ${this.routeDepth} `+"part "+ myPathSegment);
+
+
+        const route = this.navigates.find((s) => s.path === myPathSegment);
+        if (!route) {
+            console.warn(`Route not found for path segment: ${myPathSegment}`);
+            return Promise.resolve(path);
         }
 
-        const route = this.navigates.find((s) => s.path === path);
-        if (!route) {
-            console.warn(`Route not found for path: ${path}`);
-            return undefined;
-        }
         if (this.component === route.component && this.component !== undefined) {
-            return undefined;
+            this.loaded = true; // 之前未设置loaded
+            return Promise.resolve(path);
         }
-        return new Promise<string>((resolve, reject) => {
-            this.loadComponent(route)
-                .then(() => resolve(path))
-                .catch((err) => reject(err));
-        });
+
+        await this.loadComponent(route);
+
+        this.path = path;
+        this.loaded = true;
+
+        // 如果有下级，继续通知子组件导航
+        if (this.componentRef) {
+            const instance = this.componentRef.instance as any;
+            if (instance && typeof instance.navigateTo === 'function') {
+                await instance.navigateTo(path);
+            }
+        }
+        return path;
     }
-    subscription?: Subscription;
+
     /**
      * 加载路由对应的组件
      */
@@ -85,17 +107,28 @@ export class Routable implements AfterViewInit {
         this.component = componentType;
         this.componentRef = this.dynamic.createComponent(componentType);
 
-        // 订阅子组件的 parentEmitter 事件
         const instance = this.componentRef.instance as any;
-        if (instance.parentEmitter && instance.parentEmitter.subscribe) {
-            this.subscription = this.parentEmitter.subscribe((deliver: string) => {
-                this.navigateTo(deliver);
-            });
+
+        if (instance) {
+            // 传递深度 +1
+            if ('routeDepth' in instance) {
+                instance.routeDepth = this.routeDepth + 1;
+            }
+            if ('parentFullPath' in instance) {
+                instance.parentFullPath = this.path;
+            }
+
+            // 监听子组件发来的导航请求
+            if (instance.parentEmitter && instance.parentEmitter.subscribe) {
+                this.subscription = instance.parentEmitter.subscribe((nextPath: string) => {
+                    this.navigateTo(nextPath).catch(console.error);
+                });
+            }
         }
     }
 
     /**
-     * 向父组件发送通知
+     * 向父组件发送导航请求
      */
     noticePath(path: string) {
         this.parentEmitter.emit(path);

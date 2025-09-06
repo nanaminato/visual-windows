@@ -35,7 +35,7 @@ export const windowReducer = createReducer(
         do {
             added = false;
             for (const w of state.windows) {
-                if (w.parentId && activeIds.has(w.parentId) && !activeIds.has(w.id)) {
+                if (w.parentId &&w.modal && activeIds.has(w.parentId) && !activeIds.has(w.id)) {
                     activeIds.add(w.id);
                     added = true;
                 }
@@ -109,9 +109,41 @@ export const windowReducer = createReducer(
         };
     }),
     on(WindowActions.closeWindow, (state, { id, parentId }) => {
-        // 移除当前窗口
-        let windows = state.windows.filter(w => w.id !== id);
-        if (parentId) {
+        const closedWindow = state.windows.find(w => w.id === id);
+        if (!closedWindow) {
+            return state;
+        }
+
+        // 递归查找所有需要关闭的子窗口ID，只有 closeWithParent === true 的子窗口才关闭
+        const getChildWindowsToClose = (parentId: string, windows: WindowState[]): string[] => {
+            // 1. 找出所有直接子窗口，且这些子窗口的 closeWithParent === true
+            const directChildren = windows.filter(w => w.parentId === parentId && w.closeWithParent);
+
+            // 2. 初始化一个数组，用来收集所有符合条件的子窗口ID
+            let allChildrenIds: string[] = [];
+
+            // 3. 遍历每个直接子窗口
+            for (const child of directChildren) {
+                // 3.1 把当前子窗口ID加入结果数组
+                allChildrenIds.push(child.id);
+
+                // 3.2 递归调用，查找该子窗口的子窗口（孙窗口）
+                //     并把递归结果合并到结果数组中
+                allChildrenIds = allChildrenIds.concat(getChildWindowsToClose(child.id, windows));
+            }
+
+            // 4. 返回所有找到的子孙窗口ID
+            return allChildrenIds;
+        };
+
+        // 关闭的窗口ID列表，包含自身和符合条件的子孙窗口
+        const closeWindowIds = [id].concat(getChildWindowsToClose(id, state.windows));
+
+        // 过滤掉所有要关闭的窗口
+        let windows = state.windows.filter(w => !closeWindowIds.includes(w.id));
+
+        // 如果关闭的是 modal 子窗口，解除父窗口禁用状态
+        if (parentId && closedWindow.modal) {
             windows = windows.map(w =>
                 w.id === parentId ? { ...w, disabled: false } : w
             );

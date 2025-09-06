@@ -48,7 +48,7 @@ export class DesktopBar {
     divideIntoGroups() {
         const newGroupsMap = new Map<string, WindowState[]>();
         // modal = true 的窗口为模态弹窗, parent 不为空的是普通弹窗
-        for (const window of this.windows.filter(w=>(w.parentId===undefined)&&(w.modal===false||w.modal===undefined))) {
+        for (const window of this.windows.filter(w=>w.modal!==true)) {
             if (!newGroupsMap.has(window.programId)) {
                 newGroupsMap.set(window.programId, []);
             }
