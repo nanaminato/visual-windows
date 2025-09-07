@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import {HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpHandlerFn} from '@angular/common/http';
+import {HttpRequest, HttpEvent, HttpHandlerFn} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export function jwtInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {

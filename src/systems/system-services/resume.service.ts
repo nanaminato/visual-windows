@@ -19,6 +19,7 @@ export class ResumeService {
     private store$ = inject(Store);
     async resumeTerminals(){
         let resumableSession = await this.getResumableTerminals();
+        console.log(resumableSession);
         for(let sessionId of resumableSession.terminals){
             this.store$.dispatch(
                 WindowActions.openWindow(

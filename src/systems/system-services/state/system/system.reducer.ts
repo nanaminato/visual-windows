@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import {systemActions} from './system.action';
+import {loginFailure, loginSuccess, logoutAction, systemActions} from './system.action';
 import {ProgramConfig, SystemInfo} from '../../../models';
 export interface ProgramConfigState{
     programConfigs: ProgramConfig[] | undefined;
@@ -33,4 +33,36 @@ export const systemInfoReducer = createReducer(
     on(systemActions.systemInfoLoadError, (state, { error }) => ({
         ...state,
     })),
+);
+
+
+
+export interface AuthState {
+    token: string | null;
+    isLoggedIn: boolean;
+    error: any;
+}
+
+export const initialAuthState: AuthState = {
+    token: null,
+    isLoggedIn: false,
+    error: null,
+};
+
+export const authReducer = createReducer(
+    initialAuthState,
+
+    on(loginSuccess, (state, { token }) => ({
+        ...state,
+        token,
+        isLoggedIn: true,
+        error: null,
+    })),
+
+    on(loginFailure, (state, { error }) => ({
+        ...state,
+        error,
+    })),
+
+    on(logoutAction, () => initialAuthState)
 );

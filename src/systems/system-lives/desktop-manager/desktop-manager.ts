@@ -26,25 +26,17 @@ export class DesktopManager {
     // 拖拽相关状态
     draggingTouchWindowId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
-    private readonly subscription: Subscription;
     private actions$ = inject(Actions);
     private store$ = inject(Store);
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        this.subscription = this.actions$.pipe(
-            ofType(systemActions.configLoadSuccess),
-            take(1)
-        ).subscribe(() => {
-            this.resumeService.start().then(() => {
-            //     this.store$.dispatch(
-            //         WindowActions.openWindow(
-            //             { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-            //         )
-            //     );
-            });
-        });
+        //     this.store$.dispatch(
+        //         WindowActions.openWindow(
+        //             { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+        //         )
+        //     );
 
     }
     focusWindow(id: string) {
@@ -157,11 +149,6 @@ export class DesktopManager {
                 this.startDragTouch($event.event as TouchEvent, $event.id);
                 break;
 
-        }
-    }
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
         }
     }
 

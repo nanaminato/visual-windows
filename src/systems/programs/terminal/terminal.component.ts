@@ -65,7 +65,9 @@ export class TerminalComponent {
         }
     }
     private connectWebSocket(sessionId: string) {
-        this.socket = new WebSocket(`${this.serverService.getWebSocketBase()}/api/v1/terminal/${sessionId}`);
+        const token = localStorage.getItem('jwt_token');
+        const wsUrl = `${this.serverService.getWebSocketBase()}/api/v1/terminal/${sessionId}?token=${token}`;
+        this.socket = new WebSocket(wsUrl);
         this.sessionId = sessionId;
         if(this.xterm) {
             this.socket.onmessage = (event) => {

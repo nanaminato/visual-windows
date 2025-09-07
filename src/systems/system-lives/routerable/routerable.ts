@@ -1,7 +1,7 @@
 import {
     AfterViewInit,
     ComponentRef, Directive,
-    EventEmitter, Input,
+    EventEmitter, inject, Injector, Input,
     Output,
     Type,
     ViewChild,
@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 import {Subscription} from 'rxjs';
+import { AnimationBuilder, AnimationPlayer } from '@angular/animations';
+import { animate, style } from '@angular/animations';
 
 @Directive()
 export class Routable implements AfterViewInit {
@@ -20,6 +22,10 @@ export class Routable implements AfterViewInit {
 
     @Input()
     routeDepth: number = 0;
+
+    private player?: AnimationPlayer;
+    private animationBuilder: AnimationBuilder = inject(AnimationBuilder);
+    private injector: Injector = inject(Injector);
 
     component: Type<any> | undefined;
     private componentRef: ComponentRef<any> | undefined;
@@ -52,7 +58,6 @@ export class Routable implements AfterViewInit {
         // console.log(pathSegments);
         const myPathSegment = pathSegments[this.routeDepth]??'';
         // console.log(`depth : ${this.routeDepth} `+"part "+ myPathSegment);
-
 
         const route = this.navigates.find((s) => s.path === myPathSegment);
         if (!route) {
@@ -89,6 +94,13 @@ export class Routable implements AfterViewInit {
             return;
         }
         this.subscription?.unsubscribe();
+        // 先对旧组件做离场动画
+        if (this.componentRef) {
+            await this.playLeaveAnimation(this.componentRef.location.nativeElement);
+            this.componentRef.destroy();
+            this.componentRef = undefined;
+            this.component = undefined;
+        }
         this.dynamic.clear();
 
         let componentType: Type<any>;
@@ -104,8 +116,9 @@ export class Routable implements AfterViewInit {
         }
 
         this.component = componentType;
-        this.componentRef = this.dynamic.createComponent(componentType);
-
+        this.componentRef = this.dynamic.createComponent(componentType, { injector: this.injector });
+        // 新组件进场动画
+        await this.playEnterAnimation(this.componentRef.location.nativeElement);
         const instance = this.componentRef.instance as any;
 
         if (instance) {
@@ -131,5 +144,32 @@ export class Routable implements AfterViewInit {
      */
     noticePath(path: string) {
         this.parentEmitter.emit(path);
+    }
+    private playLeaveAnimation(element: any): Promise<void> {
+        return new Promise((resolve) => {
+            const factory = this.animationBuilder.build([
+                style({ opacity: 1 }),
+                animate('300ms ease', style({ opacity: 0 }))
+            ]);
+            this.player = factory.create(element);
+            this.player.onDone(() => {
+                resolve();
+            });
+            this.player.play();
+        });
+    }
+
+    private playEnterAnimation(element: any): Promise<void> {
+        return new Promise((resolve) => {
+            const factory = this.animationBuilder.build([
+                style({ opacity: 0 }),
+                animate('300ms ease', style({ opacity: 1 }))
+            ]);
+            this.player = factory.create(element);
+            this.player.onDone(() => {
+                resolve();
+            });
+            this.player.play();
+        });
     }
 }

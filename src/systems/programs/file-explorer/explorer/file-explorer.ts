@@ -259,15 +259,15 @@ export class FileExplorer {
         this.refresh();
     }
     showInfo() {
-        this.store.dispatch(WindowActions.openWindow({
-            id: fileExplorerProgram,
-            title: '选择文件',
-            params: {
-
-            },
-            parentId: this.winId,
-            modal: false,
-            closeWithParent: true
-        }));
+        // this.store.dispatch(WindowActions.openWindow({
+        //     id: fileExplorerProgram,
+        //     title: '选择文件',
+        //     params: {
+        //
+        //     },
+        //     parentId: this.winId,
+        //     modal: false,
+        //     closeWithParent: true
+        // }));
     }
 }

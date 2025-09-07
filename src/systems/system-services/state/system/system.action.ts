@@ -14,3 +14,12 @@ export const systemActions = createActionGroup({
 });
 
 export const logoutAction = createAction('[Auth] Logout');
+export const loginSuccess = createAction(
+    '[Auth] Login Success',
+    props<{ token: string; }>()
+);
+
+export const loginFailure = createAction(
+    '[Auth] Login Failure',
+    props<{ error: any }>()
+);
