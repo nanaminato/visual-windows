@@ -2,9 +2,7 @@ import {Component, HostListener, inject} from '@angular/core';
 import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
-import {Subscription, take} from 'rxjs';
-import {Actions, ofType} from '@ngrx/effects';
-import {systemActions} from '../../system-services/state/system/system.action';
+import {Actions} from '@ngrx/effects';
 import {ResumeService} from '../../system-services/resume.service';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
@@ -19,7 +17,6 @@ import {Store} from '@ngrx/store';
     styleUrl: './desktop-manager.css'
 })
 export class DesktopManager {
-    private resumeService = inject(ResumeService);
     private windowManager = inject(WindowManagerService);
     windows: WindowState[] = [];
     draggingWindowId: string | null = null;
@@ -32,11 +29,11 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        //     this.store$.dispatch(
-        //         WindowActions.openWindow(
-        //             { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-        //         )
-        //     );
+            // this.store$.dispatch(
+            //     WindowActions.openWindow(
+            //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+            //     )
+            // );
 
     }
     focusWindow(id: string) {
@@ -136,6 +133,7 @@ export class DesktopManager {
                 break;
             case 5:
                 this.startDrag($event.event as unknown as MouseEvent, $event.id);
+                this.focusWindow($event.id);
                 break;
             case 6:
                 const win = this.windows.find(w => w.id === $event.id);
@@ -144,9 +142,11 @@ export class DesktopManager {
                     win.size = $event.event.size;
                     // 触发变更检测或刷新视图
                 }
+                this.focusWindow($event.id);
                 break;
             case 7:
                 this.startDragTouch($event.event as TouchEvent, $event.id);
+                this.focusWindow($event.id);
                 break;
 
         }

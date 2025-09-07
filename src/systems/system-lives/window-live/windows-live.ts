@@ -133,9 +133,11 @@ export class WindowsLive {
                                 break;
                             case 5:
                                 this.startDrag(eventData.event as unknown as MouseEvent, eventData.id);
+                                this.focusWindow(eventData.id);
                                 break;
                             case 7:
                                 this.touchDrag(eventData.event as TouchEvent, eventData.id);
+                                this.focusWindow(eventData.id);
                                 break;
                         }
                     });

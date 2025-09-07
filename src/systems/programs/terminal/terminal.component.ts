@@ -101,7 +101,7 @@ export class TerminalComponent {
     }
     closeTerminal() {
         if(!this.sessionId) {
-            return Promise.resolve(); // 没有sessionId时，返回一个立即resolve的Promise，避免await阻塞
+            return Promise.resolve();
         }
         let url = `${this.serverService.getServerBase()}/api/v1/terminal/${this.sessionId}`;
         return new Promise((resolve,reject) => {

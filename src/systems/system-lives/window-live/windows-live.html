@@ -5,6 +5,7 @@
          [style.width.px]="win.size.width"
          [style.height.px]="win.size.height"
          [class.disabled]="win.disabled"
+         (tap)="focusWindow(win.id)"
          (mousedown)="focusWindow(win.id)">
         <div [class.disabled-overlay]="win.disabled" >
 

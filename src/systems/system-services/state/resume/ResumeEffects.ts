@@ -4,7 +4,7 @@ import {loginSuccess, systemActions} from '../system/system.action';
 import {filter, switchMap, take, withLatestFrom} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {ResumeService} from '../../resume.service';
-import {selectIsConfigLoaded, selectIsLoggedIn, selectProgramConfigs} from '../system/system.selector';
+import {selectIsConfigLoaded, selectIsLoggedIn} from '../system/system.selector';
 
 @Injectable()
 export class ResumeEffects {
@@ -19,7 +19,7 @@ export class ResumeEffects {
                     this.store.select(selectIsConfigLoaded)
                 ),
                 filter(
-                    ([action, isLoggedIn, configLoaded]) => isLoggedIn && configLoaded),
+                    ([, isLoggedIn, configLoaded]) => isLoggedIn && configLoaded),
                 take(1),
                 switchMap(() => this.resumeService.start())
             ),
