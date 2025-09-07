@@ -14,6 +14,8 @@ import { animate, style } from '@angular/animations';
 
 @Directive()
 export class Routable implements AfterViewInit {
+    private currentComponentRef?: ComponentRef<any>;
+    private previousComponentRef?: ComponentRef<any>;
     @Input()
     path: string = '';
 
@@ -22,8 +24,6 @@ export class Routable implements AfterViewInit {
 
     @Input()
     routeDepth: number = 0;
-
-    private player?: AnimationPlayer;
     private animationBuilder: AnimationBuilder = inject(AnimationBuilder);
     private injector: Injector = inject(Injector);
 
@@ -79,6 +79,7 @@ export class Routable implements AfterViewInit {
         if (this.componentRef) {
             const instance = this.componentRef.instance as any;
             if (instance && typeof instance.navigateTo === 'function') {
+                console.log('navigateTo ', path);
                 await instance.navigateTo(path);
             }
         }
@@ -93,15 +94,6 @@ export class Routable implements AfterViewInit {
             console.error('ViewContainerRef not initialized');
             return;
         }
-        this.subscription?.unsubscribe();
-        // 先对旧组件做离场动画
-        if (this.componentRef) {
-            await this.playLeaveAnimation(this.componentRef.location.nativeElement);
-            this.componentRef.destroy();
-            this.componentRef = undefined;
-            this.component = undefined;
-        }
-        this.dynamic.clear();
 
         let componentType: Type<any>;
 
@@ -115,22 +107,53 @@ export class Routable implements AfterViewInit {
             return;
         }
 
-        this.component = componentType;
-        this.componentRef = this.dynamic.createComponent(componentType, { injector: this.injector });
-        // 新组件进场动画
-        await this.playEnterAnimation(this.componentRef.location.nativeElement);
-        const instance = this.componentRef.instance as any;
+        if (this.currentComponentRef) {
+            this.previousComponentRef = this.currentComponentRef;
+        }
 
+        this.currentComponentRef = this.dynamic.createComponent(componentType, { injector: this.injector });
+        const newEl = this.currentComponentRef.location.nativeElement as HTMLElement;
+        newEl.style.position = 'absolute';
+        newEl.style.top = '0';
+        newEl.style.left = '0';
+        newEl.style.width = '100%';
+        newEl.style.height = '100%';
+        newEl.style.opacity = '0';
+
+        const oldEl = this.previousComponentRef?.location.nativeElement as HTMLElement | undefined;
+        if (oldEl) {
+            oldEl.style.position = 'absolute';
+            oldEl.style.top = '0';
+            oldEl.style.left = '0';
+            oldEl.style.width = '100%';
+            oldEl.style.height = '100%';
+            oldEl.style.opacity = '1';
+        }
+
+        // **关键改动**：不要等待动画，动画异步执行
+        this.crossFadeAnimation(newEl, oldEl).then(() => {
+            if (this.previousComponentRef) {
+                this.previousComponentRef.destroy();
+                this.previousComponentRef = undefined;
+            }
+            // 恢复样式
+            newEl.style.position = '';
+            newEl.style.top = '';
+            newEl.style.left = '';
+            newEl.style.width = '';
+            newEl.style.height = '';
+            newEl.style.opacity = '';
+        });
+
+        // 传递参数，订阅事件，立即执行，不等待动画
+        const instance = this.currentComponentRef.instance as any;
         if (instance) {
-            // 传递深度 +1
             if ('routeDepth' in instance) {
                 instance.routeDepth = this.routeDepth + 1;
             }
             if ('parentFullPath' in instance) {
                 instance.parentFullPath = this.path;
             }
-
-            // 监听子组件发来的导航请求
             if (instance.parentEmitter && instance.parentEmitter.subscribe) {
                 this.subscription = instance.parentEmitter.subscribe((nextPath: string) => {
                     this.navigateTo(nextPath).catch(console.error);
@@ -139,37 +162,45 @@ export class Routable implements AfterViewInit {
         }
     }
 
+
     /**
      * 向父组件发送导航请求
      */
     noticePath(path: string) {
         this.parentEmitter.emit(path);
     }
-    private playLeaveAnimation(element: any): Promise<void> {
+    private crossFadeAnimation(newEl: HTMLElement, oldEl?: HTMLElement): Promise<void> {
         return new Promise((resolve) => {
-            const factory = this.animationBuilder.build([
-                style({ opacity: 1 }),
-                animate('300ms ease', style({ opacity: 0 }))
-            ]);
-            this.player = factory.create(element);
-            this.player.onDone(() => {
-                resolve();
-            });
-            this.player.play();
-        });
-    }
-
-    private playEnterAnimation(element: any): Promise<void> {
-        return new Promise((resolve) => {
-            const factory = this.animationBuilder.build([
+            const animation = this.animationBuilder.build([
                 style({ opacity: 0 }),
-                animate('300ms ease', style({ opacity: 1 }))
+                animate('400ms ease', style({ opacity: 1 }))
             ]);
-            this.player = factory.create(element);
-            this.player.onDone(() => {
-                resolve();
-            });
-            this.player.play();
+            const playerNew = animation.create(newEl);
+
+            let playerOld: AnimationPlayer | undefined;
+            if (oldEl) {
+                const animationOld = this.animationBuilder.build([
+                    style({ opacity: 1 }),
+                    animate('400ms ease', style({ opacity: 0 }))
+                ]);
+                playerOld = animationOld.create(oldEl);
+            }
+
+            let doneCount = 0;
+            const done = () => {
+                doneCount++;
+                if (doneCount === (playerOld ? 2 : 1)) {
+                    resolve();
+                }
+            };
+
+            playerNew.onDone(done);
+            playerNew.play();
+
+            if (playerOld) {
+                playerOld.onDone(done);
+                playerOld.play();
+            }
         });
     }
 }

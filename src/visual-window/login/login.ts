@@ -25,7 +25,10 @@ export class Login extends Reachable {
     errorMessage = '';
 
     ngOnInit() {
-        this.tryAutoLogin();
+        this.tryAutoLogin()
+        // setTimeout(() => {
+        //     this.tryAutoLogin();
+        // },1000)
     }
 
     tryAutoLogin() {
