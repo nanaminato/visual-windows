@@ -6,12 +6,15 @@ import {Store} from '@ngrx/store';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {logoutAction} from '../../system-services/state/system/system.action';
 
 @Component({
     selector: 'system-desktop-bar',
     imports: [
         NzIconDirective,
-        WinIcon
+        WinIcon,
+        NzButtonComponent
     ],
     templateUrl: './desktop-bar.html',
     styleUrl: './desktop-bar.css'
@@ -133,5 +136,9 @@ export class DesktopBar {
         for(let window of this.windows){
             this.windowManager.minimizeWindow(window.id);
         }
+    }
+
+    Logout() {
+        this.store.dispatch(logoutAction())
     }
 }

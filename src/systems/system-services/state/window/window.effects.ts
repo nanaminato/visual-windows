@@ -21,7 +21,7 @@ export class WindowEffects {
                 this.store.select(selectProgramConfigs)
             ),
             mergeMap(([action, windows, programConfigs]) => {
-                const { id: appId, title, params, parentId, modal, closeWithParent } = action;
+                const { id: appId, title, params,x,y, parentId, modal, closeWithParent } = action;
 
                 const actionsToDispatch: Action[] = [];
 
@@ -53,8 +53,8 @@ export class WindowEffects {
                     programId: appId,
                     title,
                     position: {
-                        x: parentWindow?parentWindow.position.x+30:100,
-                        y: parentWindow?parentWindow.position.y+30:100
+                        x: parentWindow?parentWindow.position.x+30:(x??100),
+                        y: parentWindow?parentWindow.position.y+30:(y??100),
                     },
                     size: {
                         width: registeredApp?.preferredSize?.width ?? 800,

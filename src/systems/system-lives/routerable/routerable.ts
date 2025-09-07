@@ -35,7 +35,6 @@ export class Routable implements AfterViewInit {
 
     ngAfterViewInit() {
         // 父组件传入的全路径更新，初始化 fullPath
-        // this.fullPath = this.buildFullPath(this.path, this.routeDepth);
         this.navigateTo(this.path).catch(console.error);
     }
 
@@ -50,9 +49,9 @@ export class Routable implements AfterViewInit {
             return Promise.resolve(path);
         }
         const pathSegments = path.split('/');
-        console.log(pathSegments);
+        // console.log(pathSegments);
         const myPathSegment = pathSegments[this.routeDepth]??'';
-        console.log(`depth : ${this.routeDepth} `+"part "+ myPathSegment);
+        // console.log(`depth : ${this.routeDepth} `+"part "+ myPathSegment);
 
 
         const route = this.navigates.find((s) => s.path === myPathSegment);

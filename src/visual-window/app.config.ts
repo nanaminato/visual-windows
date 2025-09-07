@@ -1,7 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {NgxMonacoEditorConfig, provideMonacoEditor} from 'ngx-monaco-editor-v2';
 import { provideStore } from '@ngrx/store';
@@ -10,6 +10,7 @@ import {SystemEffects} from '../systems/system-services/state/system/system-effe
 import {windowReducer} from '../systems/system-services/state/window/window.reducer';
 import {WindowEffects} from '../systems/system-services/state/window/window.effects';
 import {programConfigReducer, systemInfoReducer} from '../systems/system-services/state/system/system.reducer';
+import {jwtInterceptor} from '../systems/system-services/jwt.interceptor';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -26,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([jwtInterceptor])),
     provideNoopAnimations(),
     provideMonacoEditor(monacoConfig),
     provideStore({

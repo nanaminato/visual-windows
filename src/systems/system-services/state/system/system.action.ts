@@ -1,4 +1,4 @@
-import {createActionGroup, emptyProps, props} from '@ngrx/store';
+import {createAction, createActionGroup, emptyProps, props} from '@ngrx/store';
 import {ProgramConfig, SystemInfo} from '../../../models';
 
 export const systemActions = createActionGroup({
@@ -13,3 +13,4 @@ export const systemActions = createActionGroup({
     }
 });
 
+export const logoutAction = createAction('[Auth] Logout');
