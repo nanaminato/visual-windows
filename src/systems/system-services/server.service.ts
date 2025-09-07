@@ -12,8 +12,8 @@ export class ServerService {
         return `${serverEnvironment.protocol}://${serverEnvironment.baseUrl}`;
     }
     getWebSocketBase(){
-        if(serverEnvironment.protocol==="https"){
-            return `wss://${serverEnvironment.baseUrl}`;
+        if(serverEnvironment.production){
+            return `wss://${window.location.host}`;
         }
         return `ws://${serverEnvironment.baseUrl}`;
     }

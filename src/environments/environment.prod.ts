@@ -1,6 +1,6 @@
 export const serverEnvironment = {
     production: true,
-    protocol: '',
+    protocol: 'https',
     baseUrl: "/",
     // baseUrl: "192.168.1.7:5000",
     // baseUrl: "192.168.1.8:5000",
