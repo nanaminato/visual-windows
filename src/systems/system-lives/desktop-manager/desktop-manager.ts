@@ -48,7 +48,11 @@ export class DesktopManager {
                             multiSelect: true,
                             maxSelectCount: 5,
                             requestId:requestId,
-                            mode: 'selector'
+                            // mode: 'selector',
+                            mode: 'save',
+                            fileExtensions: [
+                                '.txt','.json'
+                            ]
                         }
                     }
                 }

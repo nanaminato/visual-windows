@@ -80,7 +80,7 @@ export class FilePicker {
         // 保存模式默认文件名
         if (this.config.mode === 'save') {
             this.saveFileName = this.config.filePath ? this.extractFileName(this.config.filePath) : '';
-            this.selectedExt = this.getFileExtension(this.saveFileName) || (this.config.filterExts?.[0] ?? '');
+            this.selectedExt = this.config.filterExts?.[0] ?? '';
         }
 
         await this.tryNavigateToFolder(this.currentPath);
@@ -215,7 +215,8 @@ export class FilePicker {
     onRefreshRequest() {
         this.refresh();
     }
-    selectedExt = '';private getFileExtension(fileName: string): string {
+    selectedExt = '';
+    private getFileExtension(fileName: string): string {
         const idx = fileName.lastIndexOf('.');
         if (idx === -1) return '';
         return fileName.substring(idx + 1).toLowerCase();
@@ -226,7 +227,6 @@ export class FilePicker {
             // 保存模式旧逻辑不变
             if (!file.isDirectory) {
                 this.saveFileName = file.name;
-                this.selectedExt = this.getFileExtension(file.name) || this.selectedExt;
             }
             return;
         }
@@ -317,41 +317,24 @@ export class FilePicker {
     }
 
     private handleSaveMode() {
-        const fileName = this.saveFileName.trim();
+        let fileName = this.saveFileName.trim();
         if (!fileName) {
             this.messageService.warning('请输入文件名');
             return;
         }
-
-        const validatedFileName = this.ensureValidExtension(fileName);
-        const fullPath = this.buildFullPath(validatedFileName);
+        if(!fileName.endsWith(this.selectedExt)){
+            fileName = fileName+this.selectedExt;
+        }
+        const fullPath = this.currentPath+"\\"+fileName;
 
         this.store.dispatch(filePickerConfirm({
             requestId: this.config.requestId,
             selectedPaths: [fullPath]
         }));
+        console.log(fullPath);
+        this.closeWindow()
     }
 
-    private ensureValidExtension(fileName: string): string {
-        let ext = this.getFileExtension(fileName);
-        if (this.config.filterExts && this.config.filterExts.length > 0) {
-            if (!this.config.filterExts.includes(ext)) {
-                ext = this.selectedExt || this.config.filterExts[0];
-                if (ext) {
-                    const baseName = fileName.includes('.') ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
-                    return `${baseName}.${ext}`;
-                }
-            }
-        }
-        return fileName;
-    }
-
-    private buildFullPath(fileName: string): string {
-        const separator = this.currentPath.endsWith('/') || this.currentPath.endsWith('\\')
-            ? ''
-            : this.isLinux ? '/' : '\\';
-        return this.currentPath + separator + fileName;
-    }
 
     private handleSelectMode() {
         if (this.selectedFiles.length === 0 && this.selectedFilesText === '') {

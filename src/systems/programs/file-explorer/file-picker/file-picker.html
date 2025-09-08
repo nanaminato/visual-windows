@@ -87,7 +87,7 @@
             <div class="save-file-name">
                 <label for="saveFileName">文件名：</label>
                 <input id="saveFileName" nz-input [(ngModel)]="saveFileName" placeholder="请输入文件名" />
-                @if(config.filterExts?.length){
+                @if(config.fileExtensions?.length){
                     <nz-select
                         [(ngModel)]="selectedExt"
                         (ngModelChange)="onSelectedFilesTextChange($event)"
