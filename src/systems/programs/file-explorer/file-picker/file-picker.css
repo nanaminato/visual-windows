@@ -1,14 +1,180 @@
-.file-picker-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.3);
-    display: flex; justify-content: center; align-items: center;
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
 }
-.file-picker-dialog {
-    background: white; padding: 16px; border-radius: 4px; width: 400px; max-height: 80vh; display: flex; flex-direction: column;
+
+.file-browser {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
-.actions {
-    margin-top: 8px; text-align: right;
+.navigator{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 5px 0;
 }
-button {
-    margin-left: 8px;
+.navigator-item-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 10px;
+}
+.navigator-item-group > button{
+    border: none;
+    background: transparent;
+}
+.address-bar{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+.address-bar  input, #search-bar  input{
+    font-size: 16px !important;
+}
+.search-box{
+    margin: 0 10px;
+}
+
+.quick-tool{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.normal-tools{
+    margin: 0 10px;
+}
+.normal-tools > button{
+    border: none;
+    background: transparent;
+    /*padding: 5px;*/
+    margin: 10px;
+}
+.more-information{
+    margin: 10px 10px;
+}
+.breadcrumb {
+    margin-bottom: 8px; cursor: pointer;
+}
+.breadcrumb-item:hover {
+    text-decoration: underline;
+}
+.file-list {
+    border: 1px solid #ccc; padding: 8px; max-height: 300px; overflow-y: auto;
+}
+.file-item {
+    padding: 4px; cursor: pointer;
+}
+.file-item:hover {
+    background-color: #eee;
+}
+nz-splitter {
+    height: 200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.select-files {
+    border-top: 1px solid #c5c5c5;
+    padding: 10px 15px;
+    background-color: #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    color: #000;
+}
+
+.selected-files-info {
+    max-height: 80px;
+    overflow-y: auto;
+    border: 1px solid #a6a6a6;
+    background: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    user-select: none;
+}
+
+.selected-files-info label {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.selected-files-list {
+    margin: 0;
+    padding-left: 16px;
+    list-style: disc;
+    max-height: 70px;
+    overflow-y: auto;
+}
+
+.save-file-name, .select-file-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-file-name label, .select-file-name label {
+    flex-shrink: 0;
+    font-weight: 600;
+    min-width: 60px;
+}
+
+.save-file-name input, .select-file-name input {
+    flex-grow: 1;
+    height: 28px;
+    padding: 0 6px;
+    border: 1px solid #a6a6a6;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    outline-offset: 2px;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.save-file-name input:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 4px rgba(24, 144, 255, 0.6);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.action-buttons button {
+    min-width: 80px;
+    height: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 3px;
+    border: none;
+    outline-offset: 2px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.action-buttons button[nztype="primary"] {
+    background-color: #0078d7;
+    color: white;
+}
+
+.action-buttons button[nztype="primary"]:hover {
+    background-color: #005a9e;
+}
+
+.action-buttons button:not([nztype="primary"]) {
+    background-color: transparent;
+    border: 1px solid #a6a6a6;
+    color: black;
+}
+
+.action-buttons button:not([nztype="primary"]):hover {
+    background-color: #e5e5e5;
 }

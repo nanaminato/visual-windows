@@ -24,7 +24,7 @@ import {SystemInfoService} from '../../../system-services/info.service';
 import {WindowManagerService} from '../../../system-services/windows-manager.service';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {codeSpaceProgram, fileExplorerProgram, filePickerProgram} from '../../models/register-app';
+import {fileExplorerProgram} from '../../models/register-app';
 
 @Component({
     selector: 'file-explorer',
@@ -49,8 +49,6 @@ export class FileExplorer {
     // 当前实际所在的位置
     @Input()
     currentPath: string = ''; // 例如 "/home/user"
-    @Output()
-    pathChange = new EventEmitter<string>();
     // 处理文件打开
     @Output()
     fileOpen = new EventEmitter<LightFile>();
@@ -61,7 +59,6 @@ export class FileExplorer {
     @Input()
     uuid: string | undefined;
 
-    @Input()
     files: LightFile[] = [];
 
     drivers: DriverInfo[] = [];
@@ -99,7 +96,6 @@ export class FileExplorer {
     }
     // 传递
     TitleChange(){
-        this.pathChange.emit(this.currentPath);
         const title = generateTitle(this.currentPath, this.isLinux);
         this.titleChange.emit({
             fileExplorerId: this.uuid,
@@ -259,15 +255,15 @@ export class FileExplorer {
         this.refresh();
     }
     showInfo() {
-        // this.store.dispatch(WindowActions.openWindow({
-        //     id: fileExplorerProgram,
-        //     title: '选择文件',
-        //     params: {
-        //
-        //     },
-        //     parentId: this.winId,
-        //     modal: false,
-        //     closeWithParent: true
-        // }));
+        this.store.dispatch(WindowActions.openWindow({
+            id: fileExplorerProgram,
+            title: '选择文件',
+            params: {
+
+            },
+            parentId: this.winId,
+            modal: false,
+            closeWithParent: true
+        }));
     }
 }

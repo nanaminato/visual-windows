@@ -3,11 +3,10 @@ import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
 import {Actions} from '@ngrx/effects';
-import {ResumeService} from '../../system-services/resume.service';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
 import {WindowActions} from '../../system-services/state/window/window.actions';
 import {Store} from '@ngrx/store';
-
+import {v4 as uuid} from 'uuid';
 @Component({
     selector: 'system-desktop-manager',
     imports: [
@@ -29,11 +28,32 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-            // this.store$.dispatch(
-            //     WindowActions.openWindow(
-            //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-            //     )
-            // );
+        // this.store$.dispatch(
+        //     WindowActions.openWindow(
+        //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
+        //     )
+        // );
+        const requestId = uuid();
+        this.store$.dispatch(
+
+            WindowActions.openWindow(
+                {
+                    id: "file-picker",
+                    title: "文件选择器",
+                    parentId: '',
+                    params: {
+                        config: {
+                            startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
+                            selectFolders: false,
+                            multiSelect: true,
+                            maxSelectCount: 5,
+                            requestId:requestId,
+                            mode: 'selector'
+                        }
+                    }
+                }
+            )
+        );
 
     }
     focusWindow(id: string) {

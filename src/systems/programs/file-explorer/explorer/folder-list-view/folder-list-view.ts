@@ -15,9 +15,20 @@ import {codeSpaceProgram, terminalProgram} from '../../../models/register-app';
 })
 export class FolderListView {
     @Input()
+    mode: 'selector' | 'viewer' = 'viewer';
+    @Input()
     files: LightFile[] = [];
     @Input()
     currentPath: string | undefined;
+    @Input() multiSelect: boolean = false;
+    @Input() selectedFiles: LightFile[] = [];
+    @Output() fileSelect: EventEmitter<{file: LightFile, event: MouseEvent}> = new EventEmitter();
+
+    isFileSelected(file: LightFile) {
+        return this.selectedFiles.some(f => f.path === file.path);
+    }
+
+
     // 计算文件类型显示文本
     getFileType(file: LightFile): string {
         if (file.isDirectory) {
@@ -46,7 +57,26 @@ export class FolderListView {
     }
     @Output()
     fileProcess: EventEmitter<LightFile> = new EventEmitter<LightFile>();
+
+    clickTimeout: any;
+
+    onFileClick(file: LightFile, event: MouseEvent) {
+        // 先清除之前的定时器，防止多次点击叠加
+        if (this.clickTimeout) {
+            clearTimeout(this.clickTimeout);
+        }
+        // 延迟执行单击的处理，等待双击事件
+        this.clickTimeout = setTimeout(() => {
+            this.fileSelect.emit({ file, event });
+        }, 200); // 200ms 延迟，可以根据需要调整
+    }
+
     fileDbl(file: LightFile) {
+        // 双击时清除单击定时器，防止单击事件触发
+        if (this.clickTimeout) {
+            clearTimeout(this.clickTimeout);
+            this.clickTimeout = null;
+        }
         this.fileProcess.emit(file);
     }
     constructor() {

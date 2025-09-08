@@ -11,7 +11,10 @@
             </thead>
             <tbody>
                 @for (file of files; track file.path) {
-                    <tr role="row" tabindex="0" class="folder-list-row"
+                    <tr role="row" tabindex="0"
+                        class="folder-list-row"
+                        [class.selected]="isFileSelected(file)"
+                        (click)="onFileClick(file, $event)"
                         (dblclick)="fileDbl(file)"
                         (contextmenu)="onRightClick($event, file)">
                         <td role="gridcell" class="file-name">

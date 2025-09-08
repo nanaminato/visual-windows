@@ -29,6 +29,16 @@
     cursor: pointer;
 }
 
+.folder-list-row.selected {
+    background-color: #1890ff;
+    color: white;
+}
+
+.folder-list-row.selected:hover {
+    background-color: #40a9ff;
+}
+
+
 .file-name {
     white-space: nowrap;
     overflow: hidden;
@@ -71,3 +81,4 @@
 .blank-panel{
     width: 100px;
 }
+

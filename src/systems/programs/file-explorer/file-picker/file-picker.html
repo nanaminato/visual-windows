@@ -1,14 +1,119 @@
-<div class="file-picker-overlay">
-    <div class="file-picker-dialog">
-        <h3>{{ selectFolder ? '选择文件夹' : '选择文件' }}</h3>
-        <file-explorer
-            [currentPath]="currentPath"
-            [files]="files"
-            (fileOpen)="onFileOpen($event)">
-        </file-explorer>
-        <div class="actions">
-            <button (click)="onCancel()">取消</button>
-            <button [disabled]="!selectedItem" (click)="onConfirm()">确定</button>
+<div class="file-browser">
+    <div>
+        <div class="navigator">
+            <div class="navigator-item-group">
+                <button [disabled]="!canBack()" [class.disabled]="!canBack()" >
+                    <nz-icon nzType="arrow-left" nzTheme="outline" (click)="back()"/>
+                </button>
+                <button [disabled]="!canForward()" [class.disabled]="!canForward()" >
+                    <nz-icon nzType="arrow-right" nzTheme="outline" (click)="forward()"/>
+                </button>
+                <button [disabled]="!canStepBack()" [class.disabled]="!canStepBack()" >
+                    <nz-icon nzType="arrow-up" nzTheme="outline" (click)="stepBack()"/>
+                </button>
+
+                <button>
+                    <!-- todo 图标替换为更合适的图标 -->
+                    <nz-icon nzType="retweet" nzTheme="outline" (click)="refresh()" />
+                </button>
+            </div>
+            <div class="address-bar">
+                <input nz-input type="text" (keydown.enter)="navigateFromAddress()"  [(ngModel)]="navigatePath" />
+                <button class="border-none bg-transparent">
+                    <nz-icon nzType="close" nzTheme="outline" (click)="clearPath()"/>
+                </button>
+            </div>
+            <div class="search-box">
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input [placeholder]="getSearchPlaceHolder()" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <nz-icon nzType="search" />
+                </ng-template>
+            </div>
+        </div>
+        <div class="quick-tool">
+            <div class="normal-tools">
+                <div class="create-new">
+
+                </div>
+                <button>
+                    <nz-icon nzType="scissor" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="copy" nzTheme="outline" />
+                </button>
+                <button>
+                    <!-- todo 替换更贴切的图标                    -->
+                    <nz-icon nzType="snippets" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="form" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="share-alt" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="delete" nzTheme="outline" />
+                </button>
+                <button>
+                    <nz-icon nzType="more" nzTheme="outline" />
+                </button>
+            </div>
+
         </div>
     </div>
+    <nz-splitter class="d-flex flex-grow-1">
+        <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
+            <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
+        </nz-splitter-panel>
+        <nz-splitter-panel >
+            @if(driverView){
+                <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
+            }@else{
+                <app-folder-list-view
+                    (refreshRequest)="onRefreshRequest()"
+                    [currentPath]="currentPath"
+                    [files]="files"
+                    [multiSelect]="config.multiSelect??false"
+                    [selectedFiles]="selectedFiles"
+                    (fileSelect)="onFileSelectClicked($event.file, $event.event)"
+                    (fileProcess)="onFileDblClick($event)"> </app-folder-list-view>
+            }
+        </nz-splitter-panel>
+    </nz-splitter>
+    <!-- file-picker.html 中 select-files 区域 -->
+    <div class="select-files">
+        @if(config.mode==='save'){
+            <div class="save-file-name">
+                <label for="saveFileName">文件名：</label>
+                <input id="saveFileName" nz-input [(ngModel)]="saveFileName" placeholder="请输入文件名" />
+                @if(config.filterExts?.length){
+                    <nz-select
+                        [(ngModel)]="selectedExt"
+                        (ngModelChange)="onSelectedFilesTextChange($event)"
+                        style="width: 120px; margin-left: 8px;"
+                        nzPlaceHolder="选择扩展名"
+                    >
+                        @for(extension of config.fileExtensions; track extension){
+                            <nz-option [nzLabel]="extension" [nzValue]="extension"></nz-option>
+                        }
+                    </nz-select>
+                }
+            </div>
+        }@else{
+            <div class="select-file-name">
+                <label for="selectFileName">文件名：</label>
+                <input id="selectFileName" nz-input [(ngModel)]="selectedFilesText" placeholder="" />
+            </div>
+        }
+
+
+        <div class="action-buttons">
+            <button nz-button nzType="primary" (click)="confirmSelection()">确定</button>
+            <button nz-button (click)="cancelSelection()">取消</button>
+        </div>
+    </div>
+
 </div>
+
