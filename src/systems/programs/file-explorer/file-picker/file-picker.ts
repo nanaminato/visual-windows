@@ -232,8 +232,18 @@ export class FilePicker {
         }
 
         if (!this.config.multiSelect) {
-            this.selectedFiles = [file];
-            this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
+            if(this.config.selectFolders){
+                if(file.isDirectory){
+                    this.selectedFiles = [file];
+                    this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
+                }
+            }else{
+                if(!file.isDirectory){
+                    this.selectedFiles = [file];
+                    this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
+                }
+            }
+
         } else {
             this.updateMultiSelect(file, event);
         }
@@ -300,69 +310,91 @@ export class FilePicker {
 
     confirmSelection() {
         if (this.config.mode === 'save') {
-            const fileName = this.saveFileName.trim();
-            if (!fileName) {
-                this.messageService.warning('请输入文件名');
-                return;
-            }
+            this.handleSaveMode();
+        } else {
+            this.handleSelectMode();
+        }
+    }
 
-            let ext = this.getFileExtension(fileName);
-            if (this.config.filterExts && this.config.filterExts.length > 0) {
-                if (!this.config.filterExts.includes(ext)) {
-                    ext = this.selectedExt || this.config.filterExts[0];
-                    if (ext) {
-                        // 去除旧扩展名后加新扩展名
-                        const baseName = fileName.includes('.') ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
-                        this.saveFileName = `${baseName}.${ext}`;
-                    }
+    private handleSaveMode() {
+        const fileName = this.saveFileName.trim();
+        if (!fileName) {
+            this.messageService.warning('请输入文件名');
+            return;
+        }
+
+        const validatedFileName = this.ensureValidExtension(fileName);
+        const fullPath = this.buildFullPath(validatedFileName);
+
+        this.store.dispatch(filePickerConfirm({
+            requestId: this.config.requestId,
+            selectedPaths: [fullPath]
+        }));
+    }
+
+    private ensureValidExtension(fileName: string): string {
+        let ext = this.getFileExtension(fileName);
+        if (this.config.filterExts && this.config.filterExts.length > 0) {
+            if (!this.config.filterExts.includes(ext)) {
+                ext = this.selectedExt || this.config.filterExts[0];
+                if (ext) {
+                    const baseName = fileName.includes('.') ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+                    return `${baseName}.${ext}`;
                 }
             }
+        }
+        return fileName;
+    }
 
-            const fullPath = this.currentPath.endsWith('/') || this.currentPath.endsWith('\\')
-                ? this.currentPath + this.saveFileName
-                : this.currentPath + (this.isLinux ? '/' : '\\') + this.saveFileName;
+    private buildFullPath(fileName: string): string {
+        const separator = this.currentPath.endsWith('/') || this.currentPath.endsWith('\\')
+            ? ''
+            : this.isLinux ? '/' : '\\';
+        return this.currentPath + separator + fileName;
+    }
 
-            this.store.dispatch(filePickerConfirm({
-                requestId: this.config.requestId,
-                selectedPaths: [fullPath]
-            }));
+    private handleSelectMode() {
+        if (this.selectedFiles.length === 0 && this.selectedFilesText === '') {
+            this.messageService.warning(this.config.selectFolders ? '请选择文件夹' : '请选择文件');
             return;
         }
 
-        // 选择模式
-        if (this.selectedFiles.length === 0) {
-            this.messageService.warning('请选择文件或文件夹');
-            return;
-        }
-
-        // 校验所有选中文件是否都在当前路径
-        const invalidFiles = this.selectedFiles.filter(f => !this.isPathInCurrentDir(f.path));
-        if (invalidFiles.length > 0) {
-            this.messageService.error('选中的文件必须都在当前路径');
-            return;
-        }
-
-        // 组装路径字符串
-        let selectedPaths: string[];
-        if (!this.config.multiSelect) {
-            selectedPaths = [this.selectedFiles[0].path];
-        } else {
-            selectedPaths = this.selectedFiles.map(f => f.path);
+        const selectedPaths = this.parseSelectedPaths(this.selectedFilesText);
+        if (!selectedPaths) {
+            return; // 错误提示已在 parseSelectedPaths 中处理
         }
 
         this.store.dispatch(filePickerConfirm({
             requestId: this.config.requestId,
             selectedPaths
         }));
-        this.closeWindow()
+        this.closeWindow();
+    }
 
+    private parseSelectedPaths(text: string): string[] | null {
+        if (text.startsWith('"')) {
+            const paths = text.split(' ');
+            for (const path of paths) {
+                const trimmedPath = path.substring(1, path.lastIndexOf('"'));
+                if (!this.isAValidFile(trimmedPath)) {
+                    this.messageService.error('选中的文件必须都在当前路径');
+                    return null;
+                }
+            }
+            return paths.map(p => p.substring(1, p.lastIndexOf('"')));
+        } else {
+            if (!this.isAValidFile(text)) {
+                this.messageService.error('选中的文件必须都在当前路径');
+                return null;
+            }
+            return [text];
+        }
     }
-    private isPathInCurrentDir(path: string): boolean {
-        // 简单判断路径是否以当前路径开头（注意大小写和分隔符）
-        const normalizedCurrent = this.currentPath.replace(/\\/g, '/').toLowerCase();
-        const normalizedPath = path.replace(/\\/g, '/').toLowerCase();
-        return normalizedPath.startsWith(normalizedCurrent);
+
+    private isAValidFile(name: string): boolean {
+        return this.files.some(f => f.name === name);
     }
+
 
     cancelSelection() {
         this.selectedFiles = [];
@@ -389,7 +421,6 @@ export class FilePicker {
     }
     selectedFilesText = '';       // 绑定输入框字符串
     private userEditing = false;  // 标记是否正在用户编辑输入框
-    // 在模板绑定 [(ngModel)]="selectedFilesText" 并添加 (ngModelChange)="onSelectedFilesTextChange($event)"
 
     onSelectedFilesTextChange(value: string) {
         this.selectedFilesText = value;
