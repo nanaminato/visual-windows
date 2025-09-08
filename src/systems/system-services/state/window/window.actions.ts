@@ -7,7 +7,7 @@ export const WindowActions = createActionGroup({
     events: {
         'open window': props<{id: string,title: string, params?: any, x?: number,y?: number, parentId?: string; modal?: boolean, closeWithParent?: boolean }>(),
         'open window success': props<{ window: WindowState }>(),
-        'close window': props<{ id: string, parentId?: string }>(),
+        'close window': props<{ id: string }>(),
         'focus window': props<{ id: string }>(),
         'minimize window': props<{ id: string }>(),
         'maximize window': props<{ id: string; desktopWidth: number; desktopHeight: number; taskbarHeight: number }>(),

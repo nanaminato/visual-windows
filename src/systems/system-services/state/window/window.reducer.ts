@@ -108,16 +108,16 @@ export const windowReducer = createReducer(
             )
         };
     }),
-    on(WindowActions.closeWindow, (state, { id, parentId }) => {
+    on(WindowActions.closeWindow, (state, { id }) => {
         const closedWindow = state.windows.find(w => w.id === id);
         if (!closedWindow) {
             return state;
         }
 
         // 递归查找所有需要关闭的子窗口ID，只有 closeWithParent === true 的子窗口才关闭
-        const getChildWindowsToClose = (parentId: string, windows: WindowState[]): string[] => {
+        const getChildWindowsToClose = (fatherId: string, windows: WindowState[]): string[] => {
             // 1. 找出所有直接子窗口，且这些子窗口的 closeWithParent === true
-            const directChildren = windows.filter(w => w.parentId === parentId && w.closeWithParent);
+            const directChildren = windows.filter(w => w.parentId === fatherId && w.closeWithParent);
 
             // 2. 初始化一个数组，用来收集所有符合条件的子窗口ID
             let allChildrenIds: string[] = [];
@@ -143,9 +143,9 @@ export const windowReducer = createReducer(
         let windows = state.windows.filter(w => !closeWindowIds.includes(w.id));
 
         // 如果关闭的是 modal 子窗口，解除父窗口禁用状态
-        if (parentId && closedWindow.modal) {
+        if (closedWindow.parentId && closedWindow.modal) {
             windows = windows.map(w =>
-                w.id === parentId ? { ...w, disabled: false } : w
+                w.id === closedWindow.parentId ? { ...w, disabled: false } : w
             );
         }
 

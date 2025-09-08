@@ -60,8 +60,8 @@ export class DesktopManager {
         this.windowManager.focusWindow(id);
     }
 
-    closeWindow(id: string, parentId?: string) {
-        this.windowManager.closeWindow(id, parentId);
+    closeWindow(id: string) {
+        this.windowManager.closeWindow(id);
     }
     minimizeWindow(id: string) {
         this.windowManager.minimizeWindow(id);
@@ -148,7 +148,7 @@ export class DesktopManager {
                 this.maximizeWindow($event.id);
                 break;
             case 4:
-                this.closeWindow($event.id, $event.parentId);
+                this.closeWindow($event.id);
                 console.log("close window "+$event.id);
                 break;
             case 5:

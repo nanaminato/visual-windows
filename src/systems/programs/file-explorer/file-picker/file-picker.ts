@@ -69,7 +69,7 @@ export class FilePicker {
 
     isLinux: boolean = false;
     closeWindow() {
-        this.store.dispatch(WindowActions.closeWindow({id: this.id, parentId: this.parentId}))
+        this.store.dispatch(WindowActions.closeWindow({id: this.id}))
     }
     async ngOnInit() {
         this.isLinux = await this.systemInfoService.isLinuxAsync();

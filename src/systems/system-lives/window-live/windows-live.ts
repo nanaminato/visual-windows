@@ -129,7 +129,7 @@ export class WindowsLive {
                                 this.maximizeWindow(eventData.id);
                                 break;
                             case 4:
-                                this.closeWindow(eventData.id, this.win?this.win.parentId: undefined);
+                                this.closeWindow(eventData.id);
                                 break;
                             case 5:
                                 this.startDrag(eventData.event as unknown as MouseEvent, eventData.id);
@@ -154,7 +154,7 @@ export class WindowsLive {
             }
         }
     }
-    async closeWindow(id: string, parentId?: string) {
+    async closeWindow(id: string) {
         if (this.componentRef && typeof this.componentRef.instance.parentClosed=== 'function') {
             await this.componentRef.instance.parentClosed();
         }
@@ -162,7 +162,6 @@ export class WindowsLive {
             type: 4,
             id: id,
             event: 'closeWindow',
-            parentId: this.win!.parentId,
         });
     }
     startDrag(eventData: MouseEvent, id: string) {

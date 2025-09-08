@@ -36,8 +36,8 @@ export class WindowManagerService implements OnDestroy {
         return this.windows$;
     }
 
-    closeWindow(id: string, parentId?: string) {
-        this.store.dispatch(WindowActions.closeWindow({ id, parentId }));
+    closeWindow(id: string) {
+        this.store.dispatch(WindowActions.closeWindow({ id }));
     }
 
     focusWindow(id: string) {
