@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {CodeFileNode} from './file-node/code-file-node';
 import {CodeFileNodeViewModel} from '../models';
 
@@ -11,35 +11,44 @@ import {CodeFileNodeViewModel} from '../models';
   styleUrl: './folder-root.css'
 })
 export class FolderRoot {
-    @Input()
-    baseFolder: string = '';
-    folderNode: CodeFileNodeViewModel | undefined;
-    constructor() {
+    private _baseFolder: string = '';
 
+    @Input()
+    set baseFolder(value: string) {
+        this._baseFolder = value;
+        this.updateFolderNode();
     }
-    async ngOnInit() {
+    get baseFolder(): string {
+        return this._baseFolder;
+    }
+
+    folderNode: CodeFileNodeViewModel | undefined;
+
+    @Output()
+    fileSelected = new EventEmitter<CodeFileNodeViewModel>();
+
+    updateFolderNode() {
         this.folderNode = {
-            name: this.getName(this.baseFolder),
-            path: this.baseFolder,
+            name: this.getName(this._baseFolder),
+            path: this._baseFolder,
             expandedWhenInit: true,
             deep: 0,
             isDirectory: true,
-        }
+        };
     }
-    @Output()
-    fileSelected = new EventEmitter<CodeFileNodeViewModel>();
 
     onFileSelected(node: CodeFileNodeViewModel) {
         this.fileSelected.emit(node);
     }
+
     getName(path: string): string {
         let index = path.lastIndexOf('/');
         if (index > -1) {
-            return path.substring(index+1);
-        }else{
+            return path.substring(index + 1);
+        } else {
             index = path.lastIndexOf('\\');
-            if(index > -1){
-                return path.substring(index+1);
+            if (index > -1) {
+                return path.substring(index + 1);
             }
         }
         return '工作区';

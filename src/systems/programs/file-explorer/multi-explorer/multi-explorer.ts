@@ -52,6 +52,9 @@ export class MultiExplorer {
         if (this.selectedIndex < 0) {
             this.selectedIndex = 0;
         }
+        if(this.fileExplorers.length <= 0) {
+            this.closeWindow()
+        }
     }
 
     selectTab(index: number) {

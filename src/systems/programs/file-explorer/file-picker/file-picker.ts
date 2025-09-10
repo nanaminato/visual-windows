@@ -23,6 +23,7 @@ import {filePickerCancel, filePickerConfirm} from '../../../system-services/stat
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {ProgramEvent} from '../../../models';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
+import {processClose} from '../../../system-lives/window-live/adapter/adapter';
 
 @Component({
   selector: 'app-file-picker',
@@ -44,7 +45,7 @@ import {WindowActions} from '../../../system-services/state/window/window.action
   templateUrl: './file-picker.html',
   styleUrl: './file-picker.css'
 })
-export class FilePicker {
+export class FilePicker implements processClose{
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口
@@ -70,6 +71,11 @@ export class FilePicker {
     isLinux: boolean = false;
     closeWindow() {
         this.store.dispatch(WindowActions.closeWindow({id: this.id}))
+    }
+    parentClosed(){
+        this.store.dispatch(filePickerCancel({
+            requestId: this.config.requestId
+        }));
     }
     async ngOnInit() {
         this.isLinux = await this.systemInfoService.isLinuxAsync();
@@ -337,8 +343,8 @@ export class FilePicker {
 
 
     private handleSelectMode() {
-        if (this.selectedFiles.length === 0 && this.selectedFilesText === '') {
-            this.messageService.warning(this.config.selectFolders ? '请选择文件夹' : '请选择文件');
+        if (this.selectedFiles.length === 0&&!this.config.selectFolders && this.selectedFilesText === '') {
+            this.messageService.warning('请选择文件');
             return;
         }
 
@@ -364,13 +370,16 @@ export class FilePicker {
                     return null;
                 }
             }
-            return paths.map(p => p.substring(1, p.lastIndexOf('"')));
+            return paths.map(p => this.currentPath+"\\"+p.substring(1, p.lastIndexOf('"')));
         } else {
+            if(text===''){
+                return [this.currentPath]
+            }
             if (!this.isAValidFile(text)) {
                 this.messageService.error('选中的文件必须都在当前路径');
                 return null;
             }
-            return [text];
+            return [this.currentPath+"\\"+text];
         }
     }
 
@@ -382,9 +391,7 @@ export class FilePicker {
     cancelSelection() {
         this.selectedFiles = [];
         this.saveFileName = '';
-        this.store.dispatch(filePickerCancel({
-            requestId: this.config.requestId
-        }));
+
         this.closeWindow();
     }
 

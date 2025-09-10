@@ -146,6 +146,7 @@ export class WindowsLive {
             this.hasLoaded = true;
         }
     }
+    // 用于自定义header的active样式表示
     ngOnChanges(changes: SimpleChanges) {
         if (changes['win']) {
             const win = changes['win'].currentValue;
@@ -155,6 +156,7 @@ export class WindowsLive {
         }
     }
     async closeWindow(id: string) {
+        // 如果子组件实现了 processClose 接口，就调用对应方法
         if (this.componentRef && typeof this.componentRef.instance.parentClosed=== 'function') {
             await this.componentRef.instance.parentClosed();
         }

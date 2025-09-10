@@ -24,3 +24,6 @@
     text-overflow: ellipsis;   /* 超出部分显示省略号（可选） */
     display: inline-block;
 }
+.file-icon{
+    margin-left: 10px;
+}

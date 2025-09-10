@@ -2,7 +2,18 @@
     <div class="program-header" >
         <div class="d-flex flex-row">
             <app-win-icon [programConfig]="getIcon()"></app-win-icon>
-            <button class="menu-item">File</button>
+            <div class="menu-item dropdown" (click)="toggleFileMenu()" (blur)="closeFileMenu()" tabindex="0" style="position: relative;">
+                File
+                @if(fileMenuVisible){
+                    <div class="shadow"
+                         style="position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ccc; z-index: 1000; min-width: 150px;">
+                        <div class="dropdown-item" (click)="openFile()">打开文件</div>
+                        <div class="dropdown-item" (click)="openFolder()">打开文件夹</div>
+                        <div class="dropdown-item" (click)="exit()">退出</div>
+                    </div>
+                }
+
+            </div>
             <button class="menu-item">Edit</button>
             <button class="menu-item">Selection</button>
             <button class="menu-item">View</button>

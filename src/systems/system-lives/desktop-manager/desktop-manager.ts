@@ -28,36 +28,42 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        // this.store$.dispatch(
-        //     WindowActions.openWindow(
-        //         { id: "code-space", title: "code space", params: {startPath: 'D:\\WebstormProjects\\Remote-File-Manager'} }
-        //     )
-        // );
-        const requestId = uuid();
         this.store$.dispatch(
-
             WindowActions.openWindow(
                 {
-                    id: "file-picker",
-                    title: "文件选择器",
-                    parentId: '',
+                    id: "code-space",
+                    title: "code space",
                     params: {
-                        config: {
-                            startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
-                            selectFolders: false,
-                            multiSelect: true,
-                            maxSelectCount: 5,
-                            requestId:requestId,
-                            // mode: 'selector',
-                            mode: 'save',
-                            fileExtensions: [
-                                '.txt','.json'
-                            ]
-                        }
+                        startFolder: 'D:\\WebstormProjects\\Remote-File-Manager'
                     }
                 }
             )
         );
+        // const requestId = uuid();
+        // this.store$.dispatch(
+        //
+        //     WindowActions.openWindow(
+        //         {
+        //             id: "file-picker",
+        //             title: "文件选择器",
+        //             parentId: '',
+        //             params: {
+        //                 config: {
+        //                     startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
+        //                     selectFolders: false,
+        //                     multiSelect: true,
+        //                     maxSelectCount: 5,
+        //                     requestId:requestId,
+        //                     // mode: 'selector',
+        //                     mode: 'save',
+        //                     fileExtensions: [
+        //                         '.txt','.json'
+        //                     ]
+        //                 }
+        //             }
+        //         }
+        //     )
+        // );
 
     }
     focusWindow(id: string) {

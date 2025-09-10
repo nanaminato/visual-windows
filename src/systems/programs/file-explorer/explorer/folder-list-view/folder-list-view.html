@@ -52,7 +52,7 @@
             [style.top.px]="contextMenuPosition.y"
             [style.left.px]="contextMenuPosition.x"
             (click)="$event.stopPropagation()">
-            <li (click)="onContextMenuAction('openCode', contextMenuFile)">通过code打开</li>
+            <li (click)="onContextMenuAction('openCode', contextMenuFile)">通过code space打开</li>
             @if(contextMenuFile.isDirectory){
                 <li (click)="onContextMenuAction('openTerminal', contextMenuFile)">在终端中打开</li>
             }

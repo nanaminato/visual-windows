@@ -1,26 +1,25 @@
-import {
-    Component,
-    EventEmitter, HostListener,
-    inject,
-    Input,
-    Output,
-} from '@angular/core';
+import {Component, EventEmitter, HostListener, inject, Input, Output,} from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramConfig, ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {FolderRoot} from './folder-root/folder-root';
-import {CodeFileNodeViewModel} from './models';
-import {OpenFile} from './models';
-import {CodeService, getIconPath} from './services';
+import {CodeFileNodeViewModel, OpenFile} from './models';
+import {CodeService, getFileLanguage, getIconPath} from './services';
 import {EditorComponent} from 'ngx-monaco-editor-v2';
 import {FormsModule} from '@angular/forms';
-import {getFileLanguage} from './services';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 import {CommonModule} from '@angular/common';
 import {Store} from '@ngrx/store';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
 import {LightFile} from '../file-explorer/explorer/models';
 import {codeSpaceProgram} from '../models/register-app';
+import {v4 as uuid} from 'uuid';
+import {WindowActions} from '../../system-services/state/window/window.actions';
+import {filter, Subscription, take} from 'rxjs';
+import {Actions, ofType} from '@ngrx/effects';
+import {filePickerCancel, filePickerConfirm} from '../../system-services/state/system/file/file-picker.actions';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {processSizeChange} from '../../system-lives/window-live/adapter';
 
 @Component({
     selector: 'app-code-space',
@@ -41,7 +40,7 @@ import {codeSpaceProgram} from '../models/register-app';
     templateUrl: './code-space.html',
     styleUrl: './code-space.css'
 })
-export class CodeSpace {
+export class CodeSpace implements processSizeChange {
     @Input()
     id: string | undefined;
     @Input()
@@ -258,7 +257,90 @@ export class CodeSpace {
         this.activeOpenFile = undefined;
         this.content = '';
     }
+    store$ = inject(Store);
+    private actions$ = inject(Actions);
+    private filePickerSub?: Subscription;
+    private messageService = inject(NzMessageService);
+    selectFileAndOpen(selectFolder: boolean = false){
+        if (this.filePickerSub) {
+            this.filePickerSub.unsubscribe();
+        }
+        const requestId = uuid();
+        this.store$.dispatch(
 
+            WindowActions.openWindow(
+                {
+                    id: "file-picker",
+                    title: "文件选择器",
+                    parentId: this.id,
+                    modal: true,
+                    params: {
+                        config: {
+                            startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
+                            selectFolders: selectFolder,
+                            multiSelect: !selectFolder,
+                            // maxSelectCount: 1,
+                            requestId:requestId,
+                            mode: 'selector',
+                            // mode: 'save',
+                            fileExtensions: [
+                                // '.txt','.json'
+                            ]
+                        }
+                    }
+                }
+            )
+        );
+        this.filePickerSub = this.actions$.pipe(
+            ofType(filePickerConfirm, filePickerCancel),
+            filter(action => action.requestId === requestId), // 只监听当前请求ID
+            take(1) // 只监听一次
+        ).subscribe(action => {
+            if (action.type === filePickerConfirm.type) {
+                if(selectFolder){
+                    let files = action.selectedPaths;
+                    if(files && files.length > 0){
+                        if(this.startFolder===''){
+                            this.leftPanelVisible = true;
+                        }
+                        this.startFolder = files[0];
+                        console.log(this.startFolder);
+                    }else{
+                        this.messageService.error(`发生了错误`)
+                    }
+                }else{
+                    let files = action.selectedPaths;
+                    files.forEach(file => {
+                        this.openFileFromPath(file);
+                    })
+                }
+            } else {
+                this.messageService.info(`用户取消了选择文件`);
+                // 这里处理取消逻辑
+            }
+            // 监听完成后自动取消订阅（take(1) 会自动完成）
+            this.filePickerSub = undefined;
+        });
+
+    }
+    async openFileFromPath(path: string) {
+        let index = this.openFiles.findIndex(file => file.path === path);
+        if (index > -1) {
+            this.activeOpenFile = this.openFiles[index];
+        } else {
+            try {
+                let openFile = await this.codeService.getCode(path);
+                this.activeOpenFile = openFile;
+                this.openFiles.push(openFile);
+                if (this.openFiles.length === 1) {
+                    this.monacoEditorViewUpdate();
+                }
+                this.activeFile(this.activeOpenFile);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
     // 点击空白处关闭菜单
     constructor() {
         document.addEventListener('click', () => {
@@ -266,5 +348,26 @@ export class CodeSpace {
                 this.contextMenuVisible = false;
             }
         });
+    }
+    fileMenuVisible = false;
+
+    toggleFileMenu() {
+        this.fileMenuVisible = !this.fileMenuVisible;
+    }
+
+    openFile() {
+        this.selectFileAndOpen()
+    }
+
+    openFolder() {
+        this.selectFileAndOpen(true)
+    }
+
+    exit() {
+        this.closeWindow();
+    }
+
+    closeFileMenu() {
+        this.fileMenuVisible = false;
     }
 }

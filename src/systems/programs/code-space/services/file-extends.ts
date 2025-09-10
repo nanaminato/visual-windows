@@ -16,6 +16,7 @@ export function getIconPath(name: string) {
             ['json.svg', ['json']],
             ['xml.svg', ['xml']],
             ['image.svg', ['jpg', 'jpeg', 'svg', 'gif','png']],
+            ['pdf.svg', ['pdf']],
             // 继续补充
         ]);
 

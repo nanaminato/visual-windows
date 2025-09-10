@@ -37,7 +37,7 @@ export class Login extends Reachable {
             this.checkTokenValidity(token).subscribe({
                 next: valid => {
                     if (valid) {
-                        console.log("dispatcher success")
+                        // console.log("dispatcher success")
                         this.store.dispatch(
                             loginSuccess({ token})
                         );

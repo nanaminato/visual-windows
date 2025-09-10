@@ -4,7 +4,23 @@
     width: 100%;
     scrollbar-width: thin;
 }
+
+.dropdown-menu {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.dropdown-item {
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+
 .menu-item{
+    margin-left: 10px;
     background: transparent;
     border: none;
     cursor: pointer;
