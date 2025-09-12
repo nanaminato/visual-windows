@@ -42,7 +42,7 @@ export class CodeFileNode {
 
         if (this.fileNode?.expandedWhenInit) {
             this.expandChildren();
-            console.log('expanded');
+            // console.log('expanded');
         }
     }
 
@@ -56,7 +56,7 @@ export class CodeFileNode {
             this.noChild = true;
         }
         easyFolder.forEach(folder => {
-            console.log(folder);
+            // console.log(folder);
             this.children.push({
                 name: folder.name,
                 path: folder.path,

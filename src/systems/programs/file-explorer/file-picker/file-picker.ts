@@ -60,6 +60,8 @@ export class FilePicker implements processClose{
     files: LightFile[] = [];
 
     @Input() config!: FilePickerConfig;
+
+    pickedFiles: LightFile[] = [];
     selectedFiles: LightFile[] = [];
 
     drivers: DriverInfo[] = [];
@@ -222,36 +224,31 @@ export class FilePicker implements processClose{
         this.refresh();
     }
     selectedExt = '';
-    private getFileExtension(fileName: string): string {
-        const idx = fileName.lastIndexOf('.');
-        if (idx === -1) return '';
-        return fileName.substring(idx + 1).toLowerCase();
-    }
 
     onFileSelectClicked(file: LightFile, event: MouseEvent) {
         if (this.config.mode === 'save') {
             // 保存模式旧逻辑不变
             if (!file.isDirectory) {
+                this.pickedFiles = [file]
                 this.saveFileName = file.name;
             }
-            return;
         }
-
-        if (!this.config.multiSelect) {
+        if(this.config.multiSelect){
+            this.updateMultiSelect(file, event);
+        }else{
+            this.selectedFiles = [file]
+            this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
             if(this.config.selectFolders){
                 if(file.isDirectory){
-                    this.selectedFiles = [file];
-                    this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
+                    this.pickedFiles = [file];
+
                 }
             }else{
                 if(!file.isDirectory){
-                    this.selectedFiles = [file];
-                    this.lastSelectedIndex = this.files.findIndex(f => f.path === file.path);
+                    this.pickedFiles = [file];
                 }
             }
 
-        } else {
-            this.updateMultiSelect(file, event);
         }
 
         // 选中文件后，更新输入框文本，覆盖用户输入
@@ -268,47 +265,78 @@ export class FilePicker implements processClose{
         if (idx === -1) return;
 
         if (event.shiftKey && this.lastSelectedIndex !== -1) {
+
             // Shift多选 - 选中区间
             let [start, end] = [this.lastSelectedIndex, idx].sort((a,b)=>a-b);
-            const rangeFiles = this.files.slice(start, end + 1).filter(f => this.isSelectable(f));
+
             // 合并原来的选中项
-            const newSelection = new Set(this.selectedFiles.map(f=>f.path));
-            rangeFiles.forEach(f=>newSelection.add(f.path));
-            this.selectedFiles = this.files.filter(f => newSelection.has(f.path));
+
+            //selects
+            const selectRangeFiles =  this.files.slice(start, end + 1);
+            const selection = new Set(this.selectedFiles.map(f=>f.path));
+            selectRangeFiles.forEach(f=>selection.add(f.path));
+            this.selectedFiles = this.files.filter(f => selection.has(f.path));
+
+            const rangeFiles = this.files.slice(start, end + 1).filter(f => this.isSelectable(f));
+            const pickSelection = new Set(this.pickedFiles.map(f=>f.path));
+            rangeFiles.forEach(f=>pickSelection.add(f.path));
+            const picks = this.files.filter(f => pickSelection.has(f.path));
+
+            let count = this.config.maxSelectCount;
+            if (count === undefined || count >= picks.length) {
+                this.pickedFiles = picks;
+            } else {
+                this.pickedFiles = picks.slice(picks.length - count);
+            }
         } else if (event.ctrlKey || event.metaKey) {
+
             // Ctrl多选 - 切换当前项选中状态
-            const exists = this.selectedFiles.find(f => f.path === file.path);
+            const exists = this.pickedFiles.find(f => f.path === file.path);
             if (exists) {
+                // ctrl 减选
+                if(this.pickedFiles.length > 1){
+                    this.pickedFiles = this.pickedFiles.filter(f => f.path !== file.path);
+                }
                 this.selectedFiles = this.selectedFiles.filter(f => f.path !== file.path);
             } else {
-                // 如果maxSelectCount限制，提前判断
-                if (this.config.maxSelectCount && this.selectedFiles.length >= this.config.maxSelectCount) {
+                // ctrl 加选
+                if (this.config.maxSelectCount && this.pickedFiles.length >= this.config.maxSelectCount) {
                     this.messageService.warning(`最多选择 ${this.config.maxSelectCount} 个文件`);
                     return;
                 }
-                this.selectedFiles.push(file);
+                this.selectedFiles.push(file)
+                if (this.config.selectFolders === file.isDirectory) {
+                    this.pickedFiles.push(file);
+                }
+
             }
-            this.lastSelectedIndex = idx;
+
         } else {
             // 无特殊键 - 单选
-            if (this.selectedFiles.length === 1 && this.selectedFiles[0].path === file.path) {
-                // 已经选中，取消选择
-                this.selectedFiles = [];
-                this.lastSelectedIndex = -1;
+            if (this.pickedFiles.length === 1 && this.pickedFiles[0].path === file.path) {
+
             } else {
-                this.selectedFiles = [file];
-                this.lastSelectedIndex = idx;
+                if (this.config.selectFolders === file.isDirectory) {
+                    this.pickedFiles = [file];
+                }
+
             }
+            this.selectedFiles = [file];
         }
+        this.lastSelectedIndex = idx;
+        console.log('last selectedIndex', idx);
     }
 
     // 判断某文件是否可选（根据文件夹选择权重和类型过滤）
     private isSelectable(file: LightFile): boolean {
+        // 如果选择文件，但是想选择文件夹
         if (file.isDirectory && !this.config.selectFolders) return false;
-        if (!file.isDirectory && this.config.filterExts && this.config.filterExts.length > 0){
+        // 如果是文件,并且是选择文件模式
+        if ( !file.isDirectory && this.config.filterExts && this.config.filterExts.length > 0){
             const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
             return this.config.filterExts.includes(ext);
         }
+
         return true;
     }
 
@@ -343,7 +371,7 @@ export class FilePicker implements processClose{
 
 
     private handleSelectMode() {
-        if (this.selectedFiles.length === 0&&!this.config.selectFolders && this.selectedFilesText === '') {
+        if (this.pickedFiles.length === 0&&!this.config.selectFolders && this.selectedFilesText === '') {
             this.messageService.warning('请选择文件');
             return;
         }
@@ -389,7 +417,7 @@ export class FilePicker implements processClose{
 
 
     cancelSelection() {
-        this.selectedFiles = [];
+        this.pickedFiles = [];
         this.saveFileName = '';
 
         this.closeWindow();
@@ -404,7 +432,7 @@ export class FilePicker implements processClose{
         } else {
             // 文件双击直接确认选择
             if(!this.config.selectFolders){
-                this.selectedFiles = [file];
+                this.pickedFiles = [file];
                 this.confirmSelection();
             }
         }
@@ -419,17 +447,17 @@ export class FilePicker implements processClose{
             // 标记当前是用户在编辑
             this.userEditing = true;
             // 清空选中状态
-            this.selectedFiles = [];
+            this.pickedFiles = [];
         }
     }
 
     private updateSelectedFilesText() {
-        if (this.selectedFiles.length === 0) {
+        if (this.pickedFiles.length === 0) {
             this.selectedFilesText = '';
-        } else if (this.selectedFiles.length === 1) {
-            this.selectedFilesText = this.selectedFiles[0].name;
+        } else if (this.pickedFiles.length === 1) {
+            this.selectedFilesText = this.pickedFiles[0].name;
         } else {
-            this.selectedFilesText = this.selectedFiles.map(f => `"${f.name}"`).join(' ');
+            this.selectedFilesText = this.pickedFiles.map(f => `"${f.name}"`).join(' ');
         }
     }
 }

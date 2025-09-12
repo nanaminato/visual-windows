@@ -23,6 +23,7 @@ export class Login extends Reachable {
     username = '';
     password = '';
     errorMessage = '';
+    showPassword: boolean = false;
 
     ngOnInit() {
         this.tryAutoLogin()

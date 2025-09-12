@@ -6,7 +6,11 @@
     background: linear-gradient(135deg, #0078d7, #00bcf2);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
+.show-password {
+    width: 20px;
+    height: 20px;
+    margin: 5px 0 5px 5px;
+}
 .login-box {
     background: white;
     padding: 40px;
@@ -20,9 +24,11 @@
     margin-bottom: 24px;
     color: #0078d7;
 }
-
-.login-box input {
+.login-box > form > input{
     width: 100%;
+}
+
+.login-box > form > input, .login-box .password {
     padding: 12px 10px;
     margin-bottom: 16px;
     border: 1px solid #ccc;

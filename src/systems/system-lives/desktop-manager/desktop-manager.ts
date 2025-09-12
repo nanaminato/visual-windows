@@ -28,17 +28,17 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        this.store$.dispatch(
-            WindowActions.openWindow(
-                {
-                    id: "code-space",
-                    title: "code space",
-                    params: {
-                        startFolder: 'D:\\WebstormProjects\\Remote-File-Manager'
-                    }
-                }
-            )
-        );
+        // this.store$.dispatch(
+        //     WindowActions.openWindow(
+        //         {
+        //             id: "code-space",
+        //             title: "code space",
+        //             params: {
+        //                 startFolder: 'D:\\WebstormProjects\\Remote-File-Manager'
+        //             }
+        //         }
+        //     )
+        // );
         // const requestId = uuid();
         // this.store$.dispatch(
         //

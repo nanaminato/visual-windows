@@ -3,7 +3,10 @@
         <h2>登录</h2>
         <form (ngSubmit)="login()">
             <input type="text" placeholder="用户名" [(ngModel)]="username" name="username" autocomplete="username" required />
-            <input type="password" placeholder="密码" [(ngModel)]="password" name="password" autocomplete="current-password" required />
+            <input class="flex-grow-1 password" [type]="showPassword ? 'text' : 'password'" placeholder="密码" [(ngModel)]="password" name="password" autocomplete="current-password" required />
+            <div class="d-flex flex-row-reverse align-items-center">
+                <input class="show-password" type="checkbox" [(ngModel)]="showPassword" name="showPassword" />
+            </div>
             <button type="submit">登录</button>
         </form>
 

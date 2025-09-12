@@ -11,10 +11,12 @@ export class ServerService {
         }
         return `${serverEnvironment.protocol}://${serverEnvironment.baseUrl}`;
     }
-    getWebSocketBase(){
-        if(serverEnvironment.production){
-            return `wss://${window.location.host}`;
+    getWebSocketBase() {
+        if (serverEnvironment.production) {
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            return `${protocol}://${window.location.host}`;
         }
         return `ws://${serverEnvironment.baseUrl}`;
     }
+
 }
