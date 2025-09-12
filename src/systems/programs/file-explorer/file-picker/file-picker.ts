@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {DriverInfo, FileNodeViewModel, LightFile} from '../explorer/models';
 import {DriverListView} from '../explorer/driver-list-view/driver-list-view';
 import {EntryRoot} from '../explorer/entry-root/entry-root';
@@ -21,9 +21,8 @@ import {FilePickerConfig} from './models/file-picker-config';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {filePickerCancel, filePickerConfirm} from '../../../system-services/state/system/file/file-picker.actions';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
-import {ProgramEvent} from '../../../models';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {processClose} from '../../../system-lives/window-live/adapter/adapter';
+import {processClose} from '../../../system-lives/window-live/adapter';
 
 @Component({
   selector: 'app-file-picker',
@@ -63,6 +62,7 @@ export class FilePicker implements processClose{
 
     pickedFiles: LightFile[] = [];
     selectedFiles: LightFile[] = [];
+    private inherit: boolean = false;
 
     drivers: DriverInfo[] = [];
     // 地址栏地址，不代表实际处于的位置
@@ -146,6 +146,7 @@ export class FilePicker implements processClose{
                 this.history.push(path);
                 this.historyIndex = this.history.length - 1;
             }
+            this.inherit = true;
 
         } catch (error: any) {
             this.navigatePath = this.currentPath;
@@ -254,6 +255,7 @@ export class FilePicker implements processClose{
         // 选中文件后，更新输入框文本，覆盖用户输入
         this.userEditing = false; // 标记结束编辑状态，防止覆盖冲突
         this.updateSelectedFilesText();
+        this.inherit = false;
     }
 
     private lastSelectedIndex: number = -1; // 记录上一次点选的index，用于shift多选
@@ -401,6 +403,8 @@ export class FilePicker implements processClose{
             return paths.map(p => this.currentPath+"\\"+p.substring(1, p.lastIndexOf('"')));
         } else {
             if(text===''){
+                return [this.currentPath]
+            }else if(this.inherit && this.currentPath.endsWith(text)){
                 return [this.currentPath]
             }
             if (!this.isAValidFile(text)) {

@@ -278,10 +278,10 @@ export class CodeSpace implements processSizeChange {
                         config: {
                             startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
                             selectFolders: selectFolder,
-                            multiSelect: true,
+                            // multiSelect: true,
                             // multiSelect: false,
-                            // multiSelect: !selectFolder,
-                            // maxSelectCount: 1,
+                            multiSelect: !selectFolder,
+                            // maxSelectCount: 3,
                             requestId:requestId,
                             mode: 'selector',
                             // mode: 'save',
