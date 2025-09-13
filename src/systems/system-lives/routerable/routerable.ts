@@ -11,19 +11,16 @@ import { Route, Routes } from '@angular/router';
 import {Subscription} from 'rxjs';
 import { AnimationBuilder, AnimationPlayer } from '@angular/animations';
 import { animate, style } from '@angular/animations';
+import {Reachable} from './reachable';
 
 @Directive()
-export class Routable implements AfterViewInit {
+export class Routable extends Reachable implements AfterViewInit {
     private currentComponentRef?: ComponentRef<any>;
     private previousComponentRef?: ComponentRef<any>;
-    @Input()
-    path: string = '';
 
     navigates: Routes = [];
     loaded: boolean = false;
 
-    @Input()
-    routeDepth: number = 0;
     private animationBuilder: AnimationBuilder = inject(AnimationBuilder);
     private injector: Injector = inject(Injector);
 
@@ -31,8 +28,6 @@ export class Routable implements AfterViewInit {
     private componentRef: ComponentRef<any> | undefined;
 
     // 父组件监听子组件的导航事件
-    @Output()
-    parentEmitter: EventEmitter<string> = new EventEmitter();
 
     @ViewChild('dynamic', {read: ViewContainerRef, static: false})
     private dynamic!: ViewContainerRef;
@@ -162,13 +157,6 @@ export class Routable implements AfterViewInit {
         }
     }
 
-
-    /**
-     * 向父组件发送导航请求
-     */
-    noticePath(path: string) {
-        this.parentEmitter.emit(path);
-    }
     private crossFadeAnimation(newEl: HTMLElement, oldEl?: HTMLElement): Promise<void> {
         return new Promise((resolve) => {
             const animation = this.animationBuilder.build([

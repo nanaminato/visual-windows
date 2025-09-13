@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, inject, Input, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, inject, Input, Output, ViewChild} from '@angular/core';
 import {PropagateTitle} from '../multi-explorer/models';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -68,6 +68,12 @@ export class FileExplorer {
     driverView: boolean = false;
 
     isLinux: boolean = false;
+
+    editing: boolean = false;
+    breadcrumbs: { name: string, path: string }[] = [];
+
+    @ViewChild('addressInput') addressInput!: ElementRef<HTMLInputElement>;
+
     async ngOnInit() {
         let input = this.currentPath;
         this.isLinux = await this.systemInfoService.isLinuxAsync();
@@ -85,14 +91,8 @@ export class FileExplorer {
         this.history = [this.currentPath];
         this.historyIndex = 0;
         this.navigatePath = this.currentPath;
-        this.partPath();
-        this.TitleChange()
-    }
-    partPath() {
-        if (!this.currentPath){
-            this.parts = ['']
-        }
-        this.parts = this.currentPath.split('\\').filter(p => p.length > 0);
+        this.TitleChange();
+        this.buildBreadcrumbs();
     }
     // 传递
     TitleChange(){
@@ -132,8 +132,9 @@ export class FileExplorer {
                 this.currentPath = path;
             }
             this.navigatePath = this.currentPath;
-            this.partPath();
+            // this.partPath();
             this.TitleChange();
+            this.buildBreadcrumbs();
 
             if(addToHistory){
                 // 如果当前不是历史末尾，截断后面的历史
@@ -255,15 +256,114 @@ export class FileExplorer {
         this.refresh();
     }
     showInfo() {
-        this.store.dispatch(WindowActions.openWindow({
-            id: fileExplorerProgram,
-            title: '选择文件',
-            params: {
 
-            },
-            parentId: this.winId,
-            modal: false,
-            closeWithParent: true
-        }));
     }
+
+    buildBreadcrumbs() {
+        const raw = this.currentPath || '';
+        this.breadcrumbs = [];
+
+        // LINUX 情况
+        if (this.isLinux) {
+            if (!raw || raw === '/') {
+                // 根目录显示为 "/"
+                this.breadcrumbs = [{ name: '/', path: '/' }];
+                return;
+            }
+            const segs = raw.split('/').filter(s => s.length > 0);
+            // 根先放一个 "/"
+            this.breadcrumbs.push({ name: '/', path: '/' });
+            let acc = '';
+            for (let i = 0; i < segs.length; i++) {
+                acc = acc === '' ? ('/' + segs[i]) : (acc + '/' + segs[i]);
+                // name 不包含斜杠，仅显示段名
+                this.breadcrumbs.push({ name: segs[i], path: acc });
+            }
+            this.insertSeparator()
+            return;
+        }
+
+        // Windows / 非 Linux 情况
+        // 把所有 '/' 统一转成 '\' 方便处理
+        if (!raw || raw === '/') {
+            // 把 "/" 当成此电脑/驱动器视图
+            this.breadcrumbs = [{ name: '此电脑', path: '/' }];
+            return;
+        }
+        const cleaned = raw.replace(/\//g, '\\');
+        const segs = cleaned.split('\\').filter(s => s.length > 0);
+        if (segs.length === 0) {
+            this.breadcrumbs = [{ name: '此电脑', path: '/' }];
+            return;
+        }
+
+        // 如果第一个段看起来是驱动器（例如 "C:"），先加入驱动器面包屑，name 为 "C:"（无 '\')
+        if (segs[0].includes(':')) {
+            let acc = segs[0] + '\\'; // C:\
+            this.breadcrumbs.push({ name: segs[0], path: acc }); // name 不带反斜杠
+            for (let i = 1; i < segs.length; i++) {
+                // 对于后续段，累积 path 为 "C:\Users" / "C:\Users\Me"
+                acc = acc.endsWith('\\') ? (acc + segs[i]) : (acc + '\\' + segs[i]);
+                this.breadcrumbs.push({ name: segs[i], path: acc });
+            }
+        } else {
+            // 非驱动器的普通路径（如网络路径或其它），每段 name 直接为段名，不包含 '\'
+            let acc = '';
+            for (let i = 0; i < segs.length; i++) {
+                acc = acc === '' ? segs[i] : (acc + '\\' + segs[i]);
+                this.breadcrumbs.push({ name: segs[i], path: acc });
+            }
+        }
+        this.insertSeparator();
+    }
+    insertSeparator() {
+        const crumbs = this.breadcrumbs;
+        if (!Array.isArray(crumbs) || crumbs.length <= 1) return;
+        const sep = { name: '>', path: '' };
+        this.breadcrumbs = crumbs.flatMap(
+            (item, i)=>
+                i < crumbs.length - 1 ? [item, sep] : [item]);
+    }
+
+    onBreadcrumbClick(path: string, event?: MouseEvent) {
+        if(path===''){
+            return;
+        }
+        if (event) {
+            event.stopPropagation();
+        }
+        // 点击面包屑时直接导航到该路径
+        this.navigatePath = path;
+        this.tryNavigateToFolder(path);
+    }
+
+    enterEditMode(event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        this.editing = true;
+        // 将 navigatePath 置为当前路径，之后在下一次运行周期聚焦并选中
+        this.navigatePath = this.currentPath;
+        // 使用 setTimeout 让 Angular 完成 DOM 更新再 focus
+        setTimeout(() => {
+            try {
+                this.addressInput?.nativeElement?.focus();
+                this.addressInput?.nativeElement?.select();
+            } catch (e) { }
+        }, 0);
+    }
+    onEnterFromInput() {
+        // 用户在编辑模式下按回车
+        this.navigateFromAddress(); // 已在类中定义并处理了 normalize/relative 等
+        // 退出编辑模式（navigateFromAddress 在成功后会设置 navigatePath/currentPath/buildBreadcrumbs）
+        this.editing = false;
+    }
+
+    onInputBlur() {
+        this.editing = false;
+        this.navigatePath = this.currentPath;
+    }
+
+
+
 }

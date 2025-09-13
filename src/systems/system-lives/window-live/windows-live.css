@@ -1,17 +1,33 @@
 :host{
     position: absolute;
 }
+
+/* 不要对 .window.disabled 设置 pointer-events:none */
 .window.disabled {
-    pointer-events: none; /* 禁止所有交互 */
-    opacity: 0.9; /* 可选，视觉提示 */
+    opacity: 1; /* 或其它视觉样式 */
 }
+
+/* 覆盖整个窗口的层，捕获点击并触发 focus */
 .disabled-overlay {
-    position: relative;
-    top: 0; left: 0; right: 0; bottom: 0;
+    position: absolute;    /* 必须 absolute（父 .window 已经是定位元素） */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: transparent;
-    z-index: 3;
-    cursor: not-allowed;
+    z-index: 9999;         /* 高于 resize-handles（你那是 10） */
+    pointer-events: auto;  /* 确保它能接收事件 */
 }
+
+/* 在 disabled 状态下禁止内部元素交互，但允许 overlay 捕获事件 */
+.window.disabled * {
+    pointer-events: none;
+}
+/* 例外：允许 overlay 本身有交互能力 */
+.window.disabled .disabled-overlay {
+    pointer-events: auto;
+}
+
 
 .window {
     position: absolute;

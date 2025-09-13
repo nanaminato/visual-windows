@@ -28,13 +28,42 @@
     background: transparent;
 }
 .address-bar{
-    display: flex;
     flex-direction: row;
     flex-grow: 1;
+    display:flex;
+    align-items:center;
 }
 .address-bar  input, #search-bar  input{
     font-size: 16px !important;
 }
+.breadcrumbs-address{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    border: 1px solid black;
+}
+.breadcrumbs {
+    display:flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items:center;
+    flex-wrap:wrap;
+    width:100%;
+}
+.breadcrumb-item{
+    border: none;
+    margin-right: 5px;
+    background: white;
+
+}
+.breadcrumb-item::before{
+    content: '' !important;
+}
+.breadcrumb-item:hover{
+    background: lightgray;
+    text-decoration: none;
+}
+
 .search-box{
     margin: 0 10px;
 }

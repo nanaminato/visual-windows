@@ -7,9 +7,12 @@
          [class.disabled]="win.disabled"
          (tap)="focusWindow(win.id)"
          (mousedown)="focusWindow(win.id)">
-        <div [class.disabled-overlay]="win.disabled" >
-
+        <div [class.disabled-overlay]="win.disabled"
+             (click)="focusWindow(win.id!)"
+             (mousedown)="focusWindow(win.id!)"
+             (touchstart)="focusWindow(win.id!)">
         </div>
+
         <div class="title-bar"
              [hidden]="win.customHeader">
             <div class="d-flex flex-row">
