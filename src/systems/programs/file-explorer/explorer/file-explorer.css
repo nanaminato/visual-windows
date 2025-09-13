@@ -54,7 +54,6 @@
     border: none;
     margin-right: 5px;
     background: white;
-
 }
 .breadcrumb-item::before{
     content: '' !important;

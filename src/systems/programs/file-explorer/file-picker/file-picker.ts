@@ -25,7 +25,8 @@ import {WindowActions} from '../../../system-services/state/window/window.action
 import {processClose} from '../../../system-lives/window-live/adapter';
 import {ModalWindow} from '../../../system-lives/window-live/adapter/adapter';
 import {selectWindows} from '../../../system-services/state/window/window.selectors';
-import {take} from 'rxjs';
+import {firstValueFrom} from 'rxjs';
+import {buildBreadcrumbsForPath} from '../explorer/models/bread';
 
 @Component({
   selector: 'app-file-picker',
@@ -80,36 +81,12 @@ export class FilePicker extends ModalWindow implements processClose{
     private store = inject(Store); // 注入 ngrx store
 
     override modalInit() {
-        let title: string;
-        if (this.config.mode === 'save') {
-            title = '保存为';
-        } else if (this.config.selectFolders) {
-            title = '选择文件夹';
-        } else {
-            title = '选择文件';
-        }
-
-        // 从 store 读取 windows，一次性取值并更新当前窗口的 title 和 icon（icon 来自 parent）
-        this.store.select(selectWindows).pipe(take(1)).subscribe(windows => {
+        firstValueFrom(this.store.select(selectWindows)).then(windows => {
             if (!windows) return;
-
-            // 找到父窗口和当前窗口
-            // const parentWindow = this.parentId ? windows.find(w => w.id === this.parentId) : undefined;
-            // const currentWindow = windows.find(w => w.id === this.id);
-            // 构造更新后的 windows 列表
-            const updatedWindows = windows.map(w => {
-                if (w.id === this.id) {
-                    return {
-                        ...w,
-                        title,
-                    };
-                }
-                return w;
-            });
-
-            // 派发更新 action
-            this.store.dispatch(WindowActions.updateWindows({ windows: updatedWindows }));
-        });
+            const title = this.config.mode === 'save' ? '保存为' : (this.config.selectFolders ? '选择文件夹' : '选择文件');
+            const updated = windows.map(w => w.id === this.id ? { ...w, title } : w);
+            this.store.dispatch(WindowActions.updateWindows({ windows: updated }));
+        }).catch(() => {});
     }
 
     closeWindow() {
@@ -303,9 +280,6 @@ export class FilePicker extends ModalWindow implements processClose{
 
             // Shift多选 - 选中区间
             let [start, end] = [this.lastSelectedIndex, idx].sort((a,b)=>a-b);
-
-            // 合并原来的选中项
-
             //selects
             const selectRangeFiles =  this.files.slice(start, end + 1);
             const selection = new Set(this.selectedFiles.map(f=>f.path));
@@ -502,71 +476,8 @@ export class FilePicker extends ModalWindow implements processClose{
         }
     }
     buildBreadcrumbs() {
-        const raw = this.currentPath || '';
-        this.breadcrumbs = [];
-
-        // LINUX 情况
-        if (this.isLinux) {
-            if (!raw || raw === '/') {
-                // 根目录显示为 "/"
-                this.breadcrumbs = [{ name: '/', path: '/' }];
-                return;
-            }
-            const segs = raw.split('/').filter(s => s.length > 0);
-            // 根先放一个 "/"
-            this.breadcrumbs.push({ name: '/', path: '/' });
-            let acc = '';
-            for (let i = 0; i < segs.length; i++) {
-                acc = acc === '' ? ('/' + segs[i]) : (acc + '/' + segs[i]);
-                // name 不包含斜杠，仅显示段名
-                this.breadcrumbs.push({ name: segs[i], path: acc });
-            }
-            this.insertSeparator()
-            return;
-        }
-
-        // Windows / 非 Linux 情况
-        // 把所有 '/' 统一转成 '\' 方便处理
-        if (!raw || raw === '/') {
-            // 把 "/" 当成此电脑/驱动器视图
-            this.breadcrumbs = [{ name: '此电脑', path: '/' }];
-            return;
-        }
-        const cleaned = raw.replace(/\//g, '\\');
-        const segs = cleaned.split('\\').filter(s => s.length > 0);
-        if (segs.length === 0) {
-            this.breadcrumbs = [{ name: '此电脑', path: '/' }];
-            return;
-        }
-
-        // 如果第一个段看起来是驱动器（例如 "C:"），先加入驱动器面包屑，name 为 "C:"（无 '\')
-        if (segs[0].includes(':')) {
-            let acc = segs[0] + '\\'; // C:\
-            this.breadcrumbs.push({ name: segs[0], path: acc }); // name 不带反斜杠
-            for (let i = 1; i < segs.length; i++) {
-                // 对于后续段，累积 path 为 "C:\Users" / "C:\Users\Me"
-                acc = acc.endsWith('\\') ? (acc + segs[i]) : (acc + '\\' + segs[i]);
-                this.breadcrumbs.push({ name: segs[i], path: acc });
-            }
-        } else {
-            // 非驱动器的普通路径（如网络路径或其它），每段 name 直接为段名，不包含 '\'
-            let acc = '';
-            for (let i = 0; i < segs.length; i++) {
-                acc = acc === '' ? segs[i] : (acc + '\\' + segs[i]);
-                this.breadcrumbs.push({ name: segs[i], path: acc });
-            }
-        }
-        this.insertSeparator();
+        this.breadcrumbs = buildBreadcrumbsForPath(this.currentPath, this.isLinux);
     }
-    insertSeparator() {
-        const crumbs = this.breadcrumbs;
-        if (!Array.isArray(crumbs) || crumbs.length <= 1) return;
-        const sep = { name: '>', path: '' };
-        this.breadcrumbs = crumbs.flatMap(
-            (item, i)=>
-                i < crumbs.length - 1 ? [item, sep] : [item]);
-    }
-
     onBreadcrumbClick(path: string, event?: MouseEvent) {
         if(path===''){
             return;
@@ -580,20 +491,18 @@ export class FilePicker extends ModalWindow implements processClose{
     }
 
     enterEditMode(event?: Event) {
-        if (event) {
-            event.stopPropagation();
-        }
+        event?.stopPropagation();
         this.editing = true;
-        // 将 navigatePath 置为当前路径，之后在下一次运行周期聚焦并选中
         this.navigatePath = this.currentPath;
-        // 使用 setTimeout 让 Angular 完成 DOM 更新再 focus
-        setTimeout(() => {
+        // 等待下一宏任务后 focus
+        Promise.resolve().then(() => {
             try {
                 this.addressInput?.nativeElement?.focus();
                 this.addressInput?.nativeElement?.select();
-            } catch (e) { }
-        }, 0);
+            } catch {}
+        });
     }
+
     onEnterFromInput() {
         // 用户在编辑模式下按回车
         this.navigateFromAddress(); // 已在类中定义并处理了 normalize/relative 等
