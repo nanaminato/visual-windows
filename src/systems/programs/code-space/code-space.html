@@ -9,6 +9,7 @@
                          style="position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ccc; z-index: 1000; min-width: 150px;">
                         <div class="dropdown-item" (click)="openFile()">打开文件</div>
                         <div class="dropdown-item" (click)="openFolder()">打开文件夹</div>
+                        <div class="dropdown-item" (click)="openSetting()">设定</div>
                         <div class="dropdown-item" (click)="exit()">退出</div>
                     </div>
                 }
@@ -56,30 +57,35 @@
             </as-split-area>
             <as-split-area size="74">
                 <div class="d-flex flex-column w-100 h-100 flex-grow-0 flex-shrink-0">
-                    <div class="w-100 open-codes-header" [hidden]="openFiles.length===0">
-                        @for(openFile of openFiles; track openFile.path){
+                    <div class="w-100 open-codes-header" [hidden]="openedTabs.length===0">
+                        @for(tab of openedTabs; track tab){
                             <div class="px-2 py-1 open-file-item"
-                                 (click)="activeFile(openFile)"
-                                 (contextmenu)="onContextMenu($event, openFile)"
-                                 [class.active]="openFile.path===activeOpenFile?.path">
-                                <img width="15" height="15" [src]="getIconPath(openFile.name)" alt="文件图标">
-                                <div>{{openFile.name}}</div>
-                                <button class="plane-button" (click)="closeFile(openFile, $event)">
+                                 (click)="activeTab(tab)"
+                                 (contextmenu)="onContextMenu($event, tab)"
+                                 [class.active]="isActiveTab(tab)">
+                                <img width="15" height="15" [src]="getIconPath(tab.name)" alt="文件图标">
+                                <div>{{tab.name}}</div>
+                                <button class="plane-button" (click)="closeTab(tab, $event)">
                                     <nz-icon nzType="close" />
                                 </button>
-                                @if(contextMenuVisible && contextMenuFile?.path === openFile.path){
+                                @if(contextMenuVisible && (contextMenuTab?.type === tab.type || contextMenuTab?.file?.path===tab.file?.path) ){
                                     <div class="context-menu" [style.top.px]="contextMenuPosition.y" [style.left.px]="contextMenuPosition.x" (click)="$event.stopPropagation()">
-                                        <div class="context-menu-item" (click)="closeFile(contextMenuFile, $event)">关闭</div>
-                                        <div class="context-menu-item" (click)="closeOtherFiles(contextMenuFile, $event)">关闭其他标签页</div>
-                                        <div class="context-menu-item" (click)="closeAllFiles($event)">关闭所有标签页</div>
+                                        <div class="context-menu-item" (click)="closeTab(contextMenuTab, $event)">关闭</div>
+                                        <div class="context-menu-item" (click)="closeOtherTab(contextMenuTab, $event)">关闭其他标签页</div>
+                                        <div class="context-menu-item" (click)="closeAllTab($event)">关闭所有标签页</div>
                                     </div>
                                 }
                             </div>
                         }
                     </div>
                     <div class="d-flex flex-grow-1">
-                        @if(editorVisible){
-                            <ngx-monaco-editor class="w-100 h-100" [options]="editorOptions" [(ngModel)]="content"></ngx-monaco-editor>
+                        @if(panelResizeControl){
+                            @if(showFile){
+                                <ngx-monaco-editor class="w-100 h-100" [options]="editorOptions" [(ngModel)]="content"></ngx-monaco-editor>
+
+                            }@else{
+                                <app-code-space-settings (settingsChange)="onSettingChange($event)" ></app-code-space-settings>
+                            }
                         }
                     </div>
                 </div>

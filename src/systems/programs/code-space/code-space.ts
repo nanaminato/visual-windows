@@ -3,7 +3,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramConfig, ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {FolderRoot} from './folder-root/folder-root';
-import {CodeFileNodeViewModel, OpenFile} from './models';
+import {CodeFileNodeViewModel, CodeSpaceTab, OpenFile} from './models';
 import {CodeService, getFileLanguage, getIconPath} from './services';
 import {EditorComponent} from 'ngx-monaco-editor-v2';
 import {FormsModule} from '@angular/forms';
@@ -20,6 +20,8 @@ import {Actions, ofType} from '@ngrx/effects';
 import {filePickerCancel, filePickerConfirm} from '../../system-services/state/system/file/file-picker.actions';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {processSizeChange} from '../../system-lives/window-live/adapter';
+import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
+import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
 
 @Component({
     selector: 'app-code-space',
@@ -31,7 +33,8 @@ import {processSizeChange} from '../../system-lives/window-live/adapter';
         FormsModule,
         SplitAreaComponent,
         SplitComponent,
-        CommonModule
+        CommonModule,
+        CodeSpaceSettings
     ],
     providers: [
 
@@ -53,6 +56,7 @@ export class CodeSpace implements processSizeChange {
     @Input()
     startFile: string = "";
     async ngOnInit() {
+        this.loadSettingsFromStorage();
         if(this.file){
             if(this.file.isDirectory){
                 this.startFolder = this.file.path;
@@ -77,11 +81,12 @@ export class CodeSpace implements processSizeChange {
                 isDirectory: false,
             })
         }
-        this.editorVisible = true;
+        this.panelResizeControl = true;
     }
     leftPanelVisible: boolean = false;
 
-    editorVisible: boolean = false;
+    panelResizeControl: boolean = false;
+    showFile: boolean = true;
     @HostListener('window:resize', ['$event'])
     sizeChanged($event: any): void {
         this.monacoEditorViewUpdate()
@@ -90,9 +95,9 @@ export class CodeSpace implements processSizeChange {
         this.monacoEditorViewUpdate()
     }
     monacoEditorViewUpdate(){
-        this.editorVisible = false;
+        this.panelResizeControl = false;
         setTimeout(()=>{
-            this.editorVisible = true;
+            this.panelResizeControl = true;
         },0)
     }
 
@@ -164,23 +169,29 @@ export class CodeSpace implements processSizeChange {
         this.monacoEditorViewUpdate()
     }
     codeService: CodeService = inject(CodeService);
-    openFiles: OpenFile[] = [];
+    openedTabs: CodeSpaceTab[] = [];
 
-    activeOpenFile: OpenFile | undefined = undefined;
+    activatedTab: CodeSpaceTab | undefined = undefined;
 
     async onFileOpen($event: CodeFileNodeViewModel) {
-        let index = this.openFiles.findIndex(file => file.path === $event.path);
+        let index = this.openedTabs.findIndex(
+            tab => tab.type ==='file' && tab.file!.path === $event.path);
         if(index > -1){
-            this.activeOpenFile = this.openFiles[index];
+            this.activatedTab = this.openedTabs[index];
         }else{
             try{
                 let openFile = await this.codeService.getCode($event.path);
-                this.activeOpenFile = openFile;
-                this.openFiles.push(openFile);
-                if(this.openFiles.length === 1){
+                let tab: CodeSpaceTab = {
+                    type: 'file',
+                    name: openFile.name,
+                    file: openFile,
+                }
+                this.activatedTab = tab;
+                this.openedTabs.push(tab);
+                if(this.openedTabs.length === 1){
                     this.monacoEditorViewUpdate()
                 }
-                this.activeFile(this.activeOpenFile);
+                this.activeTab(this.activatedTab);
             }catch(err){
                 console.log(err);
             }
@@ -188,73 +199,108 @@ export class CodeSpace implements processSizeChange {
     }
 
     protected readonly getIconPath = getIconPath;
-    editorOptions = {theme: 'vs-light', language: 'javascript'};
+    editorOptions = {theme: 'vs-light', language: 'javascript',size: '25'};
     content: string = '';
+    private readonly storageKey = 'code_space_settings';
 
-    activeFile(openFile?: OpenFile) {
-        if(openFile){
-            this.activeOpenFile = openFile;
-            let oldLanguage = this.editorOptions.language;
-            this.editorOptions.language = getFileLanguage(openFile.name);
-            this.content = openFile.decodeText??'';
-            if(this.editorOptions.language !== oldLanguage){
-                this.monacoEditorViewUpdate();
+    onSettingsChange(settings: CodeSpaceSettingsModel) {
+        if (settings.theme) {
+            this.editorOptions.theme = settings.theme;
+        }
+        // 这里可触发编辑器重新渲染/应用配置的逻辑
+        this.applyEditorOptions();
+    }
+    private applyEditorOptions() {
+        // console.log('应用 editorOptions:', this.editorOptions);
+    }
+    private loadSettingsFromStorage(): void {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            if (!raw) return;
+
+            const parsed = JSON.parse(raw) as CodeSpaceSettingsModel;
+            if (parsed.theme) {
+                this.editorOptions.theme = parsed.theme;
             }
+        } catch (e) {
+            // 读取或解析失败，保留默认 editorOptions
+            console.warn('读取 code space 设置失败，使用默认配置：', e);
+        }
+
+        // 根据读到的配置应用到编辑器
+        this.applyEditorOptions();
+    }
+
+    activeTab(tab?: CodeSpaceTab) {
+        if(tab){
+            this.activatedTab = tab;
+            if(tab.type === 'file'){
+                let oldLanguage = this.editorOptions.language;
+                this.editorOptions.language = getFileLanguage(tab.file!.name);
+                this.content = tab.file!.decodeText??'';
+                if(this.editorOptions.language !== oldLanguage){
+                    this.monacoEditorViewUpdate();
+                }
+                this.showFile = true;
+            }else if(tab.type==='setting'){
+                this.showFile = false;
+            }
+
 
         }
     }
     contextMenuVisible: boolean = false;
     contextMenuPosition = {x: 0, y: 0};
-    contextMenuFile: OpenFile | undefined =undefined;
+    contextMenuTab: CodeSpaceTab | undefined =undefined;
 
-    onContextMenu(event: MouseEvent, openFile: OpenFile) {
+    onContextMenu(event: MouseEvent, tab: CodeSpaceTab) {
         event.preventDefault();
         event.stopPropagation();
 
-        this.contextMenuFile = openFile;
+        this.contextMenuTab = tab;
         this.contextMenuPosition = {x: event.clientX, y: event.clientY};
         this.contextMenuVisible = true;
     }
 
     // 关闭当前文件
-    closeFile(openFile: OpenFile | undefined, event: MouseEvent) {
+    closeTab(tab: CodeSpaceTab| undefined, event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
 
         this.contextMenuVisible = false;
 
-        this.openFiles = this.openFiles.filter(file => file.path !== openFile!.path);
+        this.openedTabs = this.openedTabs.filter(t => t.type !== tab?.type || t.file?.path!==tab?.file?.path);
 
-        if(this.openFiles.length > 0){
-            if(this.activeOpenFile?.path === openFile!.path){
-                this.activeFile(this.openFiles[0]);
+        if(this.openedTabs.length > 0){
+            if(this.activatedTab?.type === tab?.type || this.activatedTab?.file?.path===tab?.file?.path){
+                this.activeTab(this.openedTabs[0]);
             }
         }else{
-            this.activeOpenFile = undefined;
+            this.activatedTab = undefined;
             this.content = '';
         }
     }
 
     // 关闭其他标签页
-    closeOtherFiles(openFile: OpenFile | undefined, event: MouseEvent) {
+    closeOtherTab(tab: CodeSpaceTab| undefined, event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
 
         this.contextMenuVisible = false;
 
-        this.openFiles = this.openFiles.filter(file => file.path === openFile!.path);
-        this.activeFile(openFile!);
+        this.openedTabs = this.openedTabs.filter(t => t.type === tab?.type && t.file?.path===tab?.file?.path);
+        this.activeTab(tab!);
     }
 
     // 关闭所有标签页
-    closeAllFiles(event: MouseEvent) {
+    closeAllTab(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
 
         this.contextMenuVisible = false;
 
-        this.openFiles = [];
-        this.activeOpenFile = undefined;
+        this.openedTabs = [];
+        this.activatedTab = undefined;
         this.content = '';
     }
     store$ = inject(Store);
@@ -326,18 +372,23 @@ export class CodeSpace implements processSizeChange {
 
     }
     async openFileFromPath(path: string) {
-        let index = this.openFiles.findIndex(file => file.path === path);
+        let index = this.openedTabs.findIndex(t => t.type === 'file' && t.file?.path === path);
         if (index > -1) {
-            this.activeOpenFile = this.openFiles[index];
+            this.activatedTab = this.openedTabs[index];
         } else {
             try {
                 let openFile = await this.codeService.getCode(path);
-                this.activeOpenFile = openFile;
-                this.openFiles.push(openFile);
-                if (this.openFiles.length === 1) {
+                let tab: CodeSpaceTab = {
+                    type: 'file',
+                    name: openFile.name,
+                    file: openFile,
+                }
+                this.activatedTab = tab;
+                this.openedTabs.push(tab);
+                if (this.openedTabs.length === 1) {
                     this.monacoEditorViewUpdate();
                 }
-                this.activeFile(this.activeOpenFile);
+                this.activeTab(this.activatedTab);
             } catch (err) {
                 console.log(err);
             }
@@ -371,5 +422,27 @@ export class CodeSpace implements processSizeChange {
 
     closeFileMenu() {
         this.fileMenuVisible = false;
+    }
+
+    openSetting() {
+        let tab = this.openedTabs.find(t => t.type === 'setting');
+        if (tab) {
+            this.activeTab(tab)
+        }else{
+            let settingTab: CodeSpaceTab = {
+                type: 'setting',
+                name: 'setting',
+            }
+            this.activeTab(settingTab);
+            this.openedTabs.push(settingTab);
+        }
+    }
+
+    isActiveTab(tab: CodeSpaceTab) {
+        return this.activatedTab===tab;
+    }
+
+    onSettingChange($event: CodeSpaceSettingsModel) {
+        this.editorOptions.theme = $event.theme;
     }
 }

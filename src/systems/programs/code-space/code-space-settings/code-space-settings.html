@@ -1,0 +1,22 @@
+<div class="code-space-settings">
+    <h3>编辑器主题</h3>
+
+    <label>
+        <input type="radio" name="theme" [value]="'vs-light'" [(ngModel)]="settings.theme" (change)="onChange()" />
+        明亮 (vs-light)
+    </label>
+
+    <label style="margin-left: 12px;">
+        <input type="radio" name="theme" [value]="'vs-dark'" [(ngModel)]="settings.theme" (change)="onChange()" />
+        暗色 (vs-dark)
+    </label>
+
+    <div style="margin-top: 12px;">
+        <button type="button" (click)="apply()">应用</button>
+        <button type="button" (click)="reset()" style="margin-left:8px;">重置默认</button>
+    </div>
+
+    <div style="margin-top:12px; color:#666; font-size:13px;">
+        当前主题: <strong>{{ settings.theme }}</strong>
+    </div>
+</div>

@@ -326,7 +326,7 @@ export class FilePicker implements processClose{
             this.selectedFiles = [file];
         }
         this.lastSelectedIndex = idx;
-        console.log('last selectedIndex', idx);
+        // console.log('last selectedIndex', idx);
     }
 
     // 判断某文件是否可选（根据文件夹选择权重和类型过滤）
