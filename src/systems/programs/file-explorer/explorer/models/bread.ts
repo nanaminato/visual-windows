@@ -37,8 +37,10 @@ export function buildBreadcrumbsForPath(rawPath: string, isLinux: boolean): Crum
 
     // insert separators (pure)
     if (breadcrumbs.length > 1) {
-        const sep = { name: '>', path: '' };
-        return breadcrumbs.flatMap((item, i) => i < breadcrumbs.length - 1 ? [item, sep] : [item]);
+        return breadcrumbs.flatMap((item, i) =>
+            i < breadcrumbs.length - 1 ? [item, { name: '>', path: `${item.path}__sep__${i}` }] : [item]
+        );
     }
+
     return breadcrumbs;
 }

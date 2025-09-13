@@ -199,13 +199,15 @@ export class CodeSpace implements processSizeChange {
     }
 
     protected readonly getIconPath = getIconPath;
-    editorOptions = {theme: 'vs-light', language: 'javascript',size: '25'};
+    editorOptions = {theme: 'vs-light', language: 'javascript',fontSize: 16};
     content: string = '';
     private readonly storageKey = 'code_space_settings';
-
-    onSettingsChange(settings: CodeSpaceSettingsModel) {
+    onSettingChange(settings: CodeSpaceSettingsModel) {
         if (settings.theme) {
             this.editorOptions.theme = settings.theme;
+        }
+        if(settings.fontSize) {
+            this.editorOptions.fontSize = settings.fontSize;
         }
         // 这里可触发编辑器重新渲染/应用配置的逻辑
         this.applyEditorOptions();
@@ -442,7 +444,5 @@ export class CodeSpace implements processSizeChange {
         return this.activatedTab===tab;
     }
 
-    onSettingChange($event: CodeSpaceSettingsModel) {
-        this.editorOptions.theme = $event.theme;
-    }
+
 }

@@ -264,8 +264,8 @@ export class FileExplorer {
         this.breadcrumbs = buildBreadcrumbsForPath(this.currentPath, this.isLinux);
     }
 
-    onBreadcrumbClick(path: string, event?: MouseEvent) {
-        if(path===''){
+    onBreadcrumbClick(name: string,path: string, event?: MouseEvent) {
+        if(name==='>'){
             return;
         }
         if (event) {

@@ -1,3 +1,7 @@
+:host{
+    width: 100%;
+    height: 100%;
+}
 .code-space-settings { padding: 8px; }
 label { cursor: pointer; }
 button { padding: 6px 10px; }

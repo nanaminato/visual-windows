@@ -12,11 +12,33 @@
     </label>
 
     <div style="margin-top: 12px;">
+        <h3>字体大小</h3>
+        <nz-row nzGutter="8">
+            <nz-col nzSpan="12">
+                <nz-slider [nzMin]="5" [nzMax]="36" [nzStep]="1" [(ngModel)]="settings.fontSize" (ngModelChange)="onChange()"></nz-slider>
+            </nz-col>
+            <div nz-col nzSpan="4">
+                <nz-input-number [nzMin]="5" [nzMax]="36" [nzStep]="1" [(ngModel)]="settings.fontSize" (ngModelChange)="onChange()"></nz-input-number>
+            </div>
+        </nz-row>
+        <div style="margin-top: 8px; color: #333;">
+            <div>
+                <span>预览：</span>
+            </div>
+            <div class="d-flex justify-content-center align-items-center">
+                <span [style.font-size.px]="settings.fontSize">
+                    这是一段示例文字，用于预览字体大小。
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 12px;">
         <button type="button" (click)="apply()">应用</button>
         <button type="button" (click)="reset()" style="margin-left:8px;">重置默认</button>
     </div>
 
     <div style="margin-top:12px; color:#666; font-size:13px;">
-        当前主题: <strong>{{ settings.theme }}</strong>
+        当前主题: <strong>{{ settings.theme }}</strong> ，字体大小: <strong>{{ settings.fontSize }} px</strong>
     </div>
 </div>

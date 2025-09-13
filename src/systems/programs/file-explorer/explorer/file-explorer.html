@@ -30,9 +30,9 @@
                 }@else{
                     <div class="breadcrumbs-address">
                         <div class="breadcrumbs" (click)="enterEditMode($event)">
-                            @for(b of breadcrumbs; track b){
+                            @for(b of breadcrumbs; track b.path){
                                 <button class="breadcrumb-item"
-                                        (click)="onBreadcrumbClick(b.path, $event)">
+                                        (click)="onBreadcrumbClick(b.name, b.path, $event)">
                                     {{ b.name }}
                                 </button>
                             }
