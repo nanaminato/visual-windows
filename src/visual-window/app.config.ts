@@ -16,6 +16,8 @@ import {
 } from '../systems/system-services/state/system/system.reducer';
 import {jwtInterceptor} from '../systems/system-services/jwt.interceptor';
 import {ResumeEffects} from '../systems/system-services/state/resume/ResumeEffects';
+import {screenshotReducer} from '../systems/system-services/state/window/screenshot/screenshot.reducer';
+import {ScreenshotEffect} from '../systems/system-services/state/window/screenshot/screenshot.effect';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -40,6 +42,7 @@ export const appConfig: ApplicationConfig = {
         "programConfig": programConfigReducer,
         "window": windowReducer,
         "systemInfo": systemInfoReducer,
+        "screenshots": screenshotReducer,
         auth: authReducer,
     },{
         runtimeChecks: {
@@ -47,7 +50,7 @@ export const appConfig: ApplicationConfig = {
             strictActionImmutability: false,
         }
     }),
-    provideEffects(SystemEffects, WindowEffects, ResumeEffects),
+    provideEffects(SystemEffects, WindowEffects, ResumeEffects, ScreenshotEffect),
 
 ]
 };

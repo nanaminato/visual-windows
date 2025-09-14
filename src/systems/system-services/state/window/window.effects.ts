@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import {switchMap, withLatestFrom, catchError, of, mergeMap, from} from 'rxjs';
+import {switchMap, withLatestFrom, catchError, of, mergeMap, from, concatMap, EMPTY, Observable} from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';

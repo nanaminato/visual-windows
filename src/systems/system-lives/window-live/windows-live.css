@@ -14,9 +14,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: transparent;
+    /*background: transparent;*/
     z-index: 9999;         /* 高于 resize-handles（你那是 10） */
     pointer-events: auto;  /* 确保它能接收事件 */
+    background: skyblue;
+    opacity: 0.1;
 }
 
 /* 在 disabled 状态下禁止内部元素交互，但允许 overlay 捕获事件 */

@@ -101,9 +101,11 @@ export class DesktopBar {
         if(win.minimized){
             this.windowManager.focusWindow(winGroup.windowStates[0].id);
         }else{
-            if(!win.disabled){
-                this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
-            }
+            // if(!win.disabled){
+            //     this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
+            // }
+            this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
+
         }
 
     }

@@ -35,12 +35,14 @@ button.disabled > nz-icon{
     width: 100%;
     cursor: move;
 }
-
+// 自定义程序头部
 .program-container.active .program-header {
     background: lightblue;
 }
-
-
+// window-live 程序头部
+.title-bar.active{
+    background: lightblue;
+}
 .mini-btn,.max-btn,.close-btn {
     background: transparent;
     border: none;

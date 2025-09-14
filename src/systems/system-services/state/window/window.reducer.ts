@@ -4,6 +4,7 @@ import {WindowActions} from './window.actions';
 
 export interface WindowStateSlice {
     windows: WindowState[];
+    lastFocusedWindowId?: string;  // 新增字段
 }
 
 export const initialState: WindowStateSlice = {
@@ -21,50 +22,85 @@ export const windowReducer = createReducer(
     }),
 
     on(WindowActions.focusWindow, (state, { id }) => {
+
         const focusedWindow = state.windows.find(w => w.id === id);
         if (!focusedWindow) {
             return state;
         }
+        if (state.lastFocusedWindowId === id && !focusedWindow.minimized) {
+            return state;
+        }
 
-        // 1. 初始化激活ID集合，使用Set避免重复
         const activeIds = new Set<string>();
         activeIds.add(id);
 
-        // 2. 递归查找所有子窗口
         let added: boolean;
         do {
             added = false;
             for (const w of state.windows) {
-                if (w.parentId &&w.modal && activeIds.has(w.parentId) && !activeIds.has(w.id)) {
-                    activeIds.add(w.id);
-                    added = true;
+                if (w.parentId && w.modal) {
+                    if (focusedWindow.modal) {
+                        // 模态窗口激活子激活父
+                        if (activeIds.has(w.id) && !activeIds.has(w.parentId)) {
+                            activeIds.add(w.parentId);
+                            added = true;
+                        }
+                    } else {
+                        // 非模态窗口激活父激活子
+                        if (activeIds.has(w.parentId) && !activeIds.has(w.id)) {
+                            activeIds.add(w.id);
+                            added = true;
+                        }
+                    }
                 }
             }
         } while (added);
 
-        // 3. 更新窗口状态
-        const newWindows = state.windows.map(w => {
+
+        const updatedWindows = state.windows.map(w => {
             if (activeIds.has(w.id)) {
-                // 激活窗口及其所有子孙窗口，取消最小化
+                // console.log('active '+id)
                 return { ...w, active: true, minimized: false };
             } else {
-                // 其他窗口非激活，保持最小化状态不变
                 return { ...w, active: false };
             }
         });
 
+        const notActiveWindows =
+            updatedWindows.filter(w => !activeIds.has(w.id));
+        // 保持原有的顺序，拿出 activeIds 的窗口
+        const activeWindows = updatedWindows.filter(w => activeIds.has(w.id));
+
+        const newWindowsOrder = [...notActiveWindows, ...activeWindows];
         return {
             ...state,
-            windows: newWindows
+            windows: newWindowsOrder,
+            lastFocusedWindowId: id
         };
     }),
 
-    on(WindowActions.minimizeWindow, (state, { id }) => ({
-        ...state,
-        windows: state.windows.map(w =>
-            w.id === id ? { ...w, minimized: true, active: false } : w
-        )
-    })),
+    on(WindowActions.minimizeWindow, (state, { id }) => {
+        const getAllChildIds = (parentId: string): string[] => {
+            const directChildren = state.windows.filter(w => w.parentId === parentId);
+            let result: string[] = [];
+            for (const child of directChildren) {
+                result.push(child.id);
+                result = result.concat(getAllChildIds(child.id));
+            }
+            return result;
+        };
+
+        const minimizeIds = [id].concat(getAllChildIds(id));
+
+        return {
+            ...state,
+            windows: state.windows.map(w =>
+                minimizeIds.includes(w.id)
+                    ? { ...w, minimized: true, active: false }
+                    : w
+            )
+        };
+    }),
     on(WindowActions.maximizeWindow, (state, { id, desktopWidth, desktopHeight, taskbarHeight }) => ({
         ...state,
         windows: state.windows.map(w => {

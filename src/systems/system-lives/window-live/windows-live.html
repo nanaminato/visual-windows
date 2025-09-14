@@ -1,5 +1,6 @@
 @if(win){
-    <div class="window"
+    <div [id]="win.id"
+        class="window"
          [style.left.px]="win.position.x"
          [style.top.px]="win.position.y"
          [style.width.px]="win.size.width"
@@ -14,6 +15,7 @@
         </div>
 
         <div class="title-bar"
+             [class.active]="win.active"
              [hidden]="win.customHeader">
             <div class="d-flex flex-row">
                 <app-win-icon [programConfig]="config"></app-win-icon>
