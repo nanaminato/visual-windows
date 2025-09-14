@@ -1,11 +1,10 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import { DesktopManager } from '../systems/system-lives/desktop-manager/desktop-manager';
 import { DesktopBar } from '../systems/system-lives/desktop-bar/desktop-bar';
-import {Store} from '@ngrx/store';
-import {logoutAction, systemActions} from '../systems/system-services/state/system/system.action';
-import {Reachable} from '../systems/system-lives/routerable/reachable';
+import {logoutAction} from '../systems/system-services/state/system/system.action';
 import {Subscription} from 'rxjs';
 import {Actions, ofType} from '@ngrx/effects';
+import {Reachable} from '../systems/feature/routerable/reachable';
 
 @Component({
   selector: 'visual-window',

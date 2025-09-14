@@ -5,10 +5,12 @@ import {WindowActions} from './window.actions';
 export interface WindowStateSlice {
     windows: WindowState[];
     lastFocusedWindowId?: string;  // 新增字段
+    activeOrder: string[];
 }
 
 export const initialState: WindowStateSlice = {
-    windows: []
+    windows: [],
+    activeOrder: [],
 };
 
 export const windowReducer = createReducer(
@@ -21,21 +23,14 @@ export const windowReducer = createReducer(
         };
     }),
 
-    on(WindowActions.focusWindow, (state, {id}) => {
-
+    on(WindowActions.focusWindow, (state, { id }) => {
         const focusedWindow = state.windows.find(w => w.id === id);
-        if (!focusedWindow) {
-            return state;
-        }
+        if (!focusedWindow) return state;
         if (state.lastFocusedWindowId === id && !focusedWindow.minimized) {
-            // console.log("focus not")
             return state;
         }
-        // if (state.lastFocusedWindowId === id && focusedWindow.minimized) {
-        //     // console.log("focus not")
-        //     return state;
-        // }
 
+        // 计算活跃窗口集合（自身及模态相关窗口）激活逻辑保持一致
         const activeIds = new Set<string>();
         activeIds.add(id);
 
@@ -45,13 +40,11 @@ export const windowReducer = createReducer(
             for (const w of state.windows) {
                 if (w.parentId && w.modal) {
                     if (focusedWindow.modal) {
-                        // 模态窗口激活子激活父
                         if (activeIds.has(w.id) && !activeIds.has(w.parentId)) {
                             activeIds.add(w.parentId);
                             added = true;
                         }
                     } else {
-                        // 非模态窗口激活父激活子
                         if (activeIds.has(w.parentId) && !activeIds.has(w.id)) {
                             activeIds.add(w.id);
                             added = true;
@@ -61,28 +54,37 @@ export const windowReducer = createReducer(
             }
         } while (added);
 
-
+        // 更新所有窗口 active/minimized 状态
         const updatedWindows = state.windows.map(w => {
             if (activeIds.has(w.id)) {
-                // console.log('active '+id)
-                return {...w, active: true, minimized: false};
+                return { ...w, active: true, minimized: false };
             } else {
-                return {...w, active: false};
+                return { ...w, active: false };
             }
         });
 
-        const notActiveWindows =
-            updatedWindows.filter(w => !activeIds.has(w.id));
-        // 保持原有的顺序，拿出 activeIds 的窗口
-        const activeWindows = updatedWindows.filter(w => activeIds.has(w.id));
+        // 计算新的激活顺序 activeOrder
+        // 保留之前不活跃窗口激活顺序，然后把这次活跃窗口按先后顺序放到最后
+        // 但注意要去重且最近活跃的排在最后（top层）
+        let newActiveOrder = state.activeOrder.filter(idInList => !activeIds.has(idInList));
+        // 按 windows 原顺序加入新激活窗口顺序，保证顺序稳定
+        const newlyActivated = updatedWindows
+            .filter(w => activeIds.has(w.id))
+            .map(w => w.id);
 
-        const newWindowsOrder = [...notActiveWindows, ...activeWindows];
+        newActiveOrder = [...newActiveOrder, ...newlyActivated];
+
+        // 去重保证数组内唯一
+        newActiveOrder = Array.from(new Set(newActiveOrder));
+
         return {
             ...state,
-            windows: newWindowsOrder,
-            lastFocusedWindowId: id
+            windows: updatedWindows,
+            lastFocusedWindowId: id,
+            activeOrder: newActiveOrder,
         };
     }),
+
 
     on(WindowActions.minimizeWindow, (state, {id}) => {
         const getAllChildIds = (parentId: string): string[] => {

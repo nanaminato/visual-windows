@@ -3,10 +3,14 @@ import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
+import {Store} from '@ngrx/store';
+import {selectOrders} from '../../system-services/state/window/window.selectors';
+import {AsyncPipe} from '@angular/common';
 @Component({
     selector: 'system-desktop-manager',
     imports: [
         WindowsLive,
+        AsyncPipe,
     ],
     templateUrl: './desktop-manager.html',
     styleUrl: './desktop-manager.css'
@@ -138,6 +142,19 @@ export class DesktopManager {
 
         }
     }
+    store = inject(Store)
+    activeOrder$ = this.store.select(selectOrders)
+    getZIndex(win: WindowState, activeOrder: string[] | null): number {
+        if (win.minimized) return 0;
+        if (!activeOrder) return 1;
+
+        const pos = activeOrder.indexOf(win.id);
+        if (pos === -1) {
+            return 1;
+        }
+        return pos + 10;
+    }
+
 
 
 

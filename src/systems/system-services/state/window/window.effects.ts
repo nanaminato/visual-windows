@@ -76,7 +76,7 @@ export class WindowEffects {
                     return from(componentLoader()).pipe(
                         mergeMap(component => {
                             newWindow.component = component;
-                            actionsToDispatch.push(WindowActions.openWindowSuccess({ window: newWindow }));
+                            actionsToDispatch.push(WindowActions.openWindowSuccess({id: newId, window: newWindow }));
                             return from(actionsToDispatch);
                         }),
                         catchError(error => {
@@ -85,7 +85,7 @@ export class WindowEffects {
                         })
                     );
                 } else {
-                    actionsToDispatch.push(WindowActions.openWindowSuccess({ window: newWindow }));
+                    actionsToDispatch.push(WindowActions.openWindowSuccess({id: newId, window: newWindow }));
                     return from(actionsToDispatch);
                 }
             }),
@@ -137,6 +137,12 @@ export class WindowEffects {
                 // 返回关闭成功 action
                 return WindowActions.closeWindowSuccess({ id, windows: newWindows });
             })
+        )
+    );
+    openWindowSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WindowActions.openWindowSuccess),
+            map(action => WindowActions.focusWindow({ id: action.window.id }))
         )
     );
 

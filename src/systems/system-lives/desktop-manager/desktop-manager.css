@@ -7,10 +7,10 @@
 }
 .window-live{
     position: absolute;
-    z-index: 2;
+    /*z-index: 2;*/
 }
 
 .window-live-active{
     box-shadow: 0 0 20px #2196f3;
-    z-index: 10;
+    /*z-index: 10;*/
 }

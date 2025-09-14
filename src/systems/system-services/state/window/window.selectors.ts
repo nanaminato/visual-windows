@@ -7,6 +7,10 @@ export const selectWindows = createSelector(
     selectWindowState,
     (state) => state.windows
 );
+export const selectOrders = createSelector(
+    selectWindowState,
+    (state) => state.activeOrder
+);
 
 export const selectWindowByProgramId = (programId: string) => createSelector(
     selectWindows,

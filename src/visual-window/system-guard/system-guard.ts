@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
-import {Routable} from '../../systems/system-lives/routerable/routerable';
 import {systemActions} from '../../systems/system-services/state/system/system.action';
 import {Store} from '@ngrx/store';
+import {Routable} from '../../systems/feature/routerable/routerable';
 
 @Component({
   selector: 'app-system-guard',

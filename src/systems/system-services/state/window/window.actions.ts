@@ -6,7 +6,7 @@ export const WindowActions = createActionGroup({
     source: 'Window',
     events: {
         'open window': props<{id: string,title: string, params?: any, x?: number,y?: number, parentId?: string; modal?: boolean, closeWithParent?: boolean }>(),
-        'open window success': props<{ window: WindowState }>(),
+        'open window success': props<{id: string, window: WindowState }>(),
         'close window': props<{ id: string }>(),
         'close window success': props<{ id: string; windows: WindowState[] }>(),
         'hover windows': props<{ programId: string }>(),
