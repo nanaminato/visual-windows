@@ -2,13 +2,26 @@ import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {WindowCaptureService} from '../../../window-capture.service';
 import {WindowActions} from '../window.actions';
-import {distinctUntilChanged, exhaustMap, filter, map} from 'rxjs';
-import {deleteScreenshot, updateScreenshot} from './screenshot.actions';
+import {distinctUntilChanged, exhaustMap, filter, map, mergeMap} from 'rxjs';
+import {addScreenshot, deleteScreenshot, updateScreenshot} from './screenshot.actions';
 
 @Injectable()
 export class ScreenshotEffect {
     private actions$: Actions = inject(Actions);
     private captureService: WindowCaptureService = inject(WindowCaptureService);
+    addScreenshot$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WindowActions.windowLoaded),
+            mergeMap(({ id }) =>
+                this.captureService.takeScreenshot(id).then(screenshot => ({ id, screenshot }))
+            ),
+            filter(({ screenshot }) => !!screenshot),
+            map(
+                (
+                    { id, screenshot }) => addScreenshot({ windowId: id, screenshot: screenshot! })
+            )
+        )
+    );
     updateScreenshot$ = createEffect(() =>
         this.actions$.pipe(
             ofType(WindowActions.focusWindow),
@@ -17,7 +30,10 @@ export class ScreenshotEffect {
                 this.captureService.takeScreenshot(id).then(screenshot => ({ id, screenshot }))
             ),
             filter(({ screenshot }) => !!screenshot),
-            map(({ id, screenshot }) => updateScreenshot({ windowId: id, screenshot: screenshot! }))
+            map(
+                (
+                    { id, screenshot }) => updateScreenshot({ windowId: id, screenshot: screenshot! })
+            )
         )
     );
 

@@ -2,11 +2,7 @@ import {Component, HostListener, inject} from '@angular/core';
 import {WindowsLive} from '../window-live/windows-live';
 import {ProgramEvent} from '../../models';
 import {WindowState} from '../../models';
-import {Actions} from '@ngrx/effects';
 import {WindowManagerService} from '../../system-services/windows-manager.service';
-import {WindowActions} from '../../system-services/state/window/window.actions';
-import {Store} from '@ngrx/store';
-import {v4 as uuid} from 'uuid';
 @Component({
     selector: 'system-desktop-manager',
     imports: [
@@ -22,49 +18,10 @@ export class DesktopManager {
     // 拖拽相关状态
     draggingTouchWindowId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
-    private actions$ = inject(Actions);
-    private store$ = inject(Store);
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        // this.store$.dispatch(
-        //     WindowActions.openWindow(
-        //         {
-        //             id: "code-space",
-        //             title: "code space",
-        //             params: {
-        //                 startFolder: 'D:\\WebstormProjects\\Remote-File-Manager'
-        //             }
-        //         }
-        //     )
-        // );
-        // const requestId = uuid();
-        // this.store$.dispatch(
-        //
-        //     WindowActions.openWindow(
-        //         {
-        //             id: "file-picker",
-        //             title: "文件选择器",
-        //             parentId: '',
-        //             params: {
-        //                 config: {
-        //                     startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
-        //                     selectFolders: false,
-        //                     multiSelect: true,
-        //                     maxSelectCount: 5,
-        //                     requestId:requestId,
-        //                     // mode: 'selector',
-        //                     mode: 'save',
-        //                     fileExtensions: [
-        //                         '.txt','.json'
-        //                     ]
-        //                 }
-        //             }
-        //         }
-        //     )
-        // );
-
     }
     focusWindow(id: string) {
         this.windowManager.focusWindow(id);

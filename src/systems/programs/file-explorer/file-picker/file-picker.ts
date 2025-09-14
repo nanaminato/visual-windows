@@ -26,7 +26,7 @@ import {processClose} from '../../../system-lives/window-live/adapter';
 import {ModalWindow} from '../../../system-lives/window-live/adapter/adapter';
 import {selectWindows} from '../../../system-services/state/window/window.selectors';
 import {firstValueFrom} from 'rxjs';
-import {buildBreadcrumbsForPath} from '../explorer/models/bread';
+import {buildBreadcrumbsForPath} from '../explorer/models';
 
 @Component({
   selector: 'app-file-picker',

@@ -10,13 +10,14 @@ import { ImageAddon } from "@xterm/addon-image"
 import { Unicode11Addon} from "@xterm/addon-unicode11"
 import {ServerService} from '../../system-services/server.service';
 import {processClose} from '../../system-lives/window-live/adapter';
+import {Program} from '../../system-lives/window-live/adapter/adapter';
 @Component({
   selector: 'app-terminal',
   imports: [],
   templateUrl: './terminal.component.html',
   styleUrl: './terminal.component.css'
 })
-export class TerminalComponent implements processClose {
+export class TerminalComponent extends Program implements processClose {
     private serverService = inject(ServerService);
     @Input()
     sessionId?: string | undefined;
@@ -63,6 +64,7 @@ export class TerminalComponent implements processClose {
             } else {
                 this.connectWebSocket(this.sessionId!);
             }
+            this.loaded()
         }
     }
     private connectWebSocket(sessionId: string) {

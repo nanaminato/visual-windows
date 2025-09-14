@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import {switchMap, withLatestFrom, catchError, of, mergeMap, from, concatMap, EMPTY, Observable} from 'rxjs';
+import {switchMap, withLatestFrom, catchError, of, mergeMap, from, concatMap, EMPTY, Observable, map} from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
@@ -92,6 +92,50 @@ export class WindowEffects {
             catchError(error => {
                 console.error('openWindow effect error:', error);
                 return of({ type: 'NO_ACTION' });
+            })
+        )
+    );
+    closeWindow$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WindowActions.closeWindow),
+            withLatestFrom(this.store.select(selectWindows)), // 根据你的路径调整
+            map(([action, windows]) => {
+                const { id } = action;
+                // 递归查找所有需要关闭的子窗口ID，只有 closeWithParent === true 的子窗口才关闭
+                const getChildWindowsToClose = (fatherId: string, windows: WindowState[]): string[] => {
+                    const directChildren = windows.filter(w => w.parentId === fatherId && w.closeWithParent);
+
+                    let allChildrenIds: string[] = [];
+                    for (const child of directChildren) {
+                        allChildrenIds.push(child.id);
+                        allChildrenIds = allChildrenIds.concat(getChildWindowsToClose(child.id, windows));
+                    }
+                    return allChildrenIds;
+                };
+
+                // 找到关闭的窗口
+                const closedWindow = windows.find(w => w.id === id);
+
+                if (!closedWindow) {
+                    // 找不到窗口就返回原数组
+                    return WindowActions.closeWindowSuccess({ id, windows });
+                }
+
+                // 关闭的窗口ID列表，包含自己和需要关闭的子窗口
+                const closeWindowIds = [id].concat(getChildWindowsToClose(id, windows));
+
+                // 新的 windows 列表，不包含被关闭的
+                let newWindows = windows.filter(w => !closeWindowIds.includes(w.id));
+
+                // 如果关闭的是modal子窗口，解除父窗口禁用状态
+                if (closedWindow.parentId && closedWindow.modal) {
+                    newWindows = newWindows.map(w =>
+                        w.id === closedWindow.parentId ? { ...w, disabled: false } : w
+                    );
+                }
+
+                // 返回关闭成功 action
+                return WindowActions.closeWindowSuccess({ id, windows: newWindows });
             })
         )
     );

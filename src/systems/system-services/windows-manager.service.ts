@@ -1,8 +1,8 @@
-import { firstValueFrom, Observable } from 'rxjs';
+import {firstValueFrom, Observable, take} from 'rxjs';
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {WindowState} from '../models';
-import {selectWindows} from './state/window/window.selectors';
+import {selectWindowById, selectWindows} from './state/window/window.selectors';
 import {WindowActions} from './state/window/window.actions';
 import {FileEntry} from '../programs/code-space/models';
 import {FileAssociationService} from '../programs/file-explorer/services/file-association.service';
@@ -41,12 +41,28 @@ export class WindowManagerService implements OnDestroy {
     }
 
     focusWindow(id: string) {
+        // console.log('focus id '+id)
         this.store.dispatch(WindowActions.focusWindow({ id }));
     }
 
     minimizeWindow(id: string) {
+        // console.log('minimize id '+id)
         this.store.dispatch(WindowActions.minimizeWindow({ id }));
     }
+    toggleWindow(id: string) {
+        this.store.select(selectWindowById(id)).pipe(
+            take(1)  // 只取当前值一次，避免持续订阅
+        ).subscribe(window => {
+            if (!window) return; // 如果没找到窗口，直接返回
+
+            if (window.minimized) {
+                this.focusWindow(id);
+            } else {
+                this.minimizeWindow(id);
+            }
+        });
+    }
+
 
     getTaskbarHeight(): number {
         const taskbar = document.querySelector('.bottom-navbar');
@@ -100,4 +116,6 @@ export class WindowManagerService implements OnDestroy {
     ngOnDestroy() {
         window.removeEventListener('resize', this.onWindowResize);
     }
+
+
 }

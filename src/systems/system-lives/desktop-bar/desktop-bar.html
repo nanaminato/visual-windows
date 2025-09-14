@@ -26,34 +26,61 @@
             </div>
         </div>
 
-        <div class="taskbar dont-select">
-            @for(win of groupWindows; track win.programId) {
-                @if(win.windowStates.length>1){
-                    <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.programId, $event)">
-                        <!-- 应用图标 -->
-                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
-                        <!-- 下拉箭头 -->
-                        <span class="dropdown-arrow">▼</span>
+<!--        <div class="taskbar dont-select">-->
+<!--            @for(win of groupWindows; track win.programId) {-->
+<!--                @if(win.windowStates.length>1){-->
+<!--                    <div class="grouped-taskbar-item mx-3" (click)="toggleGroupMenu(win.programId, $event)">-->
+<!--                        &lt;!&ndash; 应用图标 &ndash;&gt;-->
+<!--                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>-->
+<!--                        &lt;!&ndash; 下拉箭头 &ndash;&gt;-->
+<!--                        <span class="dropdown-arrow">▼</span>-->
 
-                        <!-- 弹出菜单 -->
-                        @if(openGroupAppId === win.programId) {
-                            <div class="window-list-popup" (click)="$event.stopPropagation()">
-                                @for(window of win.windowStates; track window.id) {
-                                    <!-- 添加hover的时候，激活对应窗口,并关闭其他窗口                 -->
-                                    <div class="window-list-item" (click)="activateWindow(window)" >
-                                        {{window.title || '无标题窗口'}}
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                }@else{
-                    <div class="mx-3"
-                         (click)="toggleWindow(win)"
-                    >
-                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>
-                    </div>
-                }
+<!--                        &lt;!&ndash; 弹出菜单 &ndash;&gt;-->
+<!--                        @if(openGroupAppId === win.programId) {-->
+<!--                            <div class="window-list-popup" (click)="$event.stopPropagation()">-->
+<!--                                @for(window of win.windowStates; track window.id) {-->
+<!--                                    &lt;!&ndash; 添加hover的时候，激活对应窗口,并关闭其他窗口                 &ndash;&gt;-->
+<!--                                    <div class="window-list-item" (click)="activateWindow(window)" >-->
+<!--                                        {{window.title || '无标题窗口'}}-->
+<!--                                    </div>-->
+<!--                                }-->
+<!--                            </div>-->
+<!--                        }-->
+<!--                    </div>-->
+<!--                }@else{-->
+<!--                    <div class="mx-3"-->
+<!--                         (click)="toggleWindow(win)"-->
+<!--                    >-->
+<!--                        <app-win-icon [programConfig]="getWindowConfigOfProgramId(win.programId)"></app-win-icon>-->
+<!--                    </div>-->
+<!--                }-->
+<!--            }-->
+<!--        </div>-->
+        <div class="taskbar dont-select">
+            @for(group of groupWindows; track group.programId) {
+                <div class="grouped-taskbar-item mx-3"
+                     (mouseenter)="onGroupMouseEnter(group.programId)"
+                     (mouseleave)="onGroupMouseLeave()"
+                     (click)="toggleWindow(group)">
+                    <!-- 程序图标 -->
+                    <app-win-icon [programConfig]="getWindowConfigOfProgramId(group.programId)"></app-win-icon>
+                    @if(group.windowStates.length > 1){
+                        <span class="dropdown-arrow">▼</span>
+                    }
+
+                    @if(hoveredGroupAppId === group.programId){
+                        <!-- 磁贴弹层 -->
+                        <div class="tiles-popup" (click)="$event.stopPropagation()">
+                            @for(window of group.windowStates; track window.id) {
+                                <div class="tile-item" (click)="activateWindow(window)">
+                                    <div class="tile-title">{{window.title || '无标题窗口'}}</div>
+                                    <app-window-screenshot [windowId]="window.id"></app-window-screenshot>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
             }
         </div>
     </div>

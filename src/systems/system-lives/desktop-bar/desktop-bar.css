@@ -81,11 +81,51 @@
 
 
 
+/*.grouped-taskbar-item {*/
+/*    position: relative;*/
+/*    cursor: pointer;*/
+/*    display: inline-flex;*/
+/*    align-items: center;*/
+/*}*/
 .grouped-taskbar-item {
     position: relative;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
+}
+
+.tiles-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: #222;
+    border: 1px solid #666;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.tile-item {
+    width: 150px;
+    height: 150px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    color: #eee;
+    font-size: 12px;
+}
+
+.tile-item:hover {
+    background: #555;
+}
+
+.tile-title {
+    text-align: left;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdown-arrow {

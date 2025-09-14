@@ -3,6 +3,7 @@ import {LightFile} from '../file-explorer/explorer/models';
 import {ExplorerService} from '../file-explorer/explorer/services/explorer.service';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from '../../system-services/server.service';
+import {Program} from '../../system-lives/window-live/adapter/adapter';
 
 @Component({
   selector: 'app-image-viewer',
@@ -11,7 +12,7 @@ import {ServerService} from '../../system-services/server.service';
   templateUrl: './image-viewer.html',
   styleUrl: './image-viewer.css'
 })
-export class ImageViewer {
+export class ImageViewer extends Program{
     @Input() file!: LightFile;
 
     translateX = 0;
@@ -48,6 +49,7 @@ export class ImageViewer {
                     this.currentIndex = 0;
                 }
                 this.updateImageSrc();
+                this.loaded()
             })
             .catch(err => {
                 console.error('加载图片文件失败', err);

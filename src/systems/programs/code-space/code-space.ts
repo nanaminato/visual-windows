@@ -22,6 +22,7 @@ import {NzMessageService} from 'ng-zorro-antd/message';
 import {processSizeChange} from '../../system-lives/window-live/adapter';
 import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
 import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
+import {Program} from '../../system-lives/window-live/adapter/adapter';
 
 @Component({
     selector: 'app-code-space',
@@ -43,9 +44,7 @@ import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
     templateUrl: './code-space.html',
     styleUrl: './code-space.css'
 })
-export class CodeSpace implements processSizeChange {
-    @Input()
-    id: string | undefined;
+export class CodeSpace extends Program implements processSizeChange {
     @Input()
     active: boolean | undefined;
     @Input()
@@ -82,6 +81,7 @@ export class CodeSpace implements processSizeChange {
             })
         }
         this.panelResizeControl = true;
+        this.loaded();
     }
     leftPanelVisible: boolean = false;
 
@@ -157,7 +157,6 @@ export class CodeSpace implements processSizeChange {
             event: $event
         });
     }
-    private store = inject(Store);
     programConfigs$ = this.store.select(selectProgramConfigs);
     programConfigs : ProgramConfig[] | undefined;
     getIcon() {
@@ -398,6 +397,7 @@ export class CodeSpace implements processSizeChange {
     }
     // 点击空白处关闭菜单
     constructor() {
+        super();
         document.addEventListener('click', () => {
             if(this.contextMenuVisible){
                 this.contextMenuVisible = false;

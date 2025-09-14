@@ -1,7 +1,7 @@
 .desktop {
     position: relative;
     width: 100vw;
-    height: calc(100vh - 48px); /* 留出导航栏高度 */
+    height: 100vh; /* 留出导航栏高度 */
     background: #0078d7;
     overflow: hidden;
 }

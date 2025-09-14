@@ -5,6 +5,7 @@ import {FileExplorerInit, PropagateTitle} from './models';
 import {v4 as uuid} from 'uuid';
 import {ProgramEvent, SystemInfo} from '../../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {Program} from '../../../system-lives/window-live/adapter/adapter';
 @Component({
   selector: 'app-multi-explorer',
     imports: [
@@ -15,10 +16,8 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   templateUrl: './multi-explorer.html',
   styleUrl: './multi-explorer.css'
 })
-export class MultiExplorer {
+export class MultiExplorer extends Program{
     // 窗口id, 用于实现自定义程序header
-    @Input()
-    id: string | undefined;
     @Input()
     active: boolean | undefined;
     @Input()
@@ -28,6 +27,7 @@ export class MultiExplorer {
     systemInfo: SystemInfo | undefined = undefined;
     async ngOnInit() {
         this.openFileExplorer(this.startPath);
+        this.loaded()
     }
     openFileExplorer(path: string) {
         this.fileExplorers.push({

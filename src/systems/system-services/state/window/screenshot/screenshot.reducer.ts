@@ -2,7 +2,7 @@
 
 import { createReducer, on } from '@ngrx/store';
 import * as ScreenshotActions from './screenshot.actions';
-import { ScreenshotState, initialScreenshotState } from './screenshot.state';
+import { initialScreenshotState } from './screenshot.state';
 
 export const screenshotReducer = createReducer(
     initialScreenshotState,
@@ -23,7 +23,7 @@ export const screenshotReducer = createReducer(
             // 如果截图不存在，不能更新，直接返回state
             return state;
         }
-        console.log(screenshot);
+        // console.log("update screenshot"+screenshot);
         return {
             ...state,
             [windowId]: screenshot

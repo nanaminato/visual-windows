@@ -1,0 +1,11 @@
+
+@if(screenshotUrl){
+    <img [src]="screenshotUrl" alt="Screenshot" class="tile-image" />
+}@else{
+    <div class="tile-placeholder-icon">
+        <!-- fallback icon or spinner -->
+        <app-win-icon [programConfig]="programConfig"></app-win-icon>
+    </div>
+}
+
+

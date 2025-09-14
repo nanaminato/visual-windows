@@ -8,13 +8,16 @@ import {WindowActions} from '../../system-services/state/window/window.actions';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {logoutAction} from '../../system-services/state/system/system.action';
+import {WindowScreenshot} from './window-screenshot/window-screenshot';
+import {Actions, ofType} from '@ngrx/effects';
 
 @Component({
     selector: 'system-desktop-bar',
     imports: [
         NzIconDirective,
         WinIcon,
-        NzButtonComponent
+        NzButtonComponent,
+        WindowScreenshot
     ],
     templateUrl: './desktop-bar.html',
     styleUrl: './desktop-bar.css'
@@ -38,10 +41,18 @@ export class DesktopBar {
         return undefined;
     }
     showAppList = false;
-
+    private actions$ = inject(Actions);
     constructor() {
-        this.windowManager.getWindows().subscribe(ws => {
-            this.windows = ws;
+        this.actions$.pipe(
+            ofType(WindowActions.openWindowSuccess, WindowActions.closeWindowSuccess),
+        ).subscribe(action => {
+            if (action.type === '[Window] open window success') {
+                // 新增窗口
+                this.windows = [...this.windows, action.window];
+            } else if (action.type === '[Window] close window success') {
+                // 替换整个窗口数组
+                this.windows = action.windows;
+            }
             this.divideIntoGroups();
         });
         this.programConfigs$.subscribe(ws => {
@@ -50,38 +61,47 @@ export class DesktopBar {
     }
     divideIntoGroups() {
         const newGroupsMap = new Map<string, WindowState[]>();
-        // modal = true 的窗口为模态弹窗, parent 不为空的是普通弹窗
-        for (const window of this.windows.filter(w=>w.modal!==true)) {
+
+        for (const window of this.windows.filter(w => w.modal !== true)) {
             if (!newGroupsMap.has(window.programId)) {
                 newGroupsMap.set(window.programId, []);
             }
             newGroupsMap.get(window.programId)!.push(window);
         }
 
-        // 2. 更新已有分组，过滤掉没有窗口的分组
         const updatedGroups: GroupWindowState[] = [];
+
         for (const group of this.groupWindows) {
             const newWindowStates = newGroupsMap.get(group.programId) || [];
+
             if (newWindowStates.length > 0) {
+                const oldOrderIds = group.windowStates.map(w => w.id);
+
+                const sortedWindowStates = [...newWindowStates].sort((a, b) => {
+                    const indexA = oldOrderIds.indexOf(a.id);
+                    const indexB = oldOrderIds.indexOf(b.id);
+
+                    if (indexA === -1 && indexB === -1) {
+                        return 0;
+                    }
+                    if (indexA === -1) return 1;
+                    if (indexB === -1) return -1;
+                    return indexA - indexB;
+                });
+
                 updatedGroups.push({
                     programId: group.programId,
-                    windowStates: newWindowStates
+                    windowStates: sortedWindowStates,
                 });
-                // 从 newGroupsMap 中删除，表示已处理
                 newGroupsMap.delete(group.programId);
             }
-            // 如果没有对应窗口，分组就不加入，等于删除
         }
 
-        // 3. 剩余的新分组追加到后面
+        // 追加新增的分组
         for (const [programId, windowStates] of newGroupsMap.entries()) {
-            updatedGroups.push({
-                programId,
-                windowStates
-            });
+            updatedGroups.push({ programId, windowStates });
         }
 
-        // 4. 赋值回 groupWindows
         this.groupWindows = updatedGroups;
     }
     toggleProgramList() {
@@ -97,29 +117,13 @@ export class DesktopBar {
     }
 
     toggleWindow(winGroup: GroupWindowState) {
-        let win = winGroup.windowStates[0];
-        if(win.minimized){
-            this.windowManager.focusWindow(winGroup.windowStates[0].id);
-        }else{
-            // if(!win.disabled){
-            //     this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
-            // }
-            this.windowManager.minimizeWindow(winGroup.windowStates[0].id);
-
+        if(winGroup.windowStates.length === 1) {
+            let win = winGroup.windowStates[0];
+            this.windowManager.toggleWindow(win.id);
         }
 
     }
     openGroupAppId: string | null = null;
-
-// 点击多窗口组，展开/收起窗口列表
-    toggleGroupMenu(appId: string, event: MouseEvent) {
-        event.stopPropagation(); // 阻止事件冒泡，避免触发 document 点击关闭
-        if (this.openGroupAppId === appId) {
-            this.openGroupAppId = null;
-        } else {
-            this.openGroupAppId = appId;
-        }
-    }
 
 // 点击具体窗口，激活该窗口
     activateWindow(window: WindowState) {
@@ -142,5 +146,14 @@ export class DesktopBar {
 
     Logout() {
         this.store.dispatch(logoutAction())
+    }
+    hoveredGroupAppId: string | null = null;
+
+    onGroupMouseEnter(appId: string) {
+        this.hoveredGroupAppId = appId;
+    }
+
+    onGroupMouseLeave() {
+        this.hoveredGroupAppId = null;
     }
 }
