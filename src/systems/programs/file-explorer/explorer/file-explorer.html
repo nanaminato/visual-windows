@@ -1,5 +1,5 @@
-<div class="file-browser">
-    <div>
+<div class="file-browser" #fileBrowser>
+    <div class="d-flex flex-column" #header>
         <div class="navigator">
             <div class="navigator-item-group">
                 <button [disabled]="!canBack()" [class.disabled]="!canBack()" >
@@ -89,18 +89,19 @@
             </div>
         </div>
     </div>
-    @if(splitterVisible){
-        <nz-splitter class="d-flex flex-grow-1">
-            <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
+    <div class="file-shower ">
+        <as-split gutterSize="2" direction="horizontal" [style.height.px]="splitHeight">
+            <as-split-area size="20">
                 <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
-            </nz-splitter-panel>
-            <nz-splitter-panel >
+            </as-split-area>
+            <as-split-area >
                 @if(driverView){
                     <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
                 }@else{
                     <app-folder-list-view (refreshRequest)="onRefreshRequest()" [currentPath]="currentPath"  [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
                 }
-            </nz-splitter-panel>
-        </nz-splitter>
-    }
+            </as-split-area>
+        </as-split>
+    </div>
+
 </div>

@@ -3,7 +3,6 @@
     height: 100%;
     width: 100%;
 }
-
 .file-browser {
     font-family: Arial, sans-serif;
     width: 100%;
@@ -94,7 +93,9 @@
 .file-item:hover {
     background-color: #eee;
 }
-nz-splitter {
-    height: 200px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+.file-shower{
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
 }

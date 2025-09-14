@@ -23,6 +23,7 @@ import {processSizeChange} from '../../system-lives/window-live/adapter';
 import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
 import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
 import {Program} from '../../system-lives/window-live/adapter/adapter';
+import {SystemInfoService} from '../../system-services/info.service';
 
 @Component({
     selector: 'app-code-space',
@@ -54,7 +55,9 @@ export class CodeSpace extends Program implements processSizeChange {
 
     @Input()
     startFile: string = "";
+    systemInfoService = inject(SystemInfoService);
     async ngOnInit() {
+        this.isLinux = await this.systemInfoService.isLinuxAsync();
         this.loadSettingsFromStorage();
         if(this.file){
             if(this.file.isDirectory){
@@ -308,6 +311,7 @@ export class CodeSpace extends Program implements processSizeChange {
     private actions$ = inject(Actions);
     private filePickerSub?: Subscription;
     private messageService = inject(NzMessageService);
+    isLinux: boolean = false;
     selectFileAndOpen(selectFolder: boolean = false){
         if (this.filePickerSub) {
             this.filePickerSub.unsubscribe();
@@ -323,7 +327,7 @@ export class CodeSpace extends Program implements processSizeChange {
                     modal: true,
                     params: {
                         config: {
-                            startPath: '\\',
+                            startPath: this.isLinux?'/': '\\',
                             selectFolders: selectFolder,
                             // multiSelect: true,
                             // multiSelect: false,

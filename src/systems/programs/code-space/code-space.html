@@ -47,7 +47,7 @@
                 <nz-icon nzType="profile" />
             </button>
         </div>
-        <as-split direction="horizontal" (dragEnd)="monacoEditorViewUpdate()">
+        <as-split gutterSize="2" direction="horizontal" (dragEnd)="monacoEditorViewUpdate()">
             <as-split-area [minSize]="20" size="26" [visible]="leftPanelVisible">
                 <div class="w-100 flex-grow-0 flex-shrink-0">
                     @if(startFolder!==''){

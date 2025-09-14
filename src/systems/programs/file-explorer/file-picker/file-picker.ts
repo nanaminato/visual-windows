@@ -5,7 +5,6 @@ import {EntryRoot} from '../explorer/entry-root/entry-root';
 import {FolderListView} from '../explorer/folder-list-view/folder-list-view';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
-import {NzSplitterComponent, NzSplitterPanelComponent} from 'ng-zorro-antd/splitter';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ExplorerService} from '../explorer/services/explorer.service';
 import {NzMessageService} from 'ng-zorro-antd/message';
@@ -28,6 +27,7 @@ import {selectWindows} from '../../../system-services/state/window/window.select
 import {firstValueFrom} from 'rxjs';
 import {buildBreadcrumbsForPath} from '../explorer/models';
 import {splitterAutoResize} from '../../../feature/splitter';
+import {SplitAreaComponent, SplitComponent} from 'angular-split';
 
 @Component({
   selector: 'app-file-picker',
@@ -38,28 +38,35 @@ import {splitterAutoResize} from '../../../feature/splitter';
         NzIconDirective,
         NzInputDirective,
         NzInputGroupComponent,
-        NzSplitterComponent,
-        NzSplitterPanelComponent,
         ReactiveFormsModule,
         FormsModule,
         NzButtonComponent,
         NzSelectComponent,
-        NzOptionComponent
+        NzOptionComponent,
+        SplitComponent,
+        SplitAreaComponent
     ],
   templateUrl: './file-picker.html',
   styleUrl: './file-picker.css'
 })
 export class FilePicker extends ModalWindow implements processClose, processSizeChange, splitterAutoResize {
-    splitterVisible: boolean = true;
+    @ViewChild('header') header!: ElementRef;
+    @ViewChild('fileBrowser') fileBrowser!: ElementRef;
+    @ViewChild('select') select!: ElementRef;
     parentSizeChange(): void {
         this.resize()
     }
     resize(): void {
-        this.splitterVisible = false;
-        setTimeout(()=>{
-            this.splitterVisible = true;
-        },0)
+        if(this.fileBrowser&&this.header) {
+            this.splitHeight = this.fileBrowser.nativeElement.offsetHeight
+                - this.header.nativeElement.offsetHeight
+                - this.select.nativeElement.offsetHeight;
+        }
     }
+    ngAfterViewInit(): void {
+        this.resize();
+    }
+    splitHeight: number = 400;
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

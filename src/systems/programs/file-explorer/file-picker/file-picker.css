@@ -95,9 +95,10 @@
 .file-item:hover {
     background-color: #eee;
 }
-nz-splitter {
-    height: 200px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.file-shower{
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
 }
 
 .select-files {

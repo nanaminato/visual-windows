@@ -28,6 +28,7 @@ import {fileExplorerProgram} from '../../models/register-app';
 import {buildBreadcrumbsForPath} from './models';
 import {splitterAutoResize} from '../../../feature/splitter';
 import {processSizeChange} from '../../../system-lives/window-live/adapter';
+import {SplitAreaComponent, SplitComponent} from 'angular-split';
 
 @Component({
     selector: 'file-explorer',
@@ -39,21 +40,35 @@ import {processSizeChange} from '../../../system-lives/window-live/adapter';
         FormsModule,
         EntryRoot,
         FolderListView,
-        DriverListView
+        DriverListView,
+        SplitComponent,
+        SplitAreaComponent
     ],
     templateUrl: './file-explorer.html',
     styleUrl: './file-explorer.css'
 })
 export class FileExplorer implements splitterAutoResize, processSizeChange{
-    splitterVisible: boolean = true;
+    @ViewChild('header') header!: ElementRef;
+    @ViewChild('fileBrowser') fileBrowser!: ElementRef;
     parentSizeChange(): void {
         this.resize()
     }
     resize(): void {
-        this.splitterVisible = false;
-        setTimeout(()=>{
-            this.splitterVisible = true;
-        },0)
+        if (this.fileBrowser && this.header) {
+            const newHeight = this.fileBrowser.nativeElement.offsetHeight - this.header.nativeElement.offsetHeight;
+            if (newHeight !== this.lastSplitHeight) {
+                this.splitHeight = newHeight;
+                this.lastSplitHeight = newHeight;
+            }
+        }
+    }
+    private lastSplitHeight = 0;
+    ngAfterViewChecked(): void {
+        this.resize();
+    }
+    splitHeight: number = 400;
+    ngAfterViewInit(): void {
+        this.resize();
     }
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
@@ -252,6 +267,7 @@ export class FileExplorer implements splitterAutoResize, processSizeChange{
         }
     }
     private store = inject(Store);
+
 
 
     private onCtrlNPressed() {
