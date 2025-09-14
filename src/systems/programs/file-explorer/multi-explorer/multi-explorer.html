@@ -36,7 +36,7 @@
         @for(fileExplorer of fileExplorers; track fileExplorer.fileExplorerId){
             <ng-container >
                 <div [hidden]="selectedIndex !== $index" class="tab-panel">
-                    <file-explorer
+                    <file-explorer #fileExplorerComp
                         [winId]="id!"
                         [uuid]="fileExplorer.fileExplorerId"
                         [currentPath]="fileExplorer.initPath"

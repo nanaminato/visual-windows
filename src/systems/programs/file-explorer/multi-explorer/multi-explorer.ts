@@ -1,11 +1,11 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output, QueryList, ViewChildren} from '@angular/core';
 import {FileExplorer} from '../explorer/file-explorer';
 import {NzTabsModule} from 'ng-zorro-antd/tabs';
 import {FileExplorerInit, PropagateTitle} from './models';
 import {v4 as uuid} from 'uuid';
 import {ProgramEvent, SystemInfo} from '../../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {Program} from '../../../system-lives/window-live/adapter/adapter';
+import {processSizeChange, Program} from '../../../system-lives/window-live/adapter/adapter';
 @Component({
   selector: 'app-multi-explorer',
     imports: [
@@ -16,7 +16,31 @@ import {Program} from '../../../system-lives/window-live/adapter/adapter';
   templateUrl: './multi-explorer.html',
   styleUrl: './multi-explorer.css'
 })
-export class MultiExplorer extends Program{
+export class MultiExplorer extends Program implements processSizeChange{
+    @ViewChildren('fileExplorerComp')
+    fileExplorerComponents!: QueryList<FileExplorer>;
+    ngAfterViewInit() {
+        // 视图初始化后首次调用激活标签的 parentSizeChange
+        this.parentSizeChange();
+
+        // 监听 QueryList 变化（文件浏览器组件变更）
+        this.fileExplorerComponents.changes.subscribe(() => {
+            this.parentSizeChange();
+        });
+    }
+    parentSizeChange() {
+        if (!this.fileExplorerComponents || this.fileExplorerComponents.length === 0) {
+            return;
+        }
+        // 获取当前对应 selectedIndex 的实例
+        const componentsArray = this.fileExplorerComponents.toArray();
+        if (this.selectedIndex >= 0 && this.selectedIndex < componentsArray.length) {
+            const activeExplorer = componentsArray[this.selectedIndex];
+            if (activeExplorer && typeof activeExplorer.parentSizeChange === 'function') {
+                activeExplorer.parentSizeChange();
+            }
+        }
+    }
     // 窗口id, 用于实现自定义程序header
     @Input()
     active: boolean | undefined;
@@ -59,6 +83,7 @@ export class MultiExplorer extends Program{
 
     selectTab(index: number) {
         this.selectedIndex = index;
+        this.parentSizeChange();
     }
 
     handleTitleChange($event: PropagateTitle) {

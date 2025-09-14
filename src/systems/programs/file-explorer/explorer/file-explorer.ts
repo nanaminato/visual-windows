@@ -26,6 +26,8 @@ import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
 import {fileExplorerProgram} from '../../models/register-app';
 import {buildBreadcrumbsForPath} from './models';
+import {splitterAutoResize} from '../../../feature/splitter';
+import {processSizeChange} from '../../../system-lives/window-live/adapter';
 
 @Component({
     selector: 'file-explorer',
@@ -42,7 +44,17 @@ import {buildBreadcrumbsForPath} from './models';
     templateUrl: './file-explorer.html',
     styleUrl: './file-explorer.css'
 })
-export class FileExplorer {
+export class FileExplorer implements splitterAutoResize, processSizeChange{
+    splitterVisible: boolean = true;
+    parentSizeChange(): void {
+        this.resize()
+    }
+    resize(): void {
+        this.splitterVisible = false;
+        setTimeout(()=>{
+            this.splitterVisible = true;
+        },0)
+    }
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

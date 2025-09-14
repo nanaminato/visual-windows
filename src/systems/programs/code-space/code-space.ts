@@ -323,7 +323,7 @@ export class CodeSpace extends Program implements processSizeChange {
                     modal: true,
                     params: {
                         config: {
-                            startPath: 'D:\\WebstormProjects\\Remote-File-Manager',
+                            startPath: '\\',
                             selectFolders: selectFolder,
                             // multiSelect: true,
                             // multiSelect: false,

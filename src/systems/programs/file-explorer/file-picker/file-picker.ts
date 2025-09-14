@@ -22,11 +22,12 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {filePickerCancel, filePickerConfirm} from '../../../system-services/state/system/file/file-picker.actions';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {processClose} from '../../../system-lives/window-live/adapter';
+import {processClose, processSizeChange} from '../../../system-lives/window-live/adapter';
 import {ModalWindow} from '../../../system-lives/window-live/adapter/adapter';
 import {selectWindows} from '../../../system-services/state/window/window.selectors';
 import {firstValueFrom} from 'rxjs';
 import {buildBreadcrumbsForPath} from '../explorer/models';
+import {splitterAutoResize} from '../../../feature/splitter';
 
 @Component({
   selector: 'app-file-picker',
@@ -48,7 +49,17 @@ import {buildBreadcrumbsForPath} from '../explorer/models';
   templateUrl: './file-picker.html',
   styleUrl: './file-picker.css'
 })
-export class FilePicker extends ModalWindow implements processClose{
+export class FilePicker extends ModalWindow implements processClose, processSizeChange, splitterAutoResize {
+    splitterVisible: boolean = true;
+    parentSizeChange(): void {
+        this.resize()
+    }
+    resize(): void {
+        this.splitterVisible = false;
+        setTimeout(()=>{
+            this.splitterVisible = true;
+        },0)
+    }
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

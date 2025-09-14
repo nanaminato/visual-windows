@@ -89,16 +89,18 @@
             </div>
         </div>
     </div>
-    <nz-splitter class="d-flex flex-grow-1">
-        <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
-            <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
-        </nz-splitter-panel>
-        <nz-splitter-panel >
-            @if(driverView){
-                <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
-            }@else{
-                <app-folder-list-view (refreshRequest)="onRefreshRequest()" [currentPath]="currentPath"  [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
-            }
-        </nz-splitter-panel>
-    </nz-splitter>
+    @if(splitterVisible){
+        <nz-splitter class="d-flex flex-grow-1">
+            <nz-splitter-panel nzDefaultSize="18%" nzMin="15%" nzMax="70%">
+                <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
+            </nz-splitter-panel>
+            <nz-splitter-panel >
+                @if(driverView){
+                    <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
+                }@else{
+                    <app-folder-list-view (refreshRequest)="onRefreshRequest()" [currentPath]="currentPath"  [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
+                }
+            </nz-splitter-panel>
+        </nz-splitter>
+    }
 </div>
