@@ -94,7 +94,6 @@
     background-color: #eee;
 }
 
-.file-shower{
-    width: 100%;
-    flex-grow: 1;
+.file-tree-and-view{
+    height: calc(100% - 88px);
 }

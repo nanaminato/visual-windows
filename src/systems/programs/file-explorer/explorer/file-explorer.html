@@ -1,4 +1,4 @@
-<div class="file-browser" #fileBrowser>
+<div class="file-browser" >
     <div class="d-flex flex-column" #header>
         <div class="navigator">
             <div class="navigator-item-group">
@@ -89,8 +89,8 @@
             </div>
         </div>
     </div>
-    <div class="w-100 ">
-        <as-split gutterSize="2" direction="horizontal" [style.height.px]="splitHeight">
+    <div class="w-100 file-tree-and-view">
+        <as-split gutterSize="2" direction="horizontal" >
             <as-split-area size="20">
                 <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
             </as-split-area>

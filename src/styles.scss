@@ -55,7 +55,8 @@ button.disabled > nz-icon{
     color: #f5222d;
 }
 .program-content {
-    flex-grow: 1;
+    //flex-grow: 1;
+    height: calc(100% - 38px);
     //overflow: auto;
     background: white;
     overflow-x: hidden !important;

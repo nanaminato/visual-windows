@@ -57,7 +57,6 @@ export class FilePicker extends ModalWindow implements processClose, processSize
         this.resize()
     }
     resize(): void {
-        // console.log('resize');
         if(this.fileBrowser&&this.header) {
             this.splitHeight = this.fileBrowser.nativeElement.offsetHeight
                 - this.header.nativeElement.offsetHeight

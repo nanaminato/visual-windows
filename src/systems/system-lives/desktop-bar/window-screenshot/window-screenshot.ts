@@ -26,7 +26,7 @@ export class WindowScreenshot {
             take(1)
         ).subscribe(screenshot => {
             this.screenshotUrl = screenshot ? screenshot : null;
-            console.log('Screenshot', this.screenshotUrl?.length);
+            // console.log('Screenshot', this.screenshotUrl?.length);
         });
         // 可通过 windowId 得到对应程序 config 作为辅助图标
         // TODO: 需要注入 programConfigs 或传入 programId

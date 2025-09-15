@@ -47,31 +47,8 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
     templateUrl: './file-explorer.html',
     styleUrl: './file-explorer.css'
 })
-export class FileExplorer implements splitterAutoResize, processSizeChange{
-    @ViewChild('header') header!: ElementRef;
-    @ViewChild('fileBrowser') fileBrowser!: ElementRef;
-    parentSizeChange(): void {
-        // this.resize()
-    }
-    resize(): void {
-        setTimeout(()=>{
-            if (this.fileBrowser && this.header) {
-                const newHeight = this.fileBrowser.nativeElement.offsetHeight - this.header.nativeElement.offsetHeight;
-                if (newHeight !== this.lastSplitHeight) {
-                    this.splitHeight = newHeight;
-                    this.lastSplitHeight = newHeight;
-                }
-            }
-        },20)
-    }
-    private lastSplitHeight = 0;
-    ngAfterViewChecked(): void {
-        this.resize();
-    }
-    splitHeight: number = 400;
-    ngAfterViewInit(): void {
-        this.resize();
-    }
+export class FileExplorer{
+
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

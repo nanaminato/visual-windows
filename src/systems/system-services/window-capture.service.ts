@@ -8,7 +8,7 @@ export class WindowCaptureService{
     takeScreenshot(id: string): Promise<string | null> {
         const element = document.getElementById(id);
         if (!element) {
-            console.error('截图失败，找不到元素', id);
+            // console.error('截图失败，找不到元素', id);
             return Promise.resolve(null);
         }
 

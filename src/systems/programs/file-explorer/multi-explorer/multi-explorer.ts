@@ -16,31 +16,9 @@ import {processSizeChange, Program} from '../../../system-lives/window-live/adap
   templateUrl: './multi-explorer.html',
   styleUrl: './multi-explorer.css'
 })
-export class MultiExplorer extends Program implements processSizeChange{
+export class MultiExplorer extends Program{
     @ViewChildren('fileExplorerComp')
     fileExplorerComponents!: QueryList<FileExplorer>;
-    ngAfterViewInit() {
-        // 视图初始化后首次调用激活标签的 parentSizeChange
-        this.parentSizeChange();
-
-        // 监听 QueryList 变化（文件浏览器组件变更）
-        this.fileExplorerComponents.changes.subscribe(() => {
-            this.parentSizeChange();
-        });
-    }
-    parentSizeChange() {
-        if (!this.fileExplorerComponents || this.fileExplorerComponents.length === 0) {
-            return;
-        }
-        // 获取当前对应 selectedIndex 的实例
-        const componentsArray = this.fileExplorerComponents.toArray();
-        if (this.selectedIndex >= 0 && this.selectedIndex < componentsArray.length) {
-            const activeExplorer = componentsArray[this.selectedIndex];
-            if (activeExplorer && typeof activeExplorer.parentSizeChange === 'function') {
-                activeExplorer.parentSizeChange();
-            }
-        }
-    }
     // 窗口id, 用于实现自定义程序header
     @Input()
     active: boolean | undefined;
@@ -83,7 +61,6 @@ export class MultiExplorer extends Program implements processSizeChange{
 
     selectTab(index: number) {
         this.selectedIndex = index;
-        this.parentSizeChange();
     }
 
     handleTitleChange($event: PropagateTitle) {
