@@ -89,12 +89,12 @@
             </div>
         </div>
     </div>
-    <div class="file-shower ">
+    <div class="w-100 ">
         <as-split gutterSize="2" direction="horizontal" [style.height.px]="splitHeight">
             <as-split-area size="20">
                 <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
             </as-split-area>
-            <as-split-area >
+            <as-split-area>
                 @if(driverView){
                     <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
                 }@else{

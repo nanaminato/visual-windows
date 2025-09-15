@@ -56,7 +56,7 @@ export class CodeSpace extends Program implements processSizeChange {
     @Input()
     startFile: string = "";
     systemInfoService = inject(SystemInfoService);
-    async ngOnInit() {
+    async ngAfterViewInit() {
         this.isLinux = await this.systemInfoService.isLinuxAsync();
         this.loadSettingsFromStorage();
         if(this.file){
@@ -66,12 +66,11 @@ export class CodeSpace extends Program implements processSizeChange {
                 this.startFile = this.file.path;
             }
         }
-
-        this.programConfigs$.subscribe(ws => {
+        this.programConfigs$.pipe(
+            take(1)
+        ).subscribe(ws => {
             this.programConfigs = ws;
-        })
-    }
-    async ngAfterViewInit() {
+        });
         if(this.startFolder!==''){
             this.leftPanelVisible = true;
         }else if(this.startFile!==''){
@@ -101,6 +100,7 @@ export class CodeSpace extends Program implements processSizeChange {
         this.panelResizeControl = false;
         setTimeout(()=>{
             this.panelResizeControl = true;
+            // console.log('setting to ture')
         },0)
     }
 
@@ -194,8 +194,10 @@ export class CodeSpace extends Program implements processSizeChange {
                     this.monacoEditorViewUpdate()
                 }
                 this.activeTab(this.activatedTab);
+                // this.messageService.success("打开文件成功")
             }catch(err){
-                console.log(err);
+                this.messageService.error('打开文件失败')
+                // console.log(err);
             }
         }
     }

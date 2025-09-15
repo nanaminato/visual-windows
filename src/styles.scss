@@ -56,9 +56,9 @@ button.disabled > nz-icon{
 }
 .program-content {
     flex-grow: 1;
-    overflow: auto;
+    //overflow: auto;
     background: white;
     overflow-x: hidden !important;
-    /*overflow-y: hidden !important;*/
+    overflow-y: hidden !important;
 }
 /*program end*/

@@ -95,7 +95,6 @@
 }
 
 .file-shower{
-    display: flex;
     width: 100%;
     flex-grow: 1;
 }

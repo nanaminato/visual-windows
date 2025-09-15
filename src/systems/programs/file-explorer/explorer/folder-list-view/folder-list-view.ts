@@ -100,7 +100,7 @@ export class FolderListView {
     }
     onWrapperRightClick(event: MouseEvent) {
         event.preventDefault();
-        console.log('parent click');
+        // console.log('parent click');
         const target = event.target as HTMLElement;
         if (target.closest('tr.folder-list-row')) {
             return; // 文件行右键事件另有处理

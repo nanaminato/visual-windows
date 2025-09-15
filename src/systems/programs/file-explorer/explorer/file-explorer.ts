@@ -51,16 +51,18 @@ export class FileExplorer implements splitterAutoResize, processSizeChange{
     @ViewChild('header') header!: ElementRef;
     @ViewChild('fileBrowser') fileBrowser!: ElementRef;
     parentSizeChange(): void {
-        this.resize()
+        // this.resize()
     }
     resize(): void {
-        if (this.fileBrowser && this.header) {
-            const newHeight = this.fileBrowser.nativeElement.offsetHeight - this.header.nativeElement.offsetHeight;
-            if (newHeight !== this.lastSplitHeight) {
-                this.splitHeight = newHeight;
-                this.lastSplitHeight = newHeight;
+        setTimeout(()=>{
+            if (this.fileBrowser && this.header) {
+                const newHeight = this.fileBrowser.nativeElement.offsetHeight - this.header.nativeElement.offsetHeight;
+                if (newHeight !== this.lastSplitHeight) {
+                    this.splitHeight = newHeight;
+                    this.lastSplitHeight = newHeight;
+                }
             }
-        }
+        },20)
     }
     private lastSplitHeight = 0;
     ngAfterViewChecked(): void {

@@ -1,7 +1,7 @@
-<div class="folder-list-wrapper d-flex flex-column" (contextmenu)="onWrapperRightClick($event)">
+<div class="folder-list-wrapper" (contextmenu)="onWrapperRightClick($event)">
     <div class="d-flex flex-row">
-        <table class="folder-list-table" role="grid" aria-label="文件列表">
-            <thead class="sticky-top">
+        <table class="flex-grow-1" role="grid" aria-label="文件列表">
+            <thead class="sticky-top bg-white">
             <tr>
                 <th scope="col" style="width: 40%;">名称</th>
                 <th scope="col" style="width: 20%;">修改日期</th>
@@ -42,7 +42,7 @@
                 }
             </tbody>
         </table>
-        <div class="flex-grow-1 blank-panel"  (contextmenu)="onWrapperRightClick($event)">
+        <div class="blank-panel"  (contextmenu)="onWrapperRightClick($event)">
 
         </div>
     </div>
