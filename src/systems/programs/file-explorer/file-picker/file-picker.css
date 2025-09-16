@@ -96,9 +96,10 @@
     background-color: #eee;
 }
 .file-shower{
+    flex: 1 1 auto;
     display: flex;
     width: 100%;
-    flex-grow: 1;
+    height: 40px;
 }
 
 .select-files {

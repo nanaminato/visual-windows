@@ -1,5 +1,5 @@
 <div class="file-browser" >
-    <div class="d-flex flex-column" #header>
+    <div class="d-flex flex-column" style="height: 88px">
         <div class="navigator">
             <div class="navigator-item-group">
                 <button [disabled]="!canBack()" [class.disabled]="!canBack()" >
@@ -90,11 +90,11 @@
         </div>
     </div>
     <div class="w-100 file-tree-and-view">
-        <as-split gutterSize="2" direction="horizontal" >
-            <as-split-area size="20">
+        <as-split gutterSize="2" direction="horizontal" class="as-split">
+            <as-split-area size="20"  class="as-split-area">
                 <app-entry-root (folderSelected)="onFolderSelected($event)"></app-entry-root>
             </as-split-area>
-            <as-split-area>
+            <as-split-area class="as-split-area">
                 @if(driverView){
                     <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
                 }@else{

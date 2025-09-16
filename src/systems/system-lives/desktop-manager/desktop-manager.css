@@ -12,5 +12,5 @@
 
 .window-live-active{
     box-shadow: 0 0 20px #2196f3;
-    /*z-index: 10;*/
+    /*z-index: 1000;*/
 }

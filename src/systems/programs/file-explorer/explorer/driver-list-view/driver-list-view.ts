@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {DriverInfo, FileNodeViewModel} from '../models';
+import {DriverInfo} from '../models';
 
 @Component({
   selector: 'app-driver-list-view',

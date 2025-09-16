@@ -26,8 +26,6 @@ import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
 import {fileExplorerProgram} from '../../models/register-app';
 import {buildBreadcrumbsForPath} from './models';
-import {splitterAutoResize} from '../../../feature/splitter';
-import {processSizeChange} from '../../../system-lives/window-live/adapter';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 
 @Component({

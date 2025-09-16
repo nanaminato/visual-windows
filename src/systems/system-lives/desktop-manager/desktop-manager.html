@@ -1,4 +1,4 @@
-<div class="desktop" (mouseup)="stopDrag()" (mousemove)="onDrag($event)">
+<div class="desktop" >
   @for(win of windows; track win.id){
       <window-live [win]="win" [hidden]="win.minimized"
                    class="window-live"

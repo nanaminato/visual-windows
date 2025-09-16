@@ -58,13 +58,6 @@ export class WindowsLive {
         )
     }
 
-    focusWindow(id: string) {
-        this.appEventEmitter.emit({
-            type: 1,
-            id: id,
-            event: 'focus'
-        });
-    }
     minimizeWindow(id: string) {
         this.appEventEmitter.emit({
             type: 2,
@@ -133,11 +126,9 @@ export class WindowsLive {
                                 break;
                             case 5:
                                 this.startDrag(eventData.event as unknown as MouseEvent, eventData.id);
-                                this.focusWindow(eventData.id);
                                 break;
                             case 7:
                                 this.touchDrag(eventData.event as TouchEvent, eventData.id);
-                                this.focusWindow(eventData.id);
                                 break;
                         }
                     });
@@ -166,7 +157,17 @@ export class WindowsLive {
             event: 'closeWindow',
         });
     }
+    focusWindow(id: string) {
+        console.log(id, 'trigger focus');
+        this.appEventEmitter.emit({
+            type: 1,
+            id: id,
+            event: 'focus'
+        });
+    }
     startDrag(eventData: MouseEvent, id: string) {
+        eventData.stopPropagation()
+        console.log(id, 'trigger startDrag');
         this.appEventEmitter.emit({
             type: 5,
             id: id,
@@ -174,6 +175,8 @@ export class WindowsLive {
         });
     }
     touchDrag(eventData: TouchEvent, id: string) {
+        eventData.stopPropagation()
+        console.log(id, 'trigger touchDrag');
         this.appEventEmitter.emit({
             type: 7,
             id: id,
@@ -313,7 +316,11 @@ export class WindowsLive {
 
     stopResize = (event: MouseEvent | TouchEvent) => {
         if (!this.resizing) return;
-
+        this.appEventEmitter.emit({
+            type: 8,
+            id: this.resizeWinId!,
+            event: 8
+        });
         this.resizing = false;
         this.resizeDir = null;
         this.resizeWinId = null;

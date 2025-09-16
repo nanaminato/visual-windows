@@ -21,12 +21,11 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {filePickerCancel, filePickerConfirm} from '../../../system-services/state/system/file/file-picker.actions';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {processClose, processSizeChange} from '../../../system-lives/window-live/adapter';
+import {processClose} from '../../../system-lives/window-live/adapter';
 import {ModalWindow} from '../../../system-lives/window-live/adapter/adapter';
 import {selectWindows} from '../../../system-services/state/window/window.selectors';
 import {firstValueFrom} from 'rxjs';
 import {buildBreadcrumbsForPath} from '../explorer/models';
-import {splitterAutoResize} from '../../../feature/splitter';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
 
 @Component({
@@ -49,23 +48,23 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
   templateUrl: './file-picker.html',
   styleUrl: './file-picker.css'
 })
-export class FilePicker extends ModalWindow implements processClose, processSizeChange, splitterAutoResize {
-    @ViewChild('header') header!: ElementRef;
-    @ViewChild('fileBrowser') fileBrowser!: ElementRef;
-    @ViewChild('select') select!: ElementRef;
-    parentSizeChange(): void {
-        this.resize()
-    }
-    resize(): void {
-        if(this.fileBrowser&&this.header) {
-            this.splitHeight = this.fileBrowser.nativeElement.offsetHeight
-                - this.header.nativeElement.offsetHeight
-                - this.select.nativeElement.offsetHeight;
-        }
-    }
-    ngAfterViewInit(): void {
-        this.resize();
-    }
+export class FilePicker extends ModalWindow implements processClose {
+    // @ViewChild('header') header!: ElementRef;
+    // @ViewChild('fileBrowser') fileBrowser!: ElementRef;
+    // @ViewChild('select') select!: ElementRef;
+    // parentSizeChange(): void {
+    //     this.resize()
+    // }
+    // resize(): void {
+    //     if(this.fileBrowser&&this.header) {
+    //         this.splitHeight = this.fileBrowser.nativeElement.offsetHeight
+    //             - this.header.nativeElement.offsetHeight
+    //             - this.select.nativeElement.offsetHeight;
+    //     }
+    // }
+    // ngAfterViewInit(): void {
+    //     this.resize();
+    // }
     splitHeight: number = 400;
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
@@ -425,7 +424,7 @@ export class FilePicker extends ModalWindow implements processClose, processSize
                     return null;
                 }
             }
-            return paths.map(p => this.currentPath+"\\"+p.substring(1, p.lastIndexOf('"')));
+            return paths.map(p => this.currentPath+(this.isLinux ?'/':"\\")+p.substring(1, p.lastIndexOf('"')));
         } else {
             if(text===''){
                 return [this.currentPath]
@@ -436,7 +435,7 @@ export class FilePicker extends ModalWindow implements processClose, processSize
                 this.messageService.error('选中的文件必须都在当前路径');
                 return null;
             }
-            return [this.currentPath+"\\"+text];
+            return [this.currentPath+(this.isLinux ?'/':"\\")+text];
         }
     }
 

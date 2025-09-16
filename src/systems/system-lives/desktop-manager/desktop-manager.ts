@@ -6,6 +6,7 @@ import {WindowManagerService} from '../../system-services/windows-manager.servic
 import {Store} from '@ngrx/store';
 import {selectOrders} from '../../system-services/state/window/window.selectors';
 import {AsyncPipe} from '@angular/common';
+import {Actions} from '@ngrx/effects';
 @Component({
     selector: 'system-desktop-manager',
     imports: [
@@ -21,10 +22,15 @@ export class DesktopManager {
     draggingWindowId: string | null = null;
     // 拖拽相关状态
     draggingTouchWindowId: string | null = null;
+    resizeWinId: string | null = null;
     private dragOffset = { x: 0, y: 0 };
+    private actions$ = inject(Actions);
     constructor() {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
+        });
+        this.actions$.subscribe(action => {
+            console.log('Action dispatched:',action.type, action);
         });
     }
     focusWindow(id: string) {
@@ -67,10 +73,16 @@ export class DesktopManager {
 
     @HostListener('document:mouseup')
     stopDrag() {
+        if(this.draggingWindowId){
+            this.focusWindow(this.draggingWindowId);
+        }
         this.draggingWindowId = null;
     }
     @HostListener('document:touchend')
     stopDragTouch() {
+        if(this.draggingTouchWindowId){
+            this.focusWindow(this.draggingTouchWindowId);
+        }
         this.draggingTouchWindowId = null;
     }
 
@@ -88,8 +100,6 @@ export class DesktopManager {
         win.position.x = Math.max(0, newX);
         win.position.y = Math.max(0, newY);
 
-        // 通知服务更新状态（实际项目建议深拷贝后更新）
-        this.windowManager.getWindows().subscribe(); // 触发更新
     }
     // 新增触摸拖动监听
     @HostListener('document:touchmove', ['$event'])
@@ -104,8 +114,6 @@ export class DesktopManager {
 
         win.position.x = Math.max(0, newX);
         win.position.y = Math.max(0, newY);
-
-        this.windowManager.getWindows().subscribe();
     }
     appLiveEvent($event: ProgramEvent) {
         switch ($event.type) {
@@ -124,22 +132,23 @@ export class DesktopManager {
                 break;
             case 5:
                 this.startDrag($event.event as unknown as MouseEvent, $event.id);
-                this.focusWindow($event.id);
                 break;
             case 6:
+                //resize move
                 const win = this.windows.find(w => w.id === $event.id);
                 if (win && $event.event) {
                     win.position = $event.event.position;
                     win.size = $event.event.size;
-                    // 触发变更检测或刷新视图
                 }
-                this.focusWindow($event.id);
+                this.resizeWinId = $event.id;
                 break;
             case 7:
                 this.startDragTouch($event.event as TouchEvent, $event.id);
-                this.focusWindow($event.id);
                 break;
-
+            case 8:
+                this.focusWindow($event.id);
+                this.resizeWinId = null;
+                break;
         }
     }
     store = inject(Store)
@@ -152,10 +161,12 @@ export class DesktopManager {
         if (pos === -1) {
             return 1;
         }
+        // 正在拖动或者拽动， 提高其z-index以增强辨识度
+        if(win.id===this.draggingTouchWindowId || win.id===this.draggingWindowId || win.id === this.resizeWinId){
+            // 相当大的z-index,理应不会出现问题
+            return 10000;
+        }
         return pos + 10;
     }
-
-
-
 
 }
