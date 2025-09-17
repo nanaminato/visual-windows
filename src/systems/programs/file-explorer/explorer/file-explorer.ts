@@ -46,7 +46,6 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
     styleUrl: './file-explorer.css'
 })
 export class FileExplorer{
-
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

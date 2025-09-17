@@ -61,7 +61,6 @@
 .modified-col { width: 20%; }
 .type-col { width: 20%; }
 .size-col { width: 20%; text-align: right; }
-
 .context-menu {
     position: fixed;
     z-index: 1000;

@@ -27,13 +27,13 @@ import {selectWindows} from '../../../system-services/state/window/window.select
 import {firstValueFrom} from 'rxjs';
 import {buildBreadcrumbsForPath} from '../explorer/models';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
+import {PickerFolderView} from './picker-folder-view/picker-folder-view';
 
 @Component({
   selector: 'app-file-picker',
     imports: [
         DriverListView,
         EntryRoot,
-        FolderListView,
         NzIconDirective,
         NzInputDirective,
         NzInputGroupComponent,
@@ -43,29 +43,13 @@ import {SplitAreaComponent, SplitComponent} from 'angular-split';
         NzSelectComponent,
         NzOptionComponent,
         SplitComponent,
-        SplitAreaComponent
+        SplitAreaComponent,
+        PickerFolderView
     ],
   templateUrl: './file-picker.html',
   styleUrl: './file-picker.css'
 })
 export class FilePicker extends ModalWindow implements processClose {
-    // @ViewChild('header') header!: ElementRef;
-    // @ViewChild('fileBrowser') fileBrowser!: ElementRef;
-    // @ViewChild('select') select!: ElementRef;
-    // parentSizeChange(): void {
-    //     this.resize()
-    // }
-    // resize(): void {
-    //     if(this.fileBrowser&&this.header) {
-    //         this.splitHeight = this.fileBrowser.nativeElement.offsetHeight
-    //             - this.header.nativeElement.offsetHeight
-    //             - this.select.nativeElement.offsetHeight;
-    //     }
-    // }
-    // ngAfterViewInit(): void {
-    //     this.resize();
-    // }
-    splitHeight: number = 400;
     explorerService: ExplorerService = inject(ExplorerService);
     messageService = inject(NzMessageService);
     //窗口程序id,用于获弹窗等阻塞主窗口

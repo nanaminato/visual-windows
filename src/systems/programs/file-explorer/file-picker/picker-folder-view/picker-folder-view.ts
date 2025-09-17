@@ -1,27 +1,27 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {LightFile} from '../models';
 import {DatePipe} from '@angular/common';
 import {Store} from '@ngrx/store';
-import {WindowActions} from '../../../../system-services/state/window/window.actions';
-import {codeSpaceProgram, terminalProgram} from '../../../models/register-app';
+import {LightFile} from '../../explorer/models';
 import {getFileType, formatSize} from '../../models';
 
 @Component({
-  selector: 'app-folder-list-view',
+  selector: 'app-picker-folder-view',
     imports: [
         DatePipe
     ],
-  templateUrl: './folder-list-view.html',
-  styleUrl: './folder-list-view.css'
+  templateUrl: './picker-folder-view.html',
+  styleUrl: './picker-folder-view.css'
 })
-export class FolderListView {
+export class PickerFolderView {
     @Input()
     mode: 'selector' | 'viewer' = 'viewer';
     @Input()
     files: LightFile[] = [];
     @Input()
     currentPath: string | undefined;
-
+    @Input()
+    multiSelect: boolean = false;
+    @Input()
     selectedFiles: LightFile[] = [];
     @Output()
     fileSelect: EventEmitter<{file: LightFile, event: MouseEvent}> = new EventEmitter();
@@ -43,40 +43,16 @@ export class FolderListView {
     fileProcess: EventEmitter<LightFile> = new EventEmitter<LightFile>();
 
     clickTimeout: any;
-    lastSelectedIndex: number | null = null;
 
     onFileClick(file: LightFile, event: MouseEvent) {
-        const index = this.files.findIndex(f => f.path === file.path);
-        if (index === -1) {
-            return;
+        // 先清除之前的定时器，防止多次点击叠加
+        if (this.clickTimeout) {
+            clearTimeout(this.clickTimeout);
         }
-
-        if (event.shiftKey && this.lastSelectedIndex !== null) {
-            // Shift 多选
-            const start = Math.min(this.lastSelectedIndex, index);
-            const end = Math.max(this.lastSelectedIndex, index);
-            const filesToSelect = this.files.slice(start, end + 1);
-
-            // 这次选择替代上次全部选择
-            this.selectedFiles = [...filesToSelect];
-        } else if (event.ctrlKey || event.metaKey) {
-            // Ctrl 或 Cmd 多选（切换选中状态）
-            const selectedIndexInSelected = this.selectedFiles.findIndex(f => f.path === file.path);
-            if (selectedIndexInSelected > -1) {
-                // 已选中，取消选中
-                this.selectedFiles.splice(selectedIndexInSelected, 1);
-            } else {
-                this.selectedFiles.push(file);
-            }
-            // 更新 lastSelectedIndex 为当前
-            this.lastSelectedIndex = index;
-        } else {
-            // 普通点击，清空选择，只选当前
-            this.selectedFiles = [file];
-            this.lastSelectedIndex = index;
-        }
-
-        this.fileSelect.emit({file, event});
+        // 延迟执行单击的处理，等待双击事件
+        this.clickTimeout = setTimeout(() => {
+            this.fileSelect.emit({ file, event });
+        }, 10);
     }
 
     fileDbl(file: LightFile) {
@@ -108,7 +84,6 @@ export class FolderListView {
     }
     onWrapperRightClick(event: MouseEvent) {
         event.preventDefault();
-        // console.log('parent click');
         const target = event.target as HTMLElement;
         if (target.closest('tr.folder-list-row')) {
             return; // 文件行右键事件另有处理
@@ -125,24 +100,6 @@ export class FolderListView {
         switch (action) {
             case 'refresh':
                 this.refreshRequest.emit();
-                break;
-            case 'openCode':
-                this.store.dispatch(WindowActions.openWindow({
-                    id: codeSpaceProgram,
-                    title: 'code space',
-                    params: {
-                        file: file
-                    }
-                }))
-                break;
-            case 'openTerminal':
-                this.store.dispatch(WindowActions.openWindow({
-                    id: terminalProgram,
-                    title: '终端',
-                    params: {
-                        workDirectory: file===undefined? this.currentPath:file.path
-                    }
-                }))
                 break;
             case 'properties':
 

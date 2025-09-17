@@ -158,7 +158,7 @@ export class WindowsLive {
         });
     }
     focusWindow(id: string) {
-        console.log(id, 'trigger focus');
+        // console.log(id, 'trigger focus');
         this.appEventEmitter.emit({
             type: 1,
             id: id,

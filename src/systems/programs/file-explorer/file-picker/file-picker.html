@@ -92,14 +92,14 @@
                 @if(driverView){
                     <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
                 }@else{
-                    <app-folder-list-view
+                    <app-picker-folder-view
                         (refreshRequest)="onRefreshRequest()"
                         [currentPath]="currentPath"
                         [files]="files"
                         [multiSelect]="config.multiSelect??false"
                         [selectedFiles]="selectedFiles"
                         (fileSelect)="onFileSelectClicked($event.file, $event.event)"
-                        (fileProcess)="onFileDblClick($event)"> </app-folder-list-view>
+                        (fileProcess)="onFileDblClick($event)"> </app-picker-folder-view>
                 }
             </as-split-area>
         </as-split>

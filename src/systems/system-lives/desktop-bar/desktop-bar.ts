@@ -10,6 +10,8 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {logoutAction} from '../../system-services/state/system/system.action';
 import {WindowScreenshot} from './window-screenshot/window-screenshot';
 import {Actions, ofType} from '@ngrx/effects';
+import {selectWindows} from '../../system-services/state/window/window.selectors';
+import {take} from 'rxjs';
 
 @Component({
     selector: 'system-desktop-bar',
@@ -24,7 +26,6 @@ import {Actions, ofType} from '@ngrx/effects';
 })
 export class DesktopBar {
     private windowManager = inject(WindowManagerService);
-
     windows: WindowState[] = [];
     groupWindows: GroupWindowState[] = [];
     private store = inject(Store);
@@ -44,7 +45,7 @@ export class DesktopBar {
     private actions$ = inject(Actions);
     constructor() {
         this.actions$.pipe(
-            ofType(WindowActions.openWindowSuccess, WindowActions.closeWindowSuccess),
+            ofType(WindowActions.openWindowSuccess, WindowActions.closeWindowSuccess, WindowActions.windowLoaded),
         ).subscribe(action => {
             if (action.type === '[Window] open window success') {
                 // 新增窗口
@@ -52,8 +53,15 @@ export class DesktopBar {
             } else if (action.type === '[Window] close window success') {
                 // 替换整个窗口数组
                 this.windows = action.windows;
+            }else if(action.type === '[Window] window loaded' && this.windows.length<=0) {
+                this.store.select(selectWindows).pipe(take(1)).subscribe(windows => {
+                    this.windows = windows || [];
+                    this.divideIntoGroups();
+                });
+                return;
             }
             this.divideIntoGroups();
+
         });
         this.programConfigs$.subscribe(ws => {
             this.programConfigs = ws;
@@ -130,6 +138,7 @@ export class DesktopBar {
         this.openGroupAppId = null; // 关闭弹窗
         // 这里写切换窗口的逻辑，比如调用已有的 toggleWindow 或其他方法
         this.windowManager.focusWindow(window.id)
+        this.onGroupMouseLeave()
     }
 
 // 点击空白处关闭弹窗
