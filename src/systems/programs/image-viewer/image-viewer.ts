@@ -1,10 +1,9 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {LightFile} from '../file-explorer/explorer/models';
 import {ExplorerService} from '../file-explorer/explorer/services/explorer.service';
 import {HttpClient} from '@angular/common/http';
 import {ServerService} from '../../system-services/server.service';
 import {Program} from '../../system-lives/window-live/adapter';
-import {ProgramEvent} from '../../models';
 
 @Component({
   selector: 'app-image-viewer',
@@ -161,22 +160,5 @@ export class ImageViewer extends Program{
             });
         });
 
-    }
-    @Output()
-    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
-
-    hoverIn() {
-        this.appEventEmitter.emit({
-            type: 9,
-            id: this.id!,
-            event: 'hoverIn'
-        });
-    }
-    hoverOut() {
-        this.appEventEmitter.emit({
-            type: 10,
-            id: this.id!,
-            event: 'hoverOut'
-        });
     }
 }

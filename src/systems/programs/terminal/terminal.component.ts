@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import { Terminal } from 'xterm';
 import 'xterm/css/xterm.css';
 import {HttpClient} from '@angular/common/http';
@@ -11,7 +11,6 @@ import { Unicode11Addon} from "@xterm/addon-unicode11"
 import {ServerService} from '../../system-services/server.service';
 import {processClose} from '../../system-lives/window-live/adapter';
 import {Program} from '../../system-lives/window-live/adapter';
-import {ProgramEvent} from '../../models';
 @Component({
   selector: 'app-terminal',
   imports: [],
@@ -128,21 +127,5 @@ export class TerminalComponent extends Program implements processClose {
     ngOnDestroy() {
         this.socket?.close();
     }
-    @Output()
-    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
 
-    hoverIn() {
-        this.appEventEmitter.emit({
-            type: 9,
-            id: this.id!,
-            event: 'hoverIn'
-        });
-    }
-    hoverOut() {
-        this.appEventEmitter.emit({
-            type: 10,
-            id: this.id!,
-            event: 'hoverOut'
-        });
-    }
 }

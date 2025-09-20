@@ -1,6 +1,6 @@
-import {Component, EventEmitter, HostListener, inject, Input, Output,} from '@angular/core';
+import {Component,HostListener, inject, Input,} from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {ProgramConfig, ProgramEvent} from '../../models';
+import {ProgramConfig} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {FolderRoot} from './folder-root/folder-root';
 import {CodeFileNodeViewModel, CodeSpaceTab} from './models';
@@ -103,8 +103,6 @@ export class CodeSpace extends Program implements processSizeChange {
             // console.log('setting to ture')
         },0)
     }
-
-
 
     minimizeWindow() {
         if(!this.id){
@@ -447,23 +445,5 @@ export class CodeSpace extends Program implements processSizeChange {
 
     isActiveTab(tab: CodeSpaceTab) {
         return this.activatedTab===tab;
-    }
-
-    @Output()
-    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
-
-    hoverIn() {
-        this.appEventEmitter.emit({
-            type: 9,
-            id: this.id!,
-            event: 'hoverIn'
-        });
-    }
-    hoverOut() {
-        this.appEventEmitter.emit({
-            type: 10,
-            id: this.id!,
-            event: 'hoverOut'
-        });
     }
 }

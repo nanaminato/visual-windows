@@ -1,6 +1,4 @@
 import {ProgramIcon} from './program-info';
-import {Program} from '../system-lives/window-live/adapter';
-import {ComponentRef} from '@angular/core';
 
 export interface WindowState {
     id: string;                // 唯一窗口ID
@@ -12,7 +10,6 @@ export interface WindowState {
     maximized: boolean;
     active: boolean;
     component?: any;            // 关联的Angular组件（独立组件）
-    elementRef?: ComponentRef<any> // 关联的组件实体
     params?: any;              // 启动参数
     customHeader?: boolean;
     // 新增字段，保存最大化前的状态

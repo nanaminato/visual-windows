@@ -12,7 +12,7 @@ import {WindowScreenshot} from './window-screenshot/window-screenshot';
 import {Actions, ofType} from '@ngrx/effects';
 import {selectWindows} from '../../system-services/state/window/window.selectors';
 import {take} from 'rxjs';
-import {Program} from '../window-live/adapter';
+import {LinkService} from '../../system-services/link.service';
 
 @Component({
     selector: 'system-desktop-bar',
@@ -166,23 +166,20 @@ export class DesktopBar {
     onGroupMouseLeave() {
         this.hoveredGroupAppId = null;
     }
-
+    linkService = inject(LinkService);
     hoverIn(window: WindowState) {
-
-        if (typeof window.elementRef?.instance.hoverIn === 'function') {
+        let component = this.linkService.get(window.id);
+        if (typeof component.hoverIn === 'function') {
             console.log('hoverIn',window.id);
-            window.elementRef.instance.hoverIn();
-        } else {
-            console.warn('elementRef is not a Program instance');
+            component.hoverIn();
         }
     }
 
     hoverOut(window: WindowState) {
-        if (typeof window.elementRef?.instance.hoverOut === 'function') {
+        let component = this.linkService.get(window.id);
+        if (typeof component.hoverOut === 'function') {
             console.log('hoverOut',window.id);
-            window.elementRef.instance!.hoverOut()
-        } else {
-            console.warn('elementRef is not a Program instance');
+            component.hoverOut()
         }
     }
 }

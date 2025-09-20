@@ -16,6 +16,7 @@ import {WindowState} from '../../models';
 import {firstValueFrom, map} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
+import {LinkService} from '../../system-services/link.service';
 
 type ResizeDirection =
     | 'top-left' | 'top' | 'top-right'
@@ -34,6 +35,7 @@ type ResizeDirection =
 export class WindowsLive{
     @Input()
     win: WindowState | undefined;
+    linkService: LinkService = inject(LinkService);
     config: ProgramConfig | undefined;
     async ngOnInit() {
         this.config = await this.getAppWindowConfigOfWindow(this.win!.programId);
@@ -110,7 +112,7 @@ export class WindowsLive{
             for (let key of Object.keys(record)) {
                 this.componentRef!.instance[key] = record[key];
             }
-            this.win!.elementRef = this.componentRef;
+            this.linkService.add(this.win!.id, this.componentRef.instance);
             if(this.win?.customHeader){
                 if(this.componentRef.instance.appEventEmitter){
                     this.componentRef.instance.appEventEmitter.subscribe((eventData: ProgramEvent) => {

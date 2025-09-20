@@ -8,6 +8,7 @@ import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
 import {componentMap, programWithCustomHeaders} from '../../../programs/models';
 import {selectProgramConfigs} from '../system/system.selector';
+import {LinkService} from '../../link.service';
 
 @Injectable()
 export class WindowEffects {
@@ -95,6 +96,7 @@ export class WindowEffects {
             })
         )
     );
+    linkService: LinkService = inject(LinkService);
     closeWindow$ = createEffect(() =>
         this.actions$.pipe(
             ofType(WindowActions.closeWindow),
@@ -123,7 +125,10 @@ export class WindowEffects {
 
                 // 关闭的窗口ID列表，包含自己和需要关闭的子窗口
                 const closeWindowIds = [id].concat(getChildWindowsToClose(id, windows));
-
+                closeWindowIds.forEach(window=>{
+                    // 清除组件引用（常规清理）
+                    this.linkService.remove(window)
+                })
                 // 新的 windows 列表，不包含被关闭的
                 let newWindows = windows.filter(w => !closeWindowIds.includes(w.id));
 
