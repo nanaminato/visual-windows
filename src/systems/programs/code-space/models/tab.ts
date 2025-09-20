@@ -4,4 +4,5 @@ export interface CodeSpaceTab{
     type: 'setting' | 'file';
     name: string;
     file?: OpenFile;
+    dirty?: boolean;
 }

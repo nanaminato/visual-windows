@@ -24,6 +24,7 @@ import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
 import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
 import {Program} from '../../system-lives/window-live/adapter';
 import {SystemInfoService} from '../../system-services/info.service';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 
 @Component({
     selector: 'app-code-space',
@@ -36,7 +37,8 @@ import {SystemInfoService} from '../../system-services/info.service';
         SplitAreaComponent,
         SplitComponent,
         CommonModule,
-        CodeSpaceSettings
+        CodeSpaceSettings,
+        NzTooltipDirective,
     ],
     providers: [
 
@@ -184,6 +186,7 @@ export class CodeSpace extends Program implements processSizeChange {
                     type: 'file',
                     name: openFile.name,
                     file: openFile,
+                    dirty: false,
                 }
                 this.activatedTab = tab;
                 this.openedTabs.push(tab);
@@ -328,10 +331,7 @@ export class CodeSpace extends Program implements processSizeChange {
                         config: {
                             startPath: this.isLinux?'/': '\\',
                             selectFolders: selectFolder,
-                            // multiSelect: true,
-                            // multiSelect: false,
                             multiSelect: !selectFolder,
-                            // maxSelectCount: 3,
                             requestId:requestId,
                             mode: 'selector',
                             // mode: 'save',
@@ -386,6 +386,7 @@ export class CodeSpace extends Program implements processSizeChange {
                     type: 'file',
                     name: openFile.name,
                     file: openFile,
+                    dirty: false,
                 }
                 this.activatedTab = tab;
                 this.openedTabs.push(tab);
@@ -445,5 +446,46 @@ export class CodeSpace extends Program implements processSizeChange {
 
     isActiveTab(tab: CodeSpaceTab) {
         return this.activatedTab===tab;
+    }
+    onContentChange(newContent: string) {
+        if (!this.activatedTab || this.activatedTab.type !== 'file') {
+            return;
+        }
+        // 如果内容和文件源内容不同，则标记为dirty
+        this.activatedTab.dirty = (newContent !== (this.activatedTab.file?.decodeText ?? ""));
+    }
+    async saveCurrentFile() {
+        if (!this.activatedTab || this.activatedTab.type !== 'file') {
+            this.messageService.info('当前没有可保存的文件');
+            return;
+        }
+        const tab = this.activatedTab;
+        // 将当前content存回file.decodeText
+        tab.file!.decodeText = this.content;
+        tab.file!.content = this.content;
+        try {
+            await this.codeService.saveCode(tab.file!);
+            tab.dirty = false;
+            this.messageService.success(`保存文件 ${tab.name} 成功`);
+        } catch (e: any) {
+            this.messageService.error(`保存文件 ${tab.name} 失败：${e.message || e}`);
+        }
+    }
+    @HostListener('window:keydown', ['$event'])
+    async onKeyDown(event: KeyboardEvent) {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+            event.preventDefault();
+            await this.saveCurrentFile();
+        }
+    }
+
+
+    getTooltipTitle(tab: CodeSpaceTab) {
+        if(tab.type === 'file') {
+            return tab.file!.path??'';
+        }else if(tab.type === 'setting') {
+            return 'settings'
+        }
+        return '';
     }
 }

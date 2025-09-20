@@ -76,15 +76,16 @@ nz-splitter {
 .open-file-item{
     display: flex;
     flex-direction: row;
+    background-color: #f1f1f1;
     /*justify-content: center;*/
     align-items: center;
 }
 .open-file-item.active{
-    background: #9595ed;
+    background: #ffffff;
 }
-.open-file-item:hover{
-    background: #b0d8dd;
-}
+/*.open-file-item:hover{*/
+/*    background: #b0d8dd;*/
+/*}*/
 .context-menu {
     position: fixed;
     background: white;
@@ -99,7 +100,20 @@ nz-splitter {
     padding: 6px 12px;
     cursor: pointer;
 }
-
+.tab-name{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .context-menu-item:hover {
     background-color: #f0f0f0;
+}
+.unsaved-dot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: #0088ff; /* 红色 */
+    border-radius: 50%;
 }

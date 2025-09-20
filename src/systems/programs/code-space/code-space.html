@@ -8,6 +8,7 @@
                     <div class="shadow"
                          style="position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ccc; z-index: 1000; min-width: 150px;">
                         <div class="dropdown-item" (click)="openFile()">打开文件</div>
+                        <div class="dropdown-item" (click)="saveCurrentFile()">保存文件</div>
                         <div class="dropdown-item" (click)="openFolder()">打开文件夹</div>
                         <div class="dropdown-item" (click)="openSetting()">设定</div>
                         <div class="dropdown-item" (click)="exit()">退出</div>
@@ -64,7 +65,12 @@
                                  (contextmenu)="onContextMenu($event, tab)"
                                  [class.active]="isActiveTab(tab)">
                                 <img width="15" height="15" [src]="getIconPath(tab.name)" alt="文件图标">
-                                <div>{{tab.name}}</div>
+                                <div class="tab-name" [nzTooltipTitle]="getTooltipTitle(tab)" nzTooltipPlacement="right" nz-button nz-tooltip>
+                                    {{tab.name}}
+                                    @if(tab.dirty){
+                                        <div class="unsaved-dot"></div>
+                                    }
+                                </div>
                                 <button class="plane-button" (click)="closeTab(tab, $event)">
                                     <nz-icon nzType="close" />
                                 </button>
@@ -81,7 +87,12 @@
                     <div class="d-flex flex-grow-1">
                         @if(panelResizeControl){
                             @if(showFile){
-                                <ngx-monaco-editor class="w-100 h-100" [options]="editorOptions" [(ngModel)]="content"></ngx-monaco-editor>
+                                <ngx-monaco-editor
+                                    class="w-100 h-100"
+                                    [options]="editorOptions"
+                                    [(ngModel)]="content"
+                                    (ngModelChange)="onContentChange($event)"
+                                ></ngx-monaco-editor>
 
                             }@else{
                                 <app-code-space-settings (settingsChange)="onSettingChange($event)" ></app-code-space-settings>

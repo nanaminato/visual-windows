@@ -29,9 +29,24 @@ export class CodeService{
     }
 
     saveCode(openFile: OpenFile): Promise<any> {
+        let file = {...openFile};
+        // 将 decodeText（UTF-8 字符串）转换成 Uint8Array（字节数组）
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(openFile.decodeText || '');
+
+        // 把 Uint8Array 转回二进制字符串
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+
+        // 对二进制字符串进行 Base64 编码
+        file.content = btoa(binary);
+
+        file.decodeText = undefined;
         return new Promise((resolve, reject) => {
             this.http.post
-            (`${this.serverService.getServerBase()}/api/v1/code/save`,openFile).subscribe(
+            (`${this.serverService.getServerBase()}/api/v1/code/save`,file).subscribe(
                 {
                     next: (value: any) => {
                         resolve(value);
