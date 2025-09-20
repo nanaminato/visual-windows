@@ -3,7 +3,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramConfig, ProgramEvent} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
 import {FolderRoot} from './folder-root/folder-root';
-import {CodeFileNodeViewModel, CodeSpaceTab, OpenFile} from './models';
+import {CodeFileNodeViewModel, CodeSpaceTab} from './models';
 import {CodeService, getFileLanguage, getIconPath} from './services';
 import {EditorComponent} from 'ngx-monaco-editor-v2';
 import {FormsModule} from '@angular/forms';
@@ -22,7 +22,7 @@ import {NzMessageService} from 'ng-zorro-antd/message';
 import {processSizeChange} from '../../system-lives/window-live/adapter';
 import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
 import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
-import {Program} from '../../system-lives/window-live/adapter/adapter';
+import {Program} from '../../system-lives/window-live/adapter';
 import {SystemInfoService} from '../../system-services/info.service';
 
 @Component({
@@ -105,8 +105,7 @@ export class CodeSpace extends Program implements processSizeChange {
     }
 
 
-    @Output()
-    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
+
     minimizeWindow() {
         if(!this.id){
             return;
@@ -450,5 +449,21 @@ export class CodeSpace extends Program implements processSizeChange {
         return this.activatedTab===tab;
     }
 
+    @Output()
+    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
 
+    hoverIn() {
+        this.appEventEmitter.emit({
+            type: 9,
+            id: this.id!,
+            event: 'hoverIn'
+        });
+    }
+    hoverOut() {
+        this.appEventEmitter.emit({
+            type: 10,
+            id: this.id!,
+            event: 'hoverOut'
+        });
+    }
 }

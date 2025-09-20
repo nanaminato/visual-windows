@@ -12,6 +12,7 @@ import {WindowScreenshot} from './window-screenshot/window-screenshot';
 import {Actions, ofType} from '@ngrx/effects';
 import {selectWindows} from '../../system-services/state/window/window.selectors';
 import {take} from 'rxjs';
+import {Program} from '../window-live/adapter';
 
 @Component({
     selector: 'system-desktop-bar',
@@ -164,5 +165,24 @@ export class DesktopBar {
 
     onGroupMouseLeave() {
         this.hoveredGroupAppId = null;
+    }
+
+    hoverIn(window: WindowState) {
+
+        if (typeof window.elementRef?.instance.hoverIn === 'function') {
+            console.log('hoverIn',window.id);
+            window.elementRef.instance.hoverIn();
+        } else {
+            console.warn('elementRef is not a Program instance');
+        }
+    }
+
+    hoverOut(window: WindowState) {
+        if (typeof window.elementRef?.instance.hoverOut === 'function') {
+            console.log('hoverOut',window.id);
+            window.elementRef.instance!.hoverOut()
+        } else {
+            console.warn('elementRef is not a Program instance');
+        }
     }
 }

@@ -5,7 +5,7 @@ import {FileExplorerInit, PropagateTitle} from './models';
 import {v4 as uuid} from 'uuid';
 import {ProgramEvent, SystemInfo} from '../../../models';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {processSizeChange, Program} from '../../../system-lives/window-live/adapter/adapter';
+import {Program} from '../../../system-lives/window-live/adapter';
 @Component({
   selector: 'app-multi-explorer',
     imports: [
@@ -76,8 +76,6 @@ export class MultiExplorer extends Program{
         }
         return fileExplorer.title || '无标题';
     }
-    @Output()
-    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
     minimizeWindow() {
         if(!this.id){
             return;
@@ -129,6 +127,23 @@ export class MultiExplorer extends Program{
             type: 7,
             id: this.id,
             event: $event
+        });
+    }
+    @Output()
+    appEventEmitter: EventEmitter<ProgramEvent> = new EventEmitter<ProgramEvent>();
+
+    hoverIn() {
+        this.appEventEmitter.emit({
+            type: 9,
+            id: this.id!,
+            event: 'hoverIn'
+        });
+    }
+    hoverOut() {
+        this.appEventEmitter.emit({
+            type: 10,
+            id: this.id!,
+            event: 'hoverOut'
         });
     }
 }

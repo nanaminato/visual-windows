@@ -115,6 +115,7 @@ export class DesktopManager {
         win.position.x = Math.max(0, newX);
         win.position.y = Math.max(0, newY);
     }
+    hoverId: string | null = null;
     appLiveEvent($event: ProgramEvent) {
         switch ($event.type) {
             case 1:
@@ -149,6 +150,13 @@ export class DesktopManager {
                 this.focusWindow($event.id);
                 this.resizeWinId = null;
                 break;
+            case 9:
+                this.hoverId = $event.id;
+                console.log("tackle hover id "+$event.id);
+                break;
+            case 10:
+                this.hoverId = null;
+                break;
         }
     }
     store = inject(Store)
@@ -162,7 +170,11 @@ export class DesktopManager {
             return 1;
         }
         // 正在拖动或者拽动， 提高其z-index以增强辨识度
-        if(win.id===this.draggingTouchWindowId || win.id===this.draggingWindowId || win.id === this.resizeWinId){
+        if(win.id===this.draggingTouchWindowId
+            || win.id===this.draggingWindowId
+            || win.id === this.resizeWinId
+            || win.id === this.hoverId
+        ){
             // 相当大的z-index,理应不会出现问题
             return 10000;
         }

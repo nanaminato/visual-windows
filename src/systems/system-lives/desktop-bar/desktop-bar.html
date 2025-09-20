@@ -40,7 +40,7 @@
                         <!-- 磁贴弹层 -->
                         <div class="tiles-popup" (click)="$event.stopPropagation()">
                             @for(window of group.windowStates; track window.id) {
-                                <div class="tile-item" (click)="activateWindow(window)">
+                                <div class="tile-item" (click)="activateWindow(window)" (mouseenter)="hoverIn(window)" (mouseout)="hoverOut(window)">
                                     <div class="tile-title">{{window.title || '无标题窗口'}}</div>
                                     <app-window-screenshot [windowId]="window.id"></app-window-screenshot>
                                 </div>

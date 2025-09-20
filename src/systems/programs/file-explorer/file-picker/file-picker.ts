@@ -2,7 +2,6 @@ import {Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import {DriverInfo, FileNodeViewModel, LightFile} from '../explorer/models';
 import {DriverListView} from '../explorer/driver-list-view/driver-list-view';
 import {EntryRoot} from '../explorer/entry-root/entry-root';
-import {FolderListView} from '../explorer/folder-list-view/folder-list-view';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -22,7 +21,7 @@ import {filePickerCancel, filePickerConfirm} from '../../../system-services/stat
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
 import {processClose} from '../../../system-lives/window-live/adapter';
-import {ModalWindow} from '../../../system-lives/window-live/adapter/adapter';
+import {ModalWindow} from '../../../system-lives/window-live/adapter';
 import {selectWindows} from '../../../system-services/state/window/window.selectors';
 import {firstValueFrom} from 'rxjs';
 import {buildBreadcrumbsForPath} from '../explorer/models';

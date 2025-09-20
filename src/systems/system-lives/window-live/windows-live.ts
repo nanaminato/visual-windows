@@ -16,6 +16,7 @@ import {WindowState} from '../../models';
 import {firstValueFrom, map} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {selectProgramConfigs} from '../../system-services/state/system/system.selector';
+
 type ResizeDirection =
     | 'top-left' | 'top' | 'top-right'
     | 'right' | 'bottom-right' | 'bottom'
@@ -30,7 +31,7 @@ type ResizeDirection =
     templateUrl: './windows-live.html',
     styleUrl: './windows-live.css'
 })
-export class WindowsLive {
+export class WindowsLive{
     @Input()
     win: WindowState | undefined;
     config: ProgramConfig | undefined;
@@ -57,6 +58,7 @@ export class WindowsLive {
             )
         )
     }
+
 
     minimizeWindow(id: string) {
         this.appEventEmitter.emit({
@@ -108,9 +110,11 @@ export class WindowsLive {
             for (let key of Object.keys(record)) {
                 this.componentRef!.instance[key] = record[key];
             }
+            this.win!.elementRef = this.componentRef;
             if(this.win?.customHeader){
                 if(this.componentRef.instance.appEventEmitter){
                     this.componentRef.instance.appEventEmitter.subscribe((eventData: ProgramEvent) => {
+                        console.log(JSON.stringify(eventData));
                         switch (eventData.type) {
                             case 1:
                                 this.focusWindow(eventData.id);
@@ -130,6 +134,14 @@ export class WindowsLive {
                             case 7:
                                 this.touchDrag(eventData.event as TouchEvent, eventData.id);
                                 break;
+                            case 9:
+                            case 10:
+                                console.log('组件的hover被listen')
+                                this.appEventEmitter.emit({
+                                    id: eventData.id,
+                                    type: eventData.type,
+                                    event: "event",
+                                })
                         }
                     });
                 }
