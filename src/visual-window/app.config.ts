@@ -24,6 +24,7 @@ import {ResumeEffects} from '../systems/system-services/state/resume/ResumeEffec
 import {screenshotReducer} from '../systems/system-services/state/window/screenshot/screenshot.reducer';
 import {ScreenshotEffect} from '../systems/system-services/state/window/screenshot/screenshot.effect';
 import {provideStoreDevtools} from '@ngrx/store-devtools';
+import {FileOperationEffects} from '../systems/system-services/state/file-opertation/file-operation.effects';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -64,7 +65,7 @@ export const appConfig: ApplicationConfig = {
             traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
             connectInZone: true // If set to true, the connection is established within the Angular zone
         }),
-    provideEffects(SystemEffects, WindowEffects, ResumeEffects, ScreenshotEffect),
+    provideEffects(SystemEffects, WindowEffects, ResumeEffects, ScreenshotEffect, FileOperationEffects),
 
 ]
 };
