@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import {systemActions} from '../../systems/system-services/state/system/system.action';
 import {Store} from '@ngrx/store';
 import {Routable} from '../../systems/feature/routerable/routerable';
-
+import {v4 as uuid} from 'uuid';
 @Component({
   selector: 'app-system-guard',
   imports: [],
@@ -31,5 +31,7 @@ export class SystemGuard extends Routable {
     ngOnInit() {
         this.store.dispatch(systemActions.systemInfoInit())
         this.store.dispatch(systemActions.configInit())
+        let id = uuid();
+        this.setTreeId(id);
     }
 }

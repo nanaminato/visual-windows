@@ -29,9 +29,9 @@ export class DesktopManager {
         this.windowManager.getWindows().subscribe(ws => {
             this.windows = ws;
         });
-        this.actions$.subscribe(action => {
-            console.log('Action dispatched:',action.type, action);
-        });
+        // this.actions$.subscribe(action => {
+        //     console.log('Action dispatched:',action.type, action);
+        // });
     }
     focusWindow(id: string) {
         this.windowManager.focusWindow(id);

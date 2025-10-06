@@ -1,13 +1,8 @@
 import {createReducer, on} from '@ngrx/store';
 import {
-    CANCELLED,
-    COMPLETED,
-    ERROR,
-    FileOperationState,
     FileOpsActions,
-    IN_PROGRESS,
-    PENDING
 } from './file-operation.actions';
+import {CANCELLED, COMPLETED, ERROR, FileOperationState, IN_PROGRESS, PENDING} from './file-operation';
 
 
 export const initialState: FileOperationState = {

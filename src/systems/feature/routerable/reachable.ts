@@ -8,6 +8,9 @@ import {
 @Directive()
 export class Reachable{
     @Input()
+    treeId: string | undefined;
+
+    @Input()
     path: string = '';
 
     @Input()
@@ -19,4 +22,5 @@ export class Reachable{
     noticePath(path: string) {
         this.parentEmitter.emit(path);
     }
+
 }

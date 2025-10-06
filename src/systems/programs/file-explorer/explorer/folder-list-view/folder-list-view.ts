@@ -3,13 +3,18 @@ import {LightFile} from '../models';
 import {DatePipe} from '@angular/common';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../../system-services/state/window/window.actions';
-import {codeSpaceProgram, terminalProgram} from '../../../models/register-app';
+import {codeSpaceProgram, fileMoving, terminalProgram} from '../../../models/register-app';
 import {getFileType, formatSize} from '../../models';
+import {ClipboardActions} from '../../../../system-services/state/clipboard/clipboard.actions';
+import {selectClipboardState} from '../../../../system-services/state/clipboard/clipboard.selectors';
+import {ClipboardState} from '../../../../system-services/state/clipboard/clipboard';
+import {ClipboardModule, ClipboardService} from 'ngx-clipboard';
 
 @Component({
   selector: 'app-folder-list-view',
     imports: [
-        DatePipe
+        DatePipe,
+        ClipboardModule,
     ],
   templateUrl: './folder-list-view.html',
   styleUrl: './folder-list-view.css'
@@ -87,12 +92,17 @@ export class FolderListView {
         }
         this.fileProcess.emit(file);
     }
+    clipboardState: ClipboardState | undefined;
+    clipboardService: ClipboardService = inject(ClipboardService);
     constructor() {
         document.addEventListener('click', () => {
             if (this.contextMenuVisible) {
                 this.contextMenuVisible = false;
             }
         });
+        this.store.select(selectClipboardState).subscribe((state)=>{
+            this.clipboardState = state;
+        })
     }
     contextMenuVisible = false;
     contextMenuPosition = { x: 0, y: 0 };
@@ -148,9 +158,55 @@ export class FolderListView {
 
                 break;
             case 'copyPath':
-
+                this.clipboardService.copy(file?.path!)
                 return;
         }
     }
 
+
+    pasteFile() {
+        this.contextMenuVisible = false;
+        if(!this.clipboardState) return;
+        if (!this.clipboardState.operation || this.clipboardState.files.length === 0) return;
+        let windowParam = {
+            id: fileMoving,
+            title: '文件操作',
+            params: {
+                operation: {
+                    localOperationId: '',
+                    sourcePaths: this.clipboardState.files,
+                    destinationPath: this.currentPath || '',
+                    operationType: this.clipboardState.operation,
+                    status: 'pending',
+                    progress: 0,
+                    currentFile: ''
+                }
+            }
+        }
+        // console.log(windowParam);
+        this.store.dispatch(WindowActions.openWindow(windowParam));
+
+        if (this.clipboardState.operation === 'cut') {
+            this.store.dispatch(ClipboardActions.clearClipboard());
+        }
+    }
+
+    copyFile() {
+        this.contextMenuVisible = false;
+        if (!this.selectedFiles.length) return;
+        const paths = this.selectedFiles.map(f => f.path);
+        this.store.dispatch(ClipboardActions.copyFiles({ files: paths }));
+    }
+    cutFile() {
+        this.contextMenuVisible = false;
+        if (!this.selectedFiles.length) {
+            return;
+        }
+        const paths = this.selectedFiles.map(f => f.path);
+        this.store.dispatch(ClipboardActions.cutFiles({ files: paths }));
+    }
+
+    cabPaste() {
+        return this.clipboardState?.operation!==null;
+    }
 }

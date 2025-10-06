@@ -43,6 +43,7 @@
     "html2canvas": "^1.4.1",
     "monaco-editor": "^0.52.2",
     "ng-zorro-antd": "^20.0.0-next.1",
+    "ngx-clipboard": "^16.0.0",
     "ngx-monaco-editor-v2": "^20.0.0",
     "rxjs": "~7.8.0",
     "sass": "^1.91.0",

@@ -85,7 +85,7 @@ export class CodeSpace extends Program implements processSizeChange {
             })
         }
         this.panelResizeControl = true;
-        this.loaded();
+        this.programLoaded();
     }
     leftPanelVisible: boolean = false;
 

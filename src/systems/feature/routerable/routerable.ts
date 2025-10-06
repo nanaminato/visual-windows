@@ -1,8 +1,7 @@
 import {
     AfterViewInit,
     ComponentRef, Directive,
-    EventEmitter, inject, Injector, Input,
-    Output,
+    inject, Injector, Input,
     Type,
     ViewChild,
     ViewContainerRef,
@@ -27,6 +26,15 @@ export class Routable extends Reachable implements AfterViewInit {
     component: Type<any> | undefined;
     private componentRef: ComponentRef<any> | undefined;
 
+    setTreeId(id: string): void {
+        this.treeId = id;
+        if (this.componentRef) {
+            const instance = this.componentRef.instance as any;
+            if (instance) {
+                instance.setTreeId(id);
+            }
+        }
+    }
     // 父组件监听子组件的导航事件
 
     @ViewChild('dynamic', {read: ViewContainerRef, static: false})
@@ -38,7 +46,9 @@ export class Routable extends Reachable implements AfterViewInit {
         // 父组件传入的全路径更新，初始化 fullPath
         this.navigateTo(this.path).catch(console.error);
     }
-
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
+    }
     /**
      * 导航到指定路径。这里path是全路径
      */

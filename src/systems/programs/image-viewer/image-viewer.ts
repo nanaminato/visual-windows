@@ -49,7 +49,7 @@ export class ImageViewer extends Program{
                     this.currentIndex = 0;
                 }
                 this.updateImageSrc();
-                this.loaded()
+                this.programLoaded()
             })
             .catch(err => {
                 console.error('加载图片文件失败', err);

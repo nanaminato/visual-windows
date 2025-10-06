@@ -170,7 +170,7 @@ export class DesktopBar {
     hoverIn(window: WindowState) {
         let component = this.linkService.get(window.id);
         if (typeof component.hoverIn === 'function') {
-            console.log('hoverIn',window.id);
+            // console.log('hoverIn',window.id);
             component.hoverIn();
         }
     }
@@ -178,7 +178,7 @@ export class DesktopBar {
     hoverOut(window: WindowState) {
         let component = this.linkService.get(window.id);
         if (typeof component.hoverOut === 'function') {
-            console.log('hoverOut',window.id);
+            // console.log('hoverOut',window.id);
             component.hoverOut()
         }
     }

@@ -29,7 +29,7 @@ export class MultiExplorer extends Program{
     systemInfo: SystemInfo | undefined = undefined;
     async ngOnInit() {
         this.openFileExplorer(this.startPath);
-        this.loaded()
+        this.programLoaded()
     }
     openFileExplorer(path: string) {
         this.fileExplorers.push({

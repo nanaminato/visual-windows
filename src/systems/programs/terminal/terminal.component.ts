@@ -64,7 +64,7 @@ export class TerminalComponent extends Program implements processClose {
             } else {
                 this.connectWebSocket(this.sessionId!);
             }
-            this.loaded()
+            this.programLoaded()
         }
     }
     private connectWebSocket(sessionId: string) {

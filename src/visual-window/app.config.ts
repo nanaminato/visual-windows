@@ -25,6 +25,9 @@ import {screenshotReducer} from '../systems/system-services/state/window/screens
 import {ScreenshotEffect} from '../systems/system-services/state/window/screenshot/screenshot.effect';
 import {provideStoreDevtools} from '@ngrx/store-devtools';
 import {FileOperationEffects} from '../systems/system-services/state/file-opertation/file-operation.effects';
+import {nodesReducer} from '../systems/system-services/state/routables/nodes.reducer';
+import {clipboardReducer} from '../systems/system-services/state/clipboard/clipboard.reducers';
+import {ClipboardEffects} from '../systems/system-services/state/clipboard/clipboard.effects';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
     baseUrl: window.location.origin + "/assets/monaco/min/vs",
@@ -50,6 +53,8 @@ export const appConfig: ApplicationConfig = {
         "window": windowReducer,
         "systemInfo": systemInfoReducer,
         "screenshots": screenshotReducer,
+        "nodes": nodesReducer,
+        "clipboard": clipboardReducer,
         auth: authReducer,
     },{
         runtimeChecks: {
@@ -65,7 +70,12 @@ export const appConfig: ApplicationConfig = {
             traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
             connectInZone: true // If set to true, the connection is established within the Angular zone
         }),
-    provideEffects(SystemEffects, WindowEffects, ResumeEffects, ScreenshotEffect, FileOperationEffects),
+    provideEffects(SystemEffects,
+        WindowEffects,
+        ResumeEffects,
+        ScreenshotEffect,
+        FileOperationEffects,
+        ClipboardEffects),
 
 ]
 };

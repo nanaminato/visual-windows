@@ -1,20 +1,26 @@
-import {Directive, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Routable} from '../../feature/routerable/routerable';
 import {Store} from '@ngrx/store';
-import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {ProgramEvent} from '../../../models';
+import {WindowActions} from '../../system-services/state/window/window.actions';
+import {ProgramEvent} from '../../models';
+import {FileOperation} from '../../system-services/state/file-opertation/file-operation';
 
-export interface processClose {
-    parentClosed(): void;
-}
-export interface processSizeChange {
-    parentSizeChange(): void;
-}
+@Component({
+  selector: 'app-file-moving',
+  imports: [],
+  templateUrl: './file-moving.html',
+  styleUrl: './file-moving.css'
+})
+export class FileMoving extends Routable{
+    @Input()
+    operation: FileOperation | undefined;
 
-/**
- * 自定义程序的一个基类，可以继承该类来简化定义
- * **/
-@Directive()
-export class Program{
+
+
+
+
+    /**program 的实现
+     * */
     @Input()
     id!: string;
     store = inject(Store);
@@ -39,11 +45,5 @@ export class Program{
             id: this.id!,
             event: 'hoverOut'
         });
-    }
-}
-@Directive()
-export class ModalWindow{
-    modalInit(){
-
     }
 }
