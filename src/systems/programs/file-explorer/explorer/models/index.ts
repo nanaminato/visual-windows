@@ -3,3 +3,5 @@ export type {LightFile} from './light-file'
 export type {DriverInfo} from "./driver-info";
 export type {FileNodeViewModel} from "./file-node-vm"
 export {buildBreadcrumbsForPath} from './bread'
+export type {FileSelectChangedEvent} from './select-change';
+export type {FileAction} from './file-action'

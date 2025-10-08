@@ -58,13 +58,13 @@
                 <div class="create-new">
 
                 </div>
-                <button>
+                <button (click)="cutFile()">
                     <nz-icon nzType="scissor" nzTheme="outline" />
                 </button>
-                <button>
+                <button (click)="copyFile()">
                     <nz-icon nzType="copy" nzTheme="outline" />
                 </button>
-                <button>
+                <button (click)="pasteFile()" [class.disabled]="!canPaste" [disabled]="!canPaste">
                     <!-- todo 替换更贴切的图标                    -->
                     <nz-icon nzType="snippets" nzTheme="outline" />
                 </button>
@@ -74,7 +74,7 @@
                 <button>
                     <nz-icon nzType="share-alt" nzTheme="outline" />
                 </button>
-                <button>
+                <button (click)="deleteFile()">
                     <nz-icon nzType="delete" nzTheme="outline" />
                 </button>
                 <button>
@@ -98,7 +98,14 @@
                 @if(driverView){
                     <app-driver-list-view [drivers]="drivers" (driverNavigate)="onDriverNavigate($event)"></app-driver-list-view>
                 }@else{
-                    <app-folder-list-view (refreshRequest)="onRefreshRequest()" [currentPath]="currentPath"  [files]="files" (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
+                    <app-folder-list-view
+                        (refreshRequest)="onRefreshRequest()"
+                        [currentPath]="currentPath"
+                        [files]="files"
+                        [canPaste]="canPaste"
+                        (fileAction)="onFileAction($event)"
+                        (fileSelectChange)="onFileSelectChange($event)"
+                        (fileProcess)="onFileNavigate($event)"> </app-folder-list-view>
                 }
             </as-split-area>
         </as-split>

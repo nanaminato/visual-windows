@@ -101,7 +101,7 @@ export class FilePicker extends ModalWindow implements processClose {
         this.modalInit();
         this.isLinux = await this.systemInfoService.isLinuxAsync();
 
-        this.currentPath = this.config.startPath ?? (this.isLinux ? '/' : 'C:\\');
+        this.currentPath = this.config.startPath ?? (this.isLinux ? '/' : '/');
         this.navigatePath = this.currentPath;
 
         // 保存模式默认文件名
@@ -399,15 +399,22 @@ export class FilePicker extends ModalWindow implements processClose {
 
     private parseSelectedPaths(text: string): string[] | null {
         if (text.startsWith('"')) {
-            const paths = text.split(' ');
+            const regex = /"([^"]+)"/g;
+            let match;
+            const paths: string[] = [];
+
+            while ((match = regex.exec(text)) !== null) {
+                paths.push(match[1]);
+            }
+
             for (const path of paths) {
-                const trimmedPath = path.substring(1, path.lastIndexOf('"'));
-                if (!this.isAValidFile(trimmedPath)) {
+                if (!this.isAValidFile(path)) {
                     this.messageService.error('选中的文件必须都在当前路径');
                     return null;
                 }
             }
-            return paths.map(p => this.currentPath+(this.isLinux ?'/':"\\")+p.substring(1, p.lastIndexOf('"')));
+
+            return paths.map(p => this.currentPath + (this.isLinux ? '/' : "\\") + p);
         } else {
             if(text===''){
                 return [this.currentPath]

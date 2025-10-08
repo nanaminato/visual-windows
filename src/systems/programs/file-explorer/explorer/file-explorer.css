@@ -77,7 +77,14 @@
 .normal-tools > button{
     border: none;
     background: transparent;
-    margin: 10px;
+    margin: 8px;
+    padding: 6px 10px;
+}
+button.disabled {
+    background: #dcd5d5;
+}
+.normal-tools > button:hover{
+    background: lightgray;
 }
 .more-information{
     margin: 10px 10px;

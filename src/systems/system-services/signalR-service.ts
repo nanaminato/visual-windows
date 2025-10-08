@@ -1,7 +1,8 @@
-import {Injectable, NgZone} from '@angular/core';
+import {inject, Injectable, NgZone} from '@angular/core';
 import {HubConnection, HubConnectionBuilder} from '@microsoft/signalr';
 import {FileOperationProgress} from './models';
 import {FileOperationError} from './models/file-operation/operation-error';
+import {ServerService} from './server.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,12 +13,12 @@ export class SignalRService {
     private errorHandlers: ((data: FileOperationError) => void)[] = [];
     private completedHandlers: ((data: { operationId: string }) => void)[] = [];
     private cancelledHandlers: ((data: { operationId: string }) => void)[] = [];
-
+    serverService = inject(ServerService)
     constructor(private ngZone: NgZone) {}
 
     public startConnection() {
         this.hubConnection = new HubConnectionBuilder()
-            .withUrl('/fileOperationsHub')
+            .withUrl(this.serverService.getServerBase()+'/fileOperationsHub')
             .withAutomaticReconnect()
             .build();
 

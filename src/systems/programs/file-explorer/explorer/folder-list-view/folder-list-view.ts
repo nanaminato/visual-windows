@@ -1,14 +1,12 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {LightFile} from '../models';
+import {FileAction, LightFile} from '../models';
 import {DatePipe} from '@angular/common';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../../system-services/state/window/window.actions';
 import {codeSpaceProgram, fileMoving, terminalProgram} from '../../../models/register-app';
 import {getFileType, formatSize} from '../../models';
-import {ClipboardActions} from '../../../../system-services/state/clipboard/clipboard.actions';
-import {selectClipboardState} from '../../../../system-services/state/clipboard/clipboard.selectors';
-import {ClipboardState} from '../../../../system-services/state/clipboard/clipboard';
 import {ClipboardModule, ClipboardService} from 'ngx-clipboard';
+import {FileSelectChangedEvent} from '../models';
 
 @Component({
   selector: 'app-folder-list-view',
@@ -28,8 +26,12 @@ export class FolderListView {
     currentPath: string | undefined;
 
     selectedFiles: LightFile[] = [];
+    // 选择的文件发生了变化，向父组件发送通知
     @Output()
-    fileSelect: EventEmitter<{file: LightFile, event: MouseEvent}> = new EventEmitter();
+    fileSelectChange: EventEmitter<FileSelectChangedEvent> = new EventEmitter();
+
+    @Output()
+    fileAction: EventEmitter<FileAction> = new EventEmitter();
 
     isFileSelected(file: LightFile) {
         return this.selectedFiles.some(f => f.path === file.path);
@@ -81,7 +83,9 @@ export class FolderListView {
             this.lastSelectedIndex = index;
         }
 
-        this.fileSelect.emit({file, event});
+        this.fileSelectChange.emit({
+            files: this.selectedFiles,
+        });
     }
 
     fileDbl(file: LightFile) {
@@ -92,7 +96,7 @@ export class FolderListView {
         }
         this.fileProcess.emit(file);
     }
-    clipboardState: ClipboardState | undefined;
+
     clipboardService: ClipboardService = inject(ClipboardService);
     constructor() {
         document.addEventListener('click', () => {
@@ -100,13 +104,10 @@ export class FolderListView {
                 this.contextMenuVisible = false;
             }
         });
-        this.store.select(selectClipboardState).subscribe((state)=>{
-            this.clipboardState = state;
-        })
+
     }
     contextMenuVisible = false;
     contextMenuPosition = { x: 0, y: 0 };
-    contextMenuFile: LightFile | undefined = undefined;
 
     // 右键菜单事件处理
     onRightClick(event: MouseEvent, file: LightFile) {
@@ -114,23 +115,26 @@ export class FolderListView {
         event.stopPropagation();
         this.contextMenuVisible = true;
         this.contextMenuPosition = { x: event.clientX, y: event.clientY };
-        this.contextMenuFile = file;
+        let isSelected = this.selectedFiles.find(f => f.path === file.path);
+        if(!isSelected){
+            this.selectedFiles.length = 0;
+            this.selectedFiles.push(file);
+        }
     }
     onWrapperRightClick(event: MouseEvent) {
         event.preventDefault();
-        // console.log('parent click');
         const target = event.target as HTMLElement;
         if (target.closest('tr.folder-list-row')) {
             return; // 文件行右键事件另有处理
         }
         this.contextMenuVisible = true;
         this.contextMenuPosition = { x: event.clientX, y: event.clientY };
-        this.contextMenuFile = undefined;
+        this.selectedFiles.length = 0;
     }
 
     @Output() refreshRequest = new EventEmitter<void>();
     private store = inject(Store);
-    onContextMenuAction(action: string, file: LightFile | undefined) {
+    onContextMenuAction(action: string) {
         this.contextMenuVisible = false;
         switch (action) {
             case 'refresh':
@@ -141,16 +145,18 @@ export class FolderListView {
                     id: codeSpaceProgram,
                     title: 'code space',
                     params: {
-                        file: file
+                        fileList : this.selectedFiles
                     }
                 }))
+
                 break;
             case 'openTerminal':
+                let folder = this.selectedFiles[0];
                 this.store.dispatch(WindowActions.openWindow({
                     id: terminalProgram,
                     title: '终端',
                     params: {
-                        workDirectory: file===undefined? this.currentPath:file.path
+                        workDirectory: folder===undefined? this.currentPath:folder.path
                     }
                 }))
                 break;
@@ -158,7 +164,7 @@ export class FolderListView {
 
                 break;
             case 'copyPath':
-                this.clipboardService.copy(file?.path!)
+                this.clipboardService.copy(this.selectedFiles[0].path!)
                 return;
         }
     }
@@ -166,47 +172,17 @@ export class FolderListView {
 
     pasteFile() {
         this.contextMenuVisible = false;
-        if(!this.clipboardState) return;
-        if (!this.clipboardState.operation || this.clipboardState.files.length === 0) return;
-        let windowParam = {
-            id: fileMoving,
-            title: '文件操作',
-            params: {
-                operation: {
-                    localOperationId: '',
-                    sourcePaths: this.clipboardState.files,
-                    destinationPath: this.currentPath || '',
-                    operationType: this.clipboardState.operation,
-                    status: 'pending',
-                    progress: 0,
-                    currentFile: ''
-                }
-            }
-        }
-        // console.log(windowParam);
-        this.store.dispatch(WindowActions.openWindow(windowParam));
-
-        if (this.clipboardState.operation === 'cut') {
-            this.store.dispatch(ClipboardActions.clearClipboard());
-        }
+        this.fileAction.emit({type: 'paste'});
     }
 
     copyFile() {
         this.contextMenuVisible = false;
-        if (!this.selectedFiles.length) return;
-        const paths = this.selectedFiles.map(f => f.path);
-        this.store.dispatch(ClipboardActions.copyFiles({ files: paths }));
+        this.fileAction.emit({type: 'copy'});
     }
     cutFile() {
         this.contextMenuVisible = false;
-        if (!this.selectedFiles.length) {
-            return;
-        }
-        const paths = this.selectedFiles.map(f => f.path);
-        this.store.dispatch(ClipboardActions.cutFiles({ files: paths }));
+        this.fileAction.emit({type: 'cut'});
     }
-
-    cabPaste() {
-        return this.clipboardState?.operation!==null;
-    }
+    @Input()
+    canPaste: boolean = false;
 }

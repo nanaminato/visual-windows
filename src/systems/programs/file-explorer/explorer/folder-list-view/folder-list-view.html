@@ -46,24 +46,24 @@
 
         </div>
     </div>
-    @if(contextMenuVisible && contextMenuFile){
+    @if(contextMenuVisible && this.selectedFiles.length>0){
         <ul
             class="context-menu"
             [style.top.px]="contextMenuPosition.y"
             [style.left.px]="contextMenuPosition.x"
             (click)="$event.stopPropagation()">
             <li>
-                <button (click)="onContextMenuAction('openCode', contextMenuFile)">
+                <button (click)="onContextMenuAction('openCode')">
                     通过code space打开
                 </button>
             </li>
-            @if(contextMenuFile.isDirectory){
+            @if(this.selectedFiles.length === 1 && this.selectedFiles[0].isDirectory){
                 <li>
-                    <button (click)="onContextMenuAction('openTerminal', contextMenuFile)">在终端中打开</button>
+                    <button (click)="onContextMenuAction('openTerminal')">在终端中打开</button>
                 </li>
             }
             <li>
-                <button (click)="onContextMenuAction('properties', contextMenuFile)">
+                <button (click)="onContextMenuAction('properties')">
                     属性
                 </button>
             </li>
@@ -81,25 +81,25 @@
             </li>
 
             <li>
-                <button (click)="onContextMenuAction('copyPath', contextMenuFile)">
+                <button (click)="onContextMenuAction('copyPath')">
                     复制文件地址
                 </button>
             </li>
         </ul>
     }
-    @if(contextMenuVisible && !contextMenuFile){
+    @if(contextMenuVisible && this.selectedFiles.length===0){
         <ul class="context-menu"
             [style.top.px]="contextMenuPosition.y"
             [style.left.px]="contextMenuPosition.x"
             (click)="$event.stopPropagation()">
             <li>
-                <button [class.disabled]="!cabPaste()" (click)="pasteFile()" [disabled]="!cabPaste()">粘贴</button>
+                <button [class.disabled]="!canPaste" (click)="pasteFile()" [disabled]="!canPaste">粘贴</button>
             </li>
             <li>
-                <button (click)="onContextMenuAction('refresh', undefined)">刷新</button>
+                <button (click)="onContextMenuAction('refresh')">刷新</button>
             </li>
             <li>
-                <button (click)="onContextMenuAction('openTerminal', undefined)">在终端中打开</button>
+                <button (click)="onContextMenuAction('openTerminal')">在终端中打开</button>
             </li>
         </ul>
     }

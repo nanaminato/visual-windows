@@ -53,7 +53,7 @@ export class CodeSpace extends Program implements processSizeChange {
     @Input()
     startFolder: string = "";
     @Input()
-    file: LightFile | undefined;
+    fileList: LightFile[] | undefined;
 
     @Input()
     startFile: string = "";
@@ -61,11 +61,20 @@ export class CodeSpace extends Program implements processSizeChange {
     async ngAfterViewInit() {
         this.isLinux = await this.systemInfoService.isLinuxAsync();
         this.loadSettingsFromStorage();
-        if(this.file){
-            if(this.file.isDirectory){
-                this.startFolder = this.file.path;
-            }else{
-                this.startFile = this.file.path;
+        if(this.fileList){
+            let folders = this.fileList.filter(f=>f.isDirectory);
+            if(folders.length > 0){
+                this.startFolder = folders[0].path;
+            }
+            let codeFiles = this.fileList.filter(f => !f.isDirectory);
+            for (const f of codeFiles) {
+                await this.onFileOpen({
+                    name: 'any',
+                    path: f.path,
+                    deep: 0,
+                    expandedWhenInit: false,
+                    isDirectory: false,
+                })
             }
         }
         this.programConfigs$.pipe(
@@ -75,14 +84,6 @@ export class CodeSpace extends Program implements processSizeChange {
         });
         if(this.startFolder!==''){
             this.leftPanelVisible = true;
-        }else if(this.startFile!==''){
-            await this.onFileOpen({
-                name: 'any',
-                path: this.startFile,
-                deep: 0,
-                expandedWhenInit: false,
-                isDirectory: false,
-            })
         }
         this.panelResizeControl = true;
         this.programLoaded();
@@ -329,7 +330,7 @@ export class CodeSpace extends Program implements processSizeChange {
                     modal: true,
                     params: {
                         config: {
-                            startPath: this.isLinux?'/': '\\',
+                            startPath: this.isLinux?'/': '/',
                             selectFolders: selectFolder,
                             multiSelect: !selectFolder,
                             requestId:requestId,

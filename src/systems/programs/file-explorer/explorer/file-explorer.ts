@@ -5,7 +5,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {EntryRoot} from './entry-root/entry-root';
-import {FileNodeViewModel} from './models';
+import {FileAction, FileNodeViewModel, FileSelectChangedEvent} from './models';
 import {ExplorerService} from './services/explorer.service';
 import {LightFile} from './models';
 import {FolderListView} from './folder-list-view/folder-list-view';
@@ -24,9 +24,12 @@ import {SystemInfoService} from '../../../system-services/info.service';
 import {WindowManagerService} from '../../../system-services/windows-manager.service';
 import {Store} from '@ngrx/store';
 import {WindowActions} from '../../../system-services/state/window/window.actions';
-import {fileExplorerProgram} from '../../models/register-app';
+import {fileExplorerProgram, fileMoving} from '../../models/register-app';
 import {buildBreadcrumbsForPath} from './models';
 import {SplitAreaComponent, SplitComponent} from 'angular-split';
+import {ClipboardState} from '../../../system-services/state/clipboard/clipboard';
+import {selectClipboardState} from '../../../system-services/state/clipboard/clipboard.selectors';
+import {ClipboardActions} from '../../../system-services/state/clipboard/clipboard.actions';
 
 @Component({
     selector: 'file-explorer',
@@ -89,9 +92,7 @@ export class FileExplorer{
             }
             this.navigatePath = this.currentPath;
         }
-        if(input!==''){
-            await this.tryNavigateToFolder(this.currentPath);
-        }
+        await this.tryNavigateToFolder(this.currentPath);
         this.history = [this.currentPath];
         this.historyIndex = 0;
         this.navigatePath = this.currentPath;
@@ -244,8 +245,6 @@ export class FileExplorer{
     }
     private store = inject(Store);
 
-
-
     private onCtrlNPressed() {
         console.log('onCtrlNPressed');
         this.store.dispatch(WindowActions.openWindow({
@@ -304,7 +303,73 @@ export class FileExplorer{
         this.editing = false;
         this.navigatePath = this.currentPath;
     }
+    clipboardState: ClipboardState | undefined;
+    canPaste: boolean = false;
+    constructor() {
+        this.store.select(selectClipboardState).subscribe((state)=>{
+            this.clipboardState = state;
+            this.canPaste = this.clipboardState.operation != null;
+        })
+    }
+    cutFile(){
+        if (!this.selectedFiles.length) {
+            return;
+        }
+        const paths = this.selectedFiles.map(f => f.path);
+        this.store.dispatch(ClipboardActions.cutFiles({ files: paths }));
+    }
+    copyFile(){
+        if (!this.selectedFiles.length) return;
+        const paths = this.selectedFiles.map(f => f.path);
+        this.store.dispatch(ClipboardActions.copyFiles({ files: paths }));
+    }
+    pasteFile(){
+        if(!this.clipboardState) return;
+        if (!this.clipboardState.operation || this.clipboardState.files.length === 0) return;
+        let windowParam = {
+            id: fileMoving,
+            title: '文件操作',
+            params: {
+                operation: {
+                    localOperationId: '',
+                    sourcePaths: this.clipboardState.files,
+                    destinationPath: this.currentPath || '',
+                    operationType: this.clipboardState.operation,
+                    status: 'pending',
+                    progress: 0,
+                    currentFile: ''
+                }
+            }
+        }
+        // console.log(windowParam);
+        this.store.dispatch(WindowActions.openWindow(windowParam));
 
+        if (this.clipboardState.operation === 'cut') {
+            this.store.dispatch(ClipboardActions.clearClipboard());
+        }
+    }
+    deleteFile(){
 
+    }
+    selectedFiles: LightFile[] = [];
+    onFileSelectChange($event: FileSelectChangedEvent) {
+        this.selectedFiles = $event.files;
+    }
 
+    onFileAction($event: FileAction) {
+        switch ($event.type){
+            case 'copy':
+                this.copyFile();
+                break;
+            case 'paste':
+                this.pasteFile();
+                break;
+            case 'delete':
+                this.deleteFile();
+                break;
+            case 'cut':
+                this.cutFile();
+                break;
+        }
+    }
 }

@@ -83,6 +83,7 @@
     color: #999999;
 }
 .context-menu li button{
+    text-align: left;
     background: white;
     width: 100%;
     height: 100%;
