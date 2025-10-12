@@ -240,7 +240,7 @@ export class WindowsLive{
 
         this.startPos = { x: clientX, y: clientY };
         this.startSize = { width: this.win.size.width, height: this.win.size.height };
-        this.startPosWin = { x: this.win.position.x, y: this.win.position.y };
+        this.startPosWin = { x: this.win.position.left, y: this.win.position.top };
     }
 
     onResizeMove = (event: MouseEvent | TouchEvent) => {

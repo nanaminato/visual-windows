@@ -82,7 +82,9 @@ export class FolderListView {
             this.selectedFiles = [file];
             this.lastSelectedIndex = index;
         }
-
+        this.fileSelectChanged();
+    }
+    fileSelectChanged() {
         this.fileSelectChange.emit({
             files: this.selectedFiles,
         });
@@ -95,6 +97,8 @@ export class FolderListView {
             this.clickTimeout = null;
         }
         this.fileProcess.emit(file);
+        this.selectedFiles.length = 0;
+        this.fileSelectChanged();
     }
 
     clipboardService: ClipboardService = inject(ClipboardService);
@@ -119,6 +123,7 @@ export class FolderListView {
         if(!isSelected){
             this.selectedFiles.length = 0;
             this.selectedFiles.push(file);
+            this.fileSelectChanged();
         }
     }
     onWrapperRightClick(event: MouseEvent) {
@@ -130,6 +135,7 @@ export class FolderListView {
         this.contextMenuVisible = true;
         this.contextMenuPosition = { x: event.clientX, y: event.clientY };
         this.selectedFiles.length = 0;
+        this.fileSelectChanged();
     }
 
     @Output() refreshRequest = new EventEmitter<void>();
@@ -185,4 +191,9 @@ export class FolderListView {
     }
     @Input()
     canPaste: boolean = false;
+
+    deleteFile() {
+        this.contextMenuVisible = false;
+        this.fileAction.emit({type: 'delete'});
+    }
 }

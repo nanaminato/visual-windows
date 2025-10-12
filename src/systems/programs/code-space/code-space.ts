@@ -1,4 +1,4 @@
-import {Component,HostListener, inject, Input,} from '@angular/core';
+import {Component, HostListener, inject, Input,} from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ProgramConfig} from '../../models';
 import {WinIcon} from '../../system-lives/win-icon/win-icon';
@@ -19,12 +19,12 @@ import {filter, Subscription, take} from 'rxjs';
 import {Actions, ofType} from '@ngrx/effects';
 import {filePickerCancel, filePickerConfirm} from '../../system-services/state/system/file/file-picker.actions';
 import {NzMessageService} from 'ng-zorro-antd/message';
-import {processSizeChange} from '../../system-lives/window-live/adapter';
+import {processSizeChange, Program} from '../../system-lives/window-live/adapter';
 import {CodeSpaceSettings} from './code-space-settings/code-space-settings';
 import {CodeSpaceSettingsModel} from './code-space-settings/models/theme';
-import {Program} from '../../system-lives/window-live/adapter';
 import {SystemInfoService} from '../../system-services/info.service';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {WindowStartupLocation} from '../../models/window-state';
 
 @Component({
     selector: 'app-code-space',
@@ -340,6 +340,9 @@ export class CodeSpace extends Program implements processSizeChange {
                                 // '.txt','.json'
                             ]
                         }
+                    },
+                    position: {
+                        location: WindowStartupLocation.CenterWindow
                     }
                 }
             )

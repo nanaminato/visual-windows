@@ -58,26 +58,30 @@
                 <div class="create-new">
 
                 </div>
-                <button (click)="cutFile()">
+                <button (click)="cutFile()" [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
                     <nz-icon nzType="scissor" nzTheme="outline" />
                 </button>
-                <button (click)="copyFile()">
+                <button (click)="copyFile()" [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
                     <nz-icon nzType="copy" nzTheme="outline" />
                 </button>
                 <button (click)="pasteFile()" [class.disabled]="!canPaste" [disabled]="!canPaste">
                     <!-- todo 替换更贴切的图标                    -->
                     <nz-icon nzType="snippets" nzTheme="outline" />
                 </button>
-                <button>
+                <button [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
+<!--                    重命名-->
                     <nz-icon nzType="form" nzTheme="outline" />
                 </button>
-                <button>
+                <button [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
+<!--                    分享-->
                     <nz-icon nzType="share-alt" nzTheme="outline" />
                 </button>
-                <button (click)="deleteFile()">
+                <button (click)="deleteFile()" [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
+<!--                    删除-->
                     <nz-icon nzType="delete" nzTheme="outline" />
                 </button>
-                <button>
+                <button [class.disabled]="!fileActionAvailable" [disabled]="!fileActionAvailable">
+<!--                    更多-->
                     <nz-icon nzType="more" nzTheme="outline" />
                 </button>
             </div>

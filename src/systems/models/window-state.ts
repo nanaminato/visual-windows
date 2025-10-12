@@ -1,10 +1,24 @@
 import {ProgramIcon} from './program-info';
-
+export enum WindowStartupLocation{
+    Manual,
+    CenterWindow,
+    CenterScreen
+}
+export interface Position{
+    location?: WindowStartupLocation;
+    left: number;
+    top: number
+}
+export interface SetPosition{
+    location?: WindowStartupLocation;
+    left?: number;
+    top?: number
+}
 export interface WindowState {
     id: string;                // 唯一窗口ID
     title: string;             // 窗口标题
     programId: string;             // 所属应用ID
-    position: { x: number; y: number };
+    position: Position;
     size: { width: number; height: number };
     minimized: boolean;
     maximized: boolean;
@@ -13,7 +27,7 @@ export interface WindowState {
     params?: any;              // 启动参数
     customHeader?: boolean;
     // 新增字段，保存最大化前的状态
-    prevPosition?: { x: number; y: number };
+    prevPosition?: Position;
     prevSize?: { width: number; height: number };
 
     parentId?: string;

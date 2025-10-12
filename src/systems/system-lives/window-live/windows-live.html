@@ -1,8 +1,8 @@
 @if(win){
     <div [id]="win.id"
          class="window"
-         [style.left.px]="win.position.x"
-         [style.top.px]="win.position.y"
+         [style.left.px]="win.position.left"
+         [style.top.px]="win.position.top"
          [style.width.px]="win.size.width"
          [style.height.px]="win.size.height"
          [class.disabled]="win.disabled"

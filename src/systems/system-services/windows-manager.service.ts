@@ -8,6 +8,7 @@ import {FileEntry} from '../programs/code-space/models';
 import {FileAssociationService} from '../programs/file-explorer/services/file-association.service';
 import {getFileExtension} from '../programs/code-space/models/open-file';
 import {NzMessageService} from 'ng-zorro-antd/message';
+import {SetPosition} from '../models/window-state';
 
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService implements OnDestroy {
@@ -19,8 +20,8 @@ export class WindowManagerService implements OnDestroy {
     constructor() {
         window.addEventListener('resize', this.onWindowResize);
     }
-    openWindow(appId: string, title: string, params?: any,x?:number,y?:number, parentId?: string, modal?: boolean, closeWithParent?: boolean) {
-        this.store.dispatch(WindowActions.openWindow({ id: appId, title, params,x,y, parentId,modal, closeWithParent }));
+    openWindow(appId: string, title: string, params?: any,position?: SetPosition, parentId?: string, modal?: boolean, closeWithParent?: boolean) {
+        this.store.dispatch(WindowActions.openWindow({ id: appId, title, params,position, parentId,modal, closeWithParent }));
     }
     openFile(openFile: FileEntry, params: any) {
         let ext = getFileExtension(openFile);
@@ -100,7 +101,7 @@ export class WindowManagerService implements OnDestroy {
                 updated = true;
                 return {
                     ...w,
-                    position: { x: 0, y: 0 },
+                    position: { left: 0, top: 0 },
                     size: { width: desktopWidth, height: desktopHeight }
                 };
             }

@@ -2,13 +2,14 @@ import {inject, Injectable} from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
-import {switchMap, withLatestFrom, catchError, of, mergeMap, from, concatMap, EMPTY, Observable, map} from 'rxjs';
+import {withLatestFrom, catchError, of, mergeMap, from, map} from 'rxjs';
 import {selectWindows} from './window.selectors';
 import {WindowActions} from './window.actions';
 import {WindowState} from '../../../models';
 import {componentMap, programWithCustomHeaders} from '../../../programs/models';
 import {selectProgramConfigs} from '../system/system.selector';
 import {LinkService} from '../../link.service';
+import {WindowStartupLocation} from '../../../models/window-state';
 
 @Injectable()
 export class WindowEffects {
@@ -22,7 +23,7 @@ export class WindowEffects {
                 this.store.select(selectProgramConfigs)
             ),
             mergeMap(([action, windows, programConfigs]) => {
-                const { id: appId, title, params,x,y, parentId, modal, closeWithParent } = action;
+                const { id: appId, title, params,position, parentId, modal, closeWithParent } = action;
 
                 const actionsToDispatch: Action[] = [];
 
@@ -48,18 +49,30 @@ export class WindowEffects {
                 if(parentId) {
                     parentWindow = windows.find(p=>p.id === parentId);
                 }
+                const preferredWidth = registeredApp?.preferredSize?.width ?? 800;
+                const preferredHeight = registeredApp?.preferredSize?.height ?? 600;
+
+                const pos = this.calculateWindowPosition(
+                    position?.location,
+                    preferredWidth,
+                    preferredHeight,
+                    parentWindow?.position,
+                    parentWindow?.size,
+                    position?.left ?? 100,
+                    position?.top ?? 100
+                );
                 const newId = uuid();
                 const newWindow: WindowState = {
                     id: newId,
                     programId: appId,
                     title,
                     position: {
-                        x: parentWindow?parentWindow.position.x+30:(x??100),
-                        y: parentWindow?parentWindow.position.y+30:(y??100),
+                        left: pos.left,
+                        top: pos.top,
                     },
                     size: {
-                        width: registeredApp?.preferredSize?.width ?? 800,
-                        height: registeredApp?.preferredSize?.height ?? 600
+                        width: preferredWidth,
+                        height: preferredHeight
                     },
                     minimized: false,
                     maximized: false,
@@ -70,6 +83,7 @@ export class WindowEffects {
                     modal,
                     closeWithParent,
                 };
+
 
                 const componentLoader = componentMap.get(appId);
 
@@ -150,5 +164,53 @@ export class WindowEffects {
             map(action => WindowActions.focusWindow({ id: action.window.id }))
         )
     );
+    getScreenWidth(): number {
+        return window.screen.availWidth;
+    }
+
+    getScreenHeight(): number {
+        return window.screen.availHeight;
+    }
+
+    /**
+     * 根据窗口启动位置计算left和top
+     * @param location WindowStartupLocation
+     * @param windowWidth 当前窗口宽度
+     * @param windowHeight 当前窗口高度
+     * @param parentPos 父窗口位置（如果有）
+     * @param parentSize 父窗口大小（如果有）
+     * @param defaultLeft
+     * @param defaultTop
+     * @returns Position的left和top
+     */
+    calculateWindowPosition(
+        location: WindowStartupLocation | undefined,
+        windowWidth: number,
+        windowHeight: number,
+        parentPos?: { left: number; top: number },
+        parentSize?: {width: number; height: number},
+        defaultLeft = 100,
+        defaultTop = 100
+    ): { left: number; top: number } {
+        switch (location) {
+            case WindowStartupLocation.CenterScreen:
+                return {
+                    left: Math.round((this.getScreenWidth() - windowWidth) / 2),
+                    top: Math.round((this.getScreenHeight() - windowHeight) / 2),
+                };
+            case WindowStartupLocation.CenterWindow:
+                if (parentPos && parentSize) {
+                    return {
+                        left: Math.round(parentPos.left + (parentSize.width - windowWidth) / 2),
+                        top: Math.round(parentPos.top + (parentSize.height - windowHeight) / 2),
+                    };
+                }
+                return { left: defaultLeft, top: defaultTop };
+            case WindowStartupLocation.Manual:
+            case undefined:
+            default:
+                return { left: defaultLeft, top: defaultTop };
+        }
+    }
 
 }

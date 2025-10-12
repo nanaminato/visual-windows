@@ -1,11 +1,12 @@
 import {createActionGroup, props} from '@ngrx/store';
 import {WindowState} from '../../../models';
+import {SetPosition} from '../../../models/window-state';
 
 
 export const WindowActions = createActionGroup({
     source: 'Window',
     events: {
-        'open window': props<{id: string,title: string, params?: any, x?: number,y?: number, parentId?: string; modal?: boolean, closeWithParent?: boolean }>(),
+        'open window': props<{id: string,title: string, params?: any, position?: SetPosition, parentId?: string; modal?: boolean, closeWithParent?: boolean }>(),
         'open window success': props<{id: string, window: WindowState }>(),
         'close window': props<{ id: string }>(),
         'close window success': props<{ id: string; windows: WindowState[] }>(),

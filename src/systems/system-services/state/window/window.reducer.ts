@@ -117,7 +117,7 @@ export const windowReducer = createReducer(
                         ...w,
                         prevPosition: {...w.position},
                         prevSize: {...w.size},
-                        position: {x: 0, y: 0},
+                        position: {left: 0, top: 0},
                         size: {width: desktopWidth, height: desktopHeight - taskbarHeight},
                         minimized: false,
                         active: true,

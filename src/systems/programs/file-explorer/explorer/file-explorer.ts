@@ -349,11 +349,29 @@ export class FileExplorer{
         }
     }
     deleteFile(){
-
+        let windowParam = {
+            id: fileMoving,
+            title: '文件操作-删除',
+            params: {
+                operation: {
+                    localOperationId: '',
+                    sourcePaths: this.selectedFiles,
+                    destinationPath: this.currentPath || '',
+                    operationType: 'delete',
+                    status: 'pending',
+                    progress: 0,
+                    currentFile: ''
+                }
+            }
+        }
+        // console.log(windowParam);
+        this.store.dispatch(WindowActions.openWindow(windowParam));
     }
     selectedFiles: LightFile[] = [];
+    fileActionAvailable: boolean = false;
     onFileSelectChange($event: FileSelectChangedEvent) {
         this.selectedFiles = $event.files;
+        this.fileActionAvailable = this.selectedFiles.length > 0;
     }
 
     onFileAction($event: FileAction) {

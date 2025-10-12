@@ -54,8 +54,8 @@ export class DesktopManager {
         const win = this.windows.find(w => w.id === windowId);
         if (!win) return;
 
-        this.dragOffset.x = event.clientX - win.position.x;
-        this.dragOffset.y = event.clientY - win.position.y;
+        this.dragOffset.x = event.clientX - win.position.left;
+        this.dragOffset.y = event.clientY - win.position.top;
     }
     // 新增触摸拖动开始处理函数
     startDragTouch(event: TouchEvent, windowId: string) {
@@ -67,8 +67,8 @@ export class DesktopManager {
 
         // 这里只取第一个触点坐标
         const touch = event.touches[0];
-        this.dragOffset.x = touch.clientX - win.position.x;
-        this.dragOffset.y = touch.clientY - win.position.y;
+        this.dragOffset.x = touch.clientX - win.position.left;
+        this.dragOffset.y = touch.clientY - win.position.top;
     }
 
     @HostListener('document:mouseup')
@@ -97,8 +97,8 @@ export class DesktopManager {
         const newY = event.clientY - this.dragOffset.y;
 
         // 更新窗口位置（这里直接修改对象引用并触发更新）
-        win.position.x = Math.max(0, newX);
-        win.position.y = Math.max(0, newY);
+        win.position.left = Math.max(0, newX);
+        win.position.top = Math.max(0, newY);
 
     }
     // 新增触摸拖动监听
@@ -112,8 +112,8 @@ export class DesktopManager {
         const newX = touch.clientX - this.dragOffset.x;
         const newY = touch.clientY - this.dragOffset.y;
 
-        win.position.x = Math.max(0, newX);
-        win.position.y = Math.max(0, newY);
+        win.position.left = Math.max(0, newX);
+        win.position.top = Math.max(0, newY);
     }
     hoverId: string | null = null;
     appLiveEvent($event: ProgramEvent) {
